@@ -1,0 +1,4 @@
+LW $t0, 4($gp)
+LW $t1, 4($gp)
+ADD $t2, $t0, $t1
+LW $t2, 0($gp)
