@@ -45,6 +45,13 @@ std::map<std::string, int> registers{
         {"$ra",   31},
 };
 
+std::string& trim(std::string& str)
+{
+    str.erase(0, str.find_first_not_of(' '));
+    str.erase(str.find_last_not_of(' ') + 1);
+    return str;
+}
+
 std::string decimal_to_8_char_hex(unsigned int num) {
     std::string result = "";
     char hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -71,8 +78,20 @@ int register_name_to_index(std::string registerName) {
     }
 }
 
+int convert_immediate_const_to_int(std::string immediateConst) {
+    trim(immediateConst);
+
+    if (immediateConst.starts_with("0x")) {
+        return std::stoi(immediateConst, nullptr, 16);
+    } else if (immediateConst.starts_with("0b")) {
+        return std::stoi(immediateConst.substr(2), nullptr, 2);
+    } else {
+        return std::stoi(immediateConst);
+    }
+}
+
 int covert_jr_instruction_to_num(std::string command) {
-    int shiftedOpcode = Opcodes::JR << 26;
+    int shiftedOpcode = Opcodes::JR << 25;
 
     std::string registerName = command.substr(command.find(' ') + 1);
 
@@ -82,17 +101,38 @@ int covert_jr_instruction_to_num(std::string command) {
 }
 
 int convert_addu_instruction_to_num(std::string command) {
-    int code = Opcodes::ADDU << 26;
+    int code = Opcodes::ADDU << 25;
     std::regex rgx("ADDU (.+), (.+), (.+)");
     std::smatch matches;
 
     if (std::regex_search(command, matches, rgx)) {
         std::string rs, rt, rd;
         if (matches.size() == 4) {
-            code = register_name_to_index(matches[1]) << 10;
+            code += register_name_to_index(matches[1]) << 10;
             code += register_name_to_index(matches[2]) << 20;
             code += register_name_to_index(matches[3]) << 15;
             code += 0b100001;
+        } else {
+            std::cerr << "Invalid amount of arguments provided." << std::endl;
+        }
+    } else {
+        std::cerr << "Invalid command passed as an argument." << std::endl;
+    }
+
+    return code;
+}
+
+int convert_addiu_instruction_to_num(std::string command) {
+    int code = Opcodes::ADDIU << 25;
+    std::regex rgx("ADDIU (.+), (.+), (.+)");
+    std::smatch matches;
+
+    if (std::regex_search(command, matches, rgx)) {
+        std::string rs, rt, rd;
+        if (matches.size() == 4) {
+            code += register_name_to_index(matches[1]) << 15;
+            code += register_name_to_index(matches[2]) << 20;
+            code += convert_immediate_const_to_int(matches[3]);
         } else {
             std::cerr << "Invalid amount of arguments provided." << std::endl;
         }
@@ -110,7 +150,11 @@ std::string convert_instruction_to_hex(std::string command) {
     if (instruction == "JR") {
         code = covert_jr_instruction_to_num(command);
     } else if (instruction == "ADDU") {
+        std::cout << "ADDU" << std::endl;
         code = convert_addu_instruction_to_num(command);
+    } else if (instruction == "ADDIU") {
+        std::cout << "ADDIU" << std::endl;
+        code = convert_addiu_instruction_to_num(command);
     }
 
     return decimal_to_8_char_hex(code);
@@ -132,4 +176,10 @@ TEST(Assembler, JRToHexAssembly) {
 TEST(Assembler, ADDUToHexAssembly) {
     EXPECT_EQ("01194021", convert_instruction_to_hex("ADDU $s0, $s1, $s2"));
     EXPECT_EQ("00320821", convert_instruction_to_hex("ADDU $v0, $v1, $a0"));
+}
+
+TEST(Assembler, ADDIUToHexAssembly) {
+    EXPECT_EQ("131800FF", convert_instruction_to_hex("ADDIU $s0, $s1, 0xff"));
+    EXPECT_EQ("13288003", convert_instruction_to_hex("ADDIU $s1, $s2, 0b00011"));
+    EXPECT_EQ("1308800B", convert_instruction_to_hex("ADDIU $s1, $s0, 11"));
 }
