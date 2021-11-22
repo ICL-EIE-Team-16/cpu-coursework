@@ -8,6 +8,7 @@ public:
     const static int JR = 0b000000;
     const static int ADDU = 0b000000;
     const static int ADDIU = 0b001001;
+    const static int LW = 0b100011;
 };
 
 std::map<std::string, int> registers{
@@ -143,6 +144,27 @@ int convert_addiu_instruction_to_num(std::string command) {
     return code;
 }
 
+int convert_lw_instruction_to_num(std::string command) {
+    int code = Opcodes::LW << 25;
+    std::regex rgx("LW (.+), (.+)\\((.+)\\)");
+    std::smatch matches;
+
+    if (std::regex_search(command, matches, rgx)) {
+        std::string rs, rt, rd;
+        if (matches.size() == 4) {
+            code += register_name_to_index(matches[3]) << 20;
+            code += register_name_to_index(matches[1]) << 15;
+            code += convert_immediate_const_to_int(matches[2]);
+        } else {
+            std::cerr << "Invalid amount of arguments provided." << std::endl;
+        }
+    } else {
+        std::cerr << "Invalid command passed as an argument." << std::endl;
+    }
+
+    return code;
+}
+
 std::string convert_instruction_to_hex(std::string command) {
     int code = 0;
     std::string instruction = command.substr(0, command.find(' '));
@@ -150,11 +172,11 @@ std::string convert_instruction_to_hex(std::string command) {
     if (instruction == "JR") {
         code = covert_jr_instruction_to_num(command);
     } else if (instruction == "ADDU") {
-        std::cout << "ADDU" << std::endl;
         code = convert_addu_instruction_to_num(command);
     } else if (instruction == "ADDIU") {
-        std::cout << "ADDIU" << std::endl;
         code = convert_addiu_instruction_to_num(command);
+    } else if (instruction == "LW") {
+        code = convert_lw_instruction_to_num(command);
     }
 
     return decimal_to_8_char_hex(code);
@@ -182,4 +204,10 @@ TEST(Assembler, ADDIUToHexAssembly) {
     EXPECT_EQ("131800FF", convert_instruction_to_hex("ADDIU $s0, $s1, 0xff"));
     EXPECT_EQ("13288003", convert_instruction_to_hex("ADDIU $s1, $s2, 0b00011"));
     EXPECT_EQ("1308800B", convert_instruction_to_hex("ADDIU $s1, $s0, 11"));
+}
+
+TEST(Assembler, LWToHexAssembly) {
+    EXPECT_EQ("4718000C", convert_instruction_to_hex("LW $s0, 12($s1)"));
+    EXPECT_EQ("471900FC", convert_instruction_to_hex("LW $s2, 0xFC($s1)"));
+    EXPECT_EQ("47190064", convert_instruction_to_hex("LW $s2, 0b1100100($s1)"));
 }
