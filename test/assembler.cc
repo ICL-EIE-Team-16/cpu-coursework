@@ -1,14 +1,13 @@
 #include <gtest/gtest.h>
 #include <regex>
 
-// First instructions to test - JR, ADDU, ADDIU, LW, SW
-
 class Opcodes {
 public:
     const static int JR = 0b000000;
     const static int ADDU = 0b000000;
     const static int ADDIU = 0b001001;
     const static int LW = 0b100011;
+    const static int SW = 0b101011;
 };
 
 std::map<std::string, int> registers{
@@ -144,9 +143,9 @@ int convert_addiu_instruction_to_num(std::string command) {
     return code;
 }
 
-int convert_lw_instruction_to_num(std::string command) {
-    int code = Opcodes::LW << 25;
-    std::regex rgx("LW (.+), (.+)\\((.+)\\)");
+int convert_ls_instruction_to_num(std::string command, int opcode) {
+    int code = opcode << 25;
+    std::regex rgx("L?S?W (.+), (.+)\\((.+)\\)");
     std::smatch matches;
 
     if (std::regex_search(command, matches, rgx)) {
@@ -165,6 +164,14 @@ int convert_lw_instruction_to_num(std::string command) {
     return code;
 }
 
+int convert_lw_instruction_to_num(std::string commaxnd) {
+    return convert_ls_instruction_to_num(command, Opcodes::LW);
+}
+
+int convert_sw_instruction_to_num(std::string command) {
+    return convert_ls_instruction_to_num(command, Opcodes::SW);
+}
+
 std::string convert_instruction_to_hex(std::string command) {
     int code = 0;
     std::string instruction = command.substr(0, command.find(' '));
@@ -177,6 +184,8 @@ std::string convert_instruction_to_hex(std::string command) {
         code = convert_addiu_instruction_to_num(command);
     } else if (instruction == "LW") {
         code = convert_lw_instruction_to_num(command);
+    } else if (instruction == "SW") {
+        code = convert_sw_instruction_to_num(command);
     }
 
     return decimal_to_8_char_hex(code);
@@ -210,4 +219,10 @@ TEST(Assembler, LWToHexAssembly) {
     EXPECT_EQ("4718000C", convert_instruction_to_hex("LW $s0, 12($s1)"));
     EXPECT_EQ("471900FC", convert_instruction_to_hex("LW $s2, 0xFC($s1)"));
     EXPECT_EQ("47190064", convert_instruction_to_hex("LW $s2, 0b1100100($s1)"));
+}
+
+TEST(Assembler, SWToHexAssembly) {
+    EXPECT_EQ("5718000E", convert_instruction_to_hex("SW $s0, 14($s1)"));
+    EXPECT_EQ("571900FD", convert_instruction_to_hex("SW $s2, 0xFD($s1)"));
+    EXPECT_EQ("57190064", convert_instruction_to_hex("SW $s2, 0b1100100($s1)"));
 }
