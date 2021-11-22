@@ -1,10 +1,13 @@
 #include <gtest/gtest.h>
+#include <regex>
 
 // First instructions to test - JR, ADDU, ADDIU, LW, SW
 
 class Opcodes {
 public:
     const static int JR = 0b000000;
+    const static int ADDU = 0b000000;
+    const static int ADDIU = 0b001001;
 };
 
 std::map<std::string, int> registers{
@@ -59,24 +62,55 @@ std::string decimal_to_8_char_hex(unsigned int num) {
     return result;
 }
 
+int register_name_to_index(std::string registerName) {
+    if (registers.find(registerName) == registers.end()) {
+        std::cerr << "Invalid register name provided" << std::endl;
+        return -1;
+    } else {
+        return registers[registerName];
+    }
+}
+
+int covert_jr_instruction_to_num(std::string command) {
+    int shiftedOpcode = Opcodes::JR << 26;
+
+    std::string registerName = command.substr(command.find(' ') + 1);
+
+    int shiftedRS = register_name_to_index(registerName) << 20;
+
+    return (shiftedOpcode + shiftedRS + 0b1000);
+}
+
+int convert_addu_instruction_to_num(std::string command) {
+    int code = Opcodes::ADDU << 26;
+    std::regex rgx("ADDU (.+), (.+), (.+)");
+    std::smatch matches;
+
+    if (std::regex_search(command, matches, rgx)) {
+        std::string rs, rt, rd;
+        if (matches.size() == 4) {
+            code = register_name_to_index(matches[1]) << 10;
+            code += register_name_to_index(matches[2]) << 20;
+            code += register_name_to_index(matches[3]) << 15;
+            code += 0b100001;
+        } else {
+            std::cerr << "Invalid amount of arguments provided." << std::endl;
+        }
+    } else {
+        std::cerr << "Invalid command passed as an argument." << std::endl;
+    }
+
+    return code;
+}
+
 std::string convert_instruction_to_hex(std::string command) {
     int code = 0;
     std::string instruction = command.substr(0, command.find(' '));
 
     if (instruction == "JR") {
-        int shiftedOpcode = Opcodes::JR << 26;
-
-        std::string registerName = command.substr(command.find(' ') + 1);
-        int registerIndex = 0;
-
-        if (registers.find(registerName) == registers.end()) {
-            std::cerr << "Invalid register name provided" << std::endl;
-        } else {
-            registerIndex = registers[registerName];
-        }
-        int shiftedRS = registerIndex << 20;
-
-        code = shiftedOpcode + shiftedRS + 0b1000;
+        code = covert_jr_instruction_to_num(command);
+    } else if (instruction == "ADDU") {
+        code = convert_addu_instruction_to_num(command);
     }
 
     return decimal_to_8_char_hex(code);
@@ -89,8 +123,13 @@ TEST(Assembler, DecimalTo8CharHex) {
     EXPECT_EQ("FFFFFFFF", decimal_to_8_char_hex(4294967295));
 }
 
-TEST(Assemlber, JRToHexAssembly) {
+TEST(Assembler, JRToHexAssembly) {
     EXPECT_EQ("01F00008", convert_instruction_to_hex("JR $ra"));
     EXPECT_EQ("01000008", convert_instruction_to_hex("JR $s0"));
     EXPECT_EQ("01100008", convert_instruction_to_hex("JR $s1"));
+}
+
+TEST(Assembler, ADDUToHexAssembly) {
+    EXPECT_EQ("01194021", convert_instruction_to_hex("ADDU $s0, $s1, $s2"));
+    EXPECT_EQ("00320821", convert_instruction_to_hex("ADDU $v0, $v1, $a0"));
 }
