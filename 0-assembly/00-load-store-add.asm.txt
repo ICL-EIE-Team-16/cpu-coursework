@@ -1,0 +1,5 @@
+ADDIU $s0, $zero, 0xFC
+ADDIU $s1, $zero, 0xFF
+SW $s1, 4($s0)
+LW $s2, 4($s0)
+ADDU $s3, $s1, $s2

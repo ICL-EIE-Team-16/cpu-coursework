@@ -4,7 +4,7 @@ project(CPU-CW)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(CPU-CW utils/assembler.cpp)
+add_executable(CPU-CW utils/assembler.cpp utils/opcodes.h utils/registers.h)
 include(FetchContent)
 FetchContent_Declare(
         googletest
