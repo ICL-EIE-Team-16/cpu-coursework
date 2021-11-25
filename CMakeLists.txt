@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(assembler_test test/assembler.cc)
+add_executable(assembler_test utils/test/assembler.cc)
 target_link_libraries(
         assembler_test
         gtest_main
