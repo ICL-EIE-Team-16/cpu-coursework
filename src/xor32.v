@@ -4,6 +4,6 @@ module xor32(
     output logic[31:0] r
 );
 
-assign r = a|b;
+assign r = a^b;
 
 endmodule

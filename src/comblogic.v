@@ -5,7 +5,53 @@ module comblogic(
     output logic[31:0] r
 );
 
-logic[31:0] mux1;
+
+assign opcode_internal = op;
+
+typedef enum logic[5:0]{
+    AND = 6'b100100,
+    OR = 6'b100101,
+    SLL = 6'b000000,
+    SLLV = 6'b000100,
+    SRL = 6'b000010,
+    SRLV = 6'b000110,
+    XOR = 6'b100110
+} opcode_internal;
+
+always @(*) begin
+    if(AND) begin
+        r = a&b;
+    end
+
+    else if(OR) begin
+        r = a|b;
+    end
+
+    else if(SLL) begin
+        r = a<<sa;
+    end
+
+    else if(SLLV) begin
+        r = a<<b[4:0];
+    end
+
+    else if(SRL) begin
+        r = a>>sa;
+    end
+
+    else if(SRLV) begin
+        r = a>>b[4:0];
+    end
+
+    else if(XOR) begin
+        r = a^b;
+    end
+
+
+end
+
+
+/*logic[31:0] mux1;
 logic[31:0] mux2;
 logic[31:0] mux3;
 logic[31:0] mux4;
@@ -92,7 +138,7 @@ assign mux3 = (xorf == 1 ? isxor : mux2);
 assign mux4 = (sll == 1 ? issll : mux3);
 assign mux5 = (slv == 1 ? isslv : mux4);
 assign mux6 = (srl == 1 ? issrl : mux5);
-assign r = (srlv == 1 ? issrlv : mux6);
+assign r = (srlv == 1 ? issrlv : mux6);*/
 
 
 endmodule
