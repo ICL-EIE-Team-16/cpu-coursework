@@ -17,6 +17,9 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 
 ## Authors
-Michal Palic
-Vaclav Pavlicek
-...
+- Michal Palic
+- Vaclav Pavlicek
+- Pablo Romo Gonzalez
+- Arthika Sivathasan
+- Henry Hausamann
+- Yusuf Salim
