@@ -18,7 +18,6 @@ module PC (
     // adress_a and adress_b are multiplexed to give next_adress.
 
     enum logic[5:0] {SPECIAL, REGIMM, J, JAL, BEQ, BNE, BLEZ, BGTZ} opcode_in;
-    assign opcode_in = opcode;
     
     always @(*) begin
         
