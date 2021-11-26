@@ -53,7 +53,7 @@ std::string &trim(std::string &str) {
 
 std::string decimal_to_8_char_hex(unsigned int num) {
     std::string result;
-    char hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    char hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     while (num != 0) {
         unsigned int remainder = num % 16;
@@ -193,12 +193,12 @@ std::string convert_instruction_to_hex(const std::string& command) {
 TEST(Assembler, DecimalTo8CharHex) {
     EXPECT_EQ("00000000", decimal_to_8_char_hex(0));
     EXPECT_EQ("00000001", decimal_to_8_char_hex(1));
-    EXPECT_EQ("0000000F", decimal_to_8_char_hex(15));
-    EXPECT_EQ("FFFFFFFF", decimal_to_8_char_hex(4294967295));
+    EXPECT_EQ("0000000f", decimal_to_8_char_hex(15));
+    EXPECT_EQ("ffffffff", decimal_to_8_char_hex(4294967295));
 }
 
 TEST(Assembler, JRToHexAssembly) {
-    EXPECT_EQ("01F00008", convert_instruction_to_hex("JR $ra"));
+    EXPECT_EQ("01f00008", convert_instruction_to_hex("JR $ra"));
     EXPECT_EQ("01000008", convert_instruction_to_hex("JR $s0"));
     EXPECT_EQ("01100008", convert_instruction_to_hex("JR $s1"));
 }
@@ -209,19 +209,19 @@ TEST(Assembler, ADDUToHexAssembly) {
 }
 
 TEST(Assembler, ADDIUToHexAssembly) {
-    EXPECT_EQ("131800FF", convert_instruction_to_hex("ADDIU $s0, $s1, 0xff"));
+    EXPECT_EQ("131800ff", convert_instruction_to_hex("ADDIU $s0, $s1, 0xff"));
     EXPECT_EQ("13288003", convert_instruction_to_hex("ADDIU $s1, $s2, 0b00011"));
-    EXPECT_EQ("1308800B", convert_instruction_to_hex("ADDIU $s1, $s0, 11"));
+    EXPECT_EQ("1308800b", convert_instruction_to_hex("ADDIU $s1, $s0, 11"));
 }
 
 TEST(Assembler, LWToHexAssembly) {
-    EXPECT_EQ("4718000C", convert_instruction_to_hex("LW $s0, 12($s1)"));
-    EXPECT_EQ("471900FC", convert_instruction_to_hex("LW $s2, 0xFC($s1)"));
+    EXPECT_EQ("4718000c", convert_instruction_to_hex("LW $s0, 12($s1)"));
+    EXPECT_EQ("471900fc", convert_instruction_to_hex("LW $s2, 0xFC($s1)"));
     EXPECT_EQ("47190064", convert_instruction_to_hex("LW $s2, 0b1100100($s1)"));
 }
 
 TEST(Assembler, SWToHexAssembly) {
-    EXPECT_EQ("5718000E", convert_instruction_to_hex("SW $s0, 14($s1)"));
-    EXPECT_EQ("571900FD", convert_instruction_to_hex("SW $s2, 0xFD($s1)"));
+    EXPECT_EQ("5718000e", convert_instruction_to_hex("SW $s0, 14($s1)"));
+    EXPECT_EQ("571900fd", convert_instruction_to_hex("SW $s2, 0xFD($s1)"));
     EXPECT_EQ("57190064", convert_instruction_to_hex("SW $s2, 0b1100100($s1)"));
 }

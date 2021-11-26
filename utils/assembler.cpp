@@ -13,7 +13,7 @@ std::string &trim(std::string &str) {
 
 std::string decimal_to_8_char_hex(unsigned int num) {
     std::string result;
-    char hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    char hex_chars[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     while (num != 0) {
         unsigned int remainder = num % 16;

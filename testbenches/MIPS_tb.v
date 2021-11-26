@@ -32,8 +32,31 @@ module MIPS_tb;
     end
 
     initial begin
-        #10;
+        #5;
+        address = 0;
+        #20;
 
+        $display("Memory OUT: %h", readdata);
+
+        address = 1;
+        #20;
+
+        $display("Memory OUT: %h", readdata);
+
+        address = 2;
+        #20;
+
+        $display("Memory OUT: %h", readdata);
+
+        address = 3;
+        #20;
+
+        $display("Memory OUT: %h", readdata);
+
+        address = 4;
+        #20;
+
+        $display("Memory OUT: %h", readdata);
         $display("TB : finished; running=0");
 
         $finish;
