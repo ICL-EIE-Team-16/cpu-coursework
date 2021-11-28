@@ -1,0 +1,117 @@
+#! /usr/local/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1148-gef01dd1e)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/local/lib/ivl/system.vpi";
+:vpi_module "/usr/local/lib/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/local/lib/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/local/lib/ivl/v2005_math.vpi";
+:vpi_module "/usr/local/lib/ivl/va_math.vpi";
+:vpi_module "/usr/local/lib/ivl/v2009.vpi";
+S_0x7fffdd3024d0 .scope package, "$unit" "$unit" 2 1;
+ .timescale 0 0;
+S_0x7fffdd32fd20 .scope module, "addsub_tb" "addsub_tb" 3 1;
+ .timescale 0 0;
+v0x7fffdd354fe0_0 .var "a", 31 0;
+v0x7fffdd3550c0_0 .var "b", 31 0;
+v0x7fffdd355160_0 .net "negative", 0 0, v0x7fffdd354910_0;  1 drivers
+v0x7fffdd355200_0 .var "op", 5 0;
+v0x7fffdd3552a0_0 .net "positive", 0 0, v0x7fffdd354ba0_0;  1 drivers
+v0x7fffdd355340_0 .net "r", 31 0, v0x7fffdd354c60_0;  1 drivers
+v0x7fffdd355410_0 .var "sa", 5 0;
+v0x7fffdd3554e0_0 .net "zero", 0 0, v0x7fffdd354e20_0;  1 drivers
+S_0x7fffdd32feb0 .scope module, "dut" "addsub" 3 26, 4 1 0, S_0x7fffdd32fd20;
+ .timescale 0 0;
+    .port_info 0 /INPUT 32 "a";
+    .port_info 1 /INPUT 32 "b";
+    .port_info 2 /INPUT 6 "sa";
+    .port_info 3 /INPUT 6 "op";
+    .port_info 4 /OUTPUT 1 "zero";
+    .port_info 5 /OUTPUT 1 "negative";
+    .port_info 6 /OUTPUT 1 "positive";
+    .port_info 7 /OUTPUT 32 "r";
+enum0x7fffdd3031c0 .enum4 (6)
+   "ADD" 6'b100000,
+   "SUB" 6'b100010,
+   "SRA" 6'b000011,
+   "SRAV" 6'b000111,
+   "SLT" 6'b101010
+ ;
+v0x7fffdd330090_0 .net "a", 31 0, v0x7fffdd354fe0_0;  1 drivers
+v0x7fffdd354830_0 .net "b", 31 0, v0x7fffdd3550c0_0;  1 drivers
+v0x7fffdd354910_0 .var "negative", 0 0;
+v0x7fffdd3549b0_0 .net "op", 5 0, v0x7fffdd355200_0;  1 drivers
+v0x7fffdd354a90_0 .net "opcode_internal", 0 0, L_0x7fffdd3555b0;  1 drivers
+v0x7fffdd354ba0_0 .var "positive", 0 0;
+v0x7fffdd354c60_0 .var "r", 31 0;
+v0x7fffdd354d40_0 .net "sa", 5 0, v0x7fffdd355410_0;  1 drivers
+v0x7fffdd354e20_0 .var "zero", 0 0;
+E_0x7fffdd329280 .event anyedge, v0x7fffdd330090_0, v0x7fffdd354830_0, v0x7fffdd354c60_0;
+L_0x7fffdd3555b0 .part v0x7fffdd355200_0, 0, 1;
+    .scope S_0x7fffdd32feb0;
+T_0 ;
+    %wait E_0x7fffdd329280;
+    %load/vec4 v0x7fffdd330090_0;
+    %load/vec4 v0x7fffdd354830_0;
+    %add;
+    %store/vec4 v0x7fffdd354c60_0, 0, 32;
+    %load/vec4 v0x7fffdd354c60_0;
+    %cmpi/u 0, 0, 32;
+    %flag_or 5, 4; GT is !LE
+    %flag_inv 5;
+    %jmp/0xz  T_0.0, 5;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x7fffdd354ba0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354e20_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354910_0, 0, 1;
+    %jmp T_0.1;
+T_0.0 ;
+    %load/vec4 v0x7fffdd354c60_0;
+    %cmpi/u 0, 0, 32;
+    %jmp/0xz  T_0.2, 5;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354ba0_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354e20_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x7fffdd354910_0, 0, 1;
+    %jmp T_0.3;
+T_0.2 ;
+    %load/vec4 v0x7fffdd354c60_0;
+    %cmpi/e 0, 0, 32;
+    %jmp/0xz  T_0.4, 4;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354ba0_0, 0, 1;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x7fffdd354e20_0, 0, 1;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fffdd354910_0, 0, 1;
+T_0.4 ;
+T_0.3 ;
+T_0.1 ;
+    %jmp T_0;
+    .thread T_0, $push;
+    .scope S_0x7fffdd32fd20;
+T_1 ;
+    %pushi/vec4 8, 0, 32;
+    %cassign/vec4 v0x7fffdd354fe0_0;
+    %pushi/vec4 15, 0, 32;
+    %cassign/vec4 v0x7fffdd3550c0_0;
+    %pushi/vec4 1, 0, 6;
+    %cassign/vec4 v0x7fffdd355410_0;
+    %pushi/vec4 32, 0, 6;
+    %cassign/vec4 v0x7fffdd355200_0;
+    %delay 1, 0;
+    %vpi_call/w 3 17 "$display", "r=%d, zero=%d, positive=%d, negative=%d", v0x7fffdd355340_0, v0x7fffdd3554e0_0, v0x7fffdd3552a0_0, v0x7fffdd355160_0 {0 0 0};
+    %vpi_call/w 3 19 "$finish" {0 0 0};
+    %end;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "-";
+    "addsub_tb.v";
+    "addsub.v";
