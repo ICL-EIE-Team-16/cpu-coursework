@@ -12,7 +12,7 @@ output logic [4:0] register_one, // ”
 output logic [4:0] register_two, // “  
 output logic [31:0] immediate, // only relevant to I_type instructions – immediate value (sign extended for ALU so 32 bits long) 
 output logic [25:0] memory, // only relevant to j_type instructions – memory address 
-output write_en, // for register files 
+output logic write_en, // for register files 
 output logic [5:0] opcode
 );  
 
@@ -47,6 +47,14 @@ always@(*) begin
         function_code = instruction[5:0];
         immediate = 32'd0;
         memory = 26'd0;
+       
+       //determing write enables
+        if ((r_type==1)&&(function_code!=6'b001000)) begin  // high for all r_type instrcutions but low for JR
+            write_en = 1;     
+        end
+        else begin 
+        write_en = 0; 
+        end
     end 
     else if (j_type == 1) begin
         //assign groups of bits of instruction word to each field. 
@@ -57,6 +65,14 @@ always@(*) begin
         function_code = 6'd0;
         immediate = 32'd0;
         memory = instruction[25:0];
+             
+       //determing write enables
+        if((j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL
+            write_en = 0;
+        end 
+        else begin 
+            write_en = 1;
+        end 
     end 
     else if (i_type == 1) begin
         //assign groups of bits of instruction word to each field.
@@ -74,21 +90,20 @@ always@(*) begin
         else if (instruction [15] == 1) begin
             immediate = {16'd65535,instruction[15:0]};
         end
+
+        //determing write enables
+                          //BEQ--------------    BGEZ-------------------------------------------   BGTZ--------------   BLEZ-----------        BLTZ------------------------------------------    BNE-----------------      
+        if ((i_type==1)&&(opcode!=6'b000100)&&((opcode!=6'b000001)&&(destination_reg!=5'b00001))&&(opcode!=6'b000111)&&(opcode!=6'b000110)&&((opcode!=6'b000001)&&(destination_reg!=5'b00000))&&(opcode!=6'b000101))begin
+            write_en = 1; 
+        end 
+         else begin 
+            write_en = 0;
+        end
+        if(((opcode==6'b000001)&&(instruction[20:16]==5'b10001))||(opcode==6'b000001)&&(instruction[20:16]==5'b10000))begin 
+            write_en = 1;
+        end 
+       
     end
 end 
 
-always@(*) begin 
-    
-  // determining when write enable is high 
-    if ((r_type==1)&&(function_code!=6'b001000)) begin  // high for all r_type instrcutions but low for JR
-        write_en = 1;     
-    end 
-    if((j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL
-        write_en = 0;
-    end 
-                     //BEQ--------------    BGEZ-------------------------------------------   BGTZ--------------   BLEZ-----------        BLTZ------------------------------------------    BNE-----------------      
-    if ((i_type==1)&&(opcode!=6'b000100)&&((opcode!=6'b000001)&&(destination_reg!=5'b00001))&&(opcode!=6'b000111)&&(opcode!=6'b000110)&&((opcode!=6'b000001)&&(destination_reg!=5'b00000))&&(opcode!=6'b000100))begin
-        write_en = 1; 
-    end 
-end
 endmodule
