@@ -131,7 +131,7 @@ int convert_sw_instruction_to_num(const std::string& command) {
     return convert_ls_instruction_to_num(command, Opcodes::SW);
 }
 
-std::string convert_instruction_to_hex(const std::string& command) {
+std::string convert_instruction_to_hex_legacy(const std::string& command) {
     int code = 0;
     std::string instruction = command.substr(0, command.find(' '));
 
@@ -153,6 +153,6 @@ std::string convert_instruction_to_hex(const std::string& command) {
 int main() {
     std::string line;
     while (getline(std::cin, line)) {
-        std::cout << convert_instruction_to_hex(line) << std::endl;
+        std::cout << convert_instruction_to_hex_legacy(line) << std::endl;
     }
 }
