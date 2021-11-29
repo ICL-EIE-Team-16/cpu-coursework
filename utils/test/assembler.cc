@@ -1,5 +1,26 @@
 #include <gtest/gtest.h>
 #include <regex>
+#include <vector>
+#include <map>
+
+class InstructionParseConfig {
+private:
+    std::regex regex;
+    int opcode;
+    int constantToAdd;
+    std::vector<int> bitShifts;
+public:
+    InstructionParseConfig(std::regex regex, int opcode, int constantToAdd, std::vector<int> bitShifts) :
+        regex(regex), opcode(opcode), constantToAdd(constantToAdd), bitShifts(bitShifts) {};
+
+    std::regex getRegex() const { return regex; };
+
+    int getOpcode() const { return this->opcode; };
+
+    int getConstantToAdd() const { return this->constantToAdd; };
+
+    std::vector<int> getBitShifts() const { return bitShifts; };
+};
 
 class Opcodes {
 public:
@@ -45,7 +66,7 @@ std::map<std::string, int> registers{
         {"$ra",   31},
 };
 
-std::string &trim(std::string &str) {
+std::string trim(std::string str) {
     str.erase(0, str.find_first_not_of(' '));
     str.erase(str.find_last_not_of(' ') + 1);
     return str;
@@ -68,7 +89,7 @@ std::string decimal_to_8_char_hex(unsigned int num) {
     return result;
 }
 
-int register_name_to_index(const std::string& registerName) {
+int register_name_to_index(const std::string &registerName) {
     if (registers.find(registerName) == registers.end()) {
         std::cerr << "Invalid register name provided: " << registerName << std::endl;
         return -1;
@@ -78,7 +99,7 @@ int register_name_to_index(const std::string& registerName) {
 }
 
 int convert_immediate_const_to_int(std::string immediateConst) {
-    trim(immediateConst);
+    immediateConst = trim(immediateConst);
 
     if (immediateConst.substr(0, 2) == "0x") {
         return std::stoi(immediateConst, nullptr, 16);
@@ -89,7 +110,7 @@ int convert_immediate_const_to_int(std::string immediateConst) {
     }
 }
 
-int covert_jr_instruction_to_num(const std::string& command) {
+int covert_jr_instruction_to_num(const std::string &command) {
     int shiftedOpcode = Opcodes::JR << 25;
 
     std::string registerName = command.substr(command.find(' ') + 1);
@@ -99,7 +120,7 @@ int covert_jr_instruction_to_num(const std::string& command) {
     return (shiftedOpcode + shiftedRS + 0b1000);
 }
 
-int convert_addu_instruction_to_num(const std::string& command) {
+int convert_addu_instruction_to_num(const std::string &command) {
     int code = Opcodes::ADDU << 25;
     std::regex rgx("ADDU (.+), (.+), (.+)");
     std::smatch matches;
@@ -121,7 +142,7 @@ int convert_addu_instruction_to_num(const std::string& command) {
     return code;
 }
 
-int convert_addiu_instruction_to_num(const std::string& command) {
+int convert_addiu_instruction_to_num(const std::string &command) {
     int code = Opcodes::ADDIU << 25;
     std::regex rgx("ADDIU (.+), (.+), (.+)");
     std::smatch matches;
@@ -142,7 +163,7 @@ int convert_addiu_instruction_to_num(const std::string& command) {
     return code;
 }
 
-int convert_ls_instruction_to_num(const std::string& command, int opcode) {
+int convert_ls_instruction_to_num(const std::string &command, int opcode) {
     int code = opcode << 25;
     std::regex rgx("L?S?W (.+), (.+)\\((.+)\\)");
     std::smatch matches;
@@ -163,15 +184,15 @@ int convert_ls_instruction_to_num(const std::string& command, int opcode) {
     return code;
 }
 
-int convert_lw_instruction_to_num(const std::string& command) {
+int convert_lw_instruction_to_num(const std::string &command) {
     return convert_ls_instruction_to_num(command, Opcodes::LW);
 }
 
-int convert_sw_instruction_to_num(const std::string& command) {
+int convert_sw_instruction_to_num(const std::string &command) {
     return convert_ls_instruction_to_num(command, Opcodes::SW);
 }
 
-std::string convert_instruction_to_hex(const std::string& command) {
+std::string convert_instruction_to_hex(const std::string &command) {
     int code = 0;
     std::string instruction = command.substr(0, command.find(' '));
 
@@ -186,6 +207,49 @@ std::string convert_instruction_to_hex(const std::string& command) {
     } else if (instruction == "SW") {
         code = convert_sw_instruction_to_num(command);
     }
+
+    return decimal_to_8_char_hex(code);
+}
+
+std::map<std::string, InstructionParseConfig> initializeConfigMap() {
+    std::map<std::string, InstructionParseConfig> configs;
+
+    std::regex adduRegex("ADDU (.+), (.+), (.+)");
+    std::vector<int> adduShifts{10, 20, 15};
+    InstructionParseConfig ADDU_CONFIG(adduRegex, 0b000000, 0b100001, adduShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("ADDU", ADDU_CONFIG));
+
+    std::regex adduiRegex("ADDIU (.+), (.+), (.+)");
+    std::vector<int> adduiShifts{15, 20, -1};
+    InstructionParseConfig ADDIU_CONFIG(adduiRegex, 0b001001, 0, adduiShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("ADDIU", ADDIU_CONFIG));
+
+    return configs;
+}
+
+std::string convert_instructions_to_string_obj(const std::string &command,
+                                               const std::map<std::string, InstructionParseConfig> configs) {
+    int code = 0;
+    std::string trimmedCommand = trim(command);
+    std::string instrName = trimmedCommand.substr(0, trimmedCommand.find(" "));
+    InstructionParseConfig config = configs.find(instrName)->second;
+    code += (config.getOpcode() << 25);
+
+    std::smatch matches;
+    if (std::regex_search(command, matches, config.getRegex())) {
+        for (int i = 1; i < matches.size(); i++) {
+            int bitShift = config.getBitShifts()[i - 1];
+            if (bitShift == -1) {
+                code += convert_immediate_const_to_int(matches[i]);
+            } else {
+                code += register_name_to_index(matches[i]) << bitShift;
+            }
+        }
+    } else {
+        std::cerr << "Invalid command passed as an argument." << std::endl;
+    }
+
+    code += config.getConstantToAdd();
 
     return decimal_to_8_char_hex(code);
 }
@@ -224,4 +288,17 @@ TEST(Assembler, SWToHexAssembly) {
     EXPECT_EQ("5718000e", convert_instruction_to_hex("SW $s0, 14($s1)"));
     EXPECT_EQ("571900fd", convert_instruction_to_hex("SW $s2, 0xFD($s1)"));
     EXPECT_EQ("57190064", convert_instruction_to_hex("SW $s2, 0b1100100($s1)"));
+}
+
+TEST(Assembler, ParameterizedADDUInstructions) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("01194021", convert_instructions_to_string_obj("ADDU $s0, $s1, $s2", configs));
+    EXPECT_EQ("00320821", convert_instructions_to_string_obj("ADDU $v0, $v1, $a0", configs));
+}
+
+TEST(Assembler, ParameterizedADDUIInstructions) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("131800ff", convert_instructions_to_string_obj("ADDIU $s0, $s1, 0xff", configs));
+    EXPECT_EQ("13288003", convert_instructions_to_string_obj("ADDIU $s1, $s2, 0b00011", configs));
+    EXPECT_EQ("1308800b", convert_instructions_to_string_obj("ADDIU $s1, $s0, 11", configs));
 }
