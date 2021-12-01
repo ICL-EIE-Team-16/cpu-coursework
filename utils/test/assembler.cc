@@ -29,6 +29,9 @@ public:
     const static int ADDIU = 0b001001;
     const static int AND = 0b000000;
     const static int ANDI = 0b001100;
+    const static int BEQ = 0b000100;
+    const static int BGEZ = 0b000001;
+    const static int BGEZAL = 0b000001;
     const static int JR = 0b000000;
     const static int LW = 0b100011;
     const static int SW = 0b101011;
@@ -136,6 +139,21 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     InstructionParseConfig ADDIU_CONFIG(adduiRegex, Opcodes::ADDIU, 0, adduiShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("ADDIU", ADDIU_CONFIG));
 
+    std::regex beqRegex("BEQ (.+), (.+), (.+)");
+    std::vector<int> beqShifts{21, 16, -1};
+    InstructionParseConfig BEQ_CONFIG(beqRegex, Opcodes::BEQ, 0, beqShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BEQ", BEQ_CONFIG));
+
+    std::regex bgezRegex("BGEZ (.+), (.+)");
+    std::vector<int> bgezShifts{21, -1};
+    InstructionParseConfig BGEZ_CONFIG(bgezRegex, Opcodes::BGEZ, 0b00001 << 16, bgezShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BGEZ", BGEZ_CONFIG));
+
+    std::regex bgezalRegex("BGEZAL (.+), (.+)");
+    std::vector<int> bgezalShifts{21, -1};
+    InstructionParseConfig BGEZAL_CONFIG(bgezalRegex, Opcodes::BGEZAL, 0b10001 << 16, bgezalShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BGEZAL", BGEZAL_CONFIG));
+
     std::regex jrRegex("JR (.+)");
     std::vector<int> jrShifts{21};
     InstructionParseConfig JR_CONFIG(jrRegex, Opcodes::JR, 0b1000, jrShifts);
@@ -174,7 +192,6 @@ std::string convert_instruction_to_hex(const std::string &command,
                 } else {
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
-                std::cout << std::bitset<32>(code) << std::endl;
             }
         } else {
             std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
@@ -220,6 +237,28 @@ TEST(Assembler, ANDIToHexAssembly) {
     EXPECT_EQ("3251ffff", convert_instruction_to_hex("ANDI $s1, $s2, 0b1111111111111111", configs));
     EXPECT_EQ("3230000a", convert_instruction_to_hex("ANDI $s0, $s1, 10", configs));
     EXPECT_EQ("32320010", convert_instruction_to_hex("ANDI $s2, $s1, 0x10", configs));
+}
+
+TEST(Assembler, BEQToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("1230000f", convert_instruction_to_hex("BEQ $s1, $s0, 0b1111", configs));
+    EXPECT_EQ("1043ffab", convert_instruction_to_hex("BEQ $v0, $v1, 0xffab", configs));
+    EXPECT_EQ("12511234", convert_instruction_to_hex("BEQ $s2, $s1, 0x1234", configs));
+    EXPECT_EQ("1251000c", convert_instruction_to_hex("BEQ $s2, $s1, 12", configs));
+}
+
+TEST(Assembler, BGEZToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("064100ff", convert_instruction_to_hex("BGEZ $s2, 0b11111111", configs));
+    EXPECT_EQ("06011111", convert_instruction_to_hex("BGEZ $s0, 0x1111", configs));
+    EXPECT_EQ("0621006e", convert_instruction_to_hex("BGEZ $s1, 110", configs));
+}
+
+TEST(Assembler, BGEZALToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("065100b7", convert_instruction_to_hex("BGEZAL $s2, 0b10110111", configs));
+    EXPECT_EQ("06112222", convert_instruction_to_hex("BGEZAL $s0, 0x2222", configs));
+    EXPECT_EQ("0631006f", convert_instruction_to_hex("BGEZAL $s1, 111", configs));
 }
 
 TEST(Assembler, JRToHexAssembly) {
