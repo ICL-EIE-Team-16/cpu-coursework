@@ -37,6 +37,11 @@ public:
     const static int BLTZ = 0b000001;
     const static int BLTZAL = 0b000001;
     const static int BNE = 0b000101;
+    const static int DIV = 0b000000;
+    const static int DIVU = 0b000000;
+    const static int J = 0b000010;
+    const static int JAL = 0b000011;
+    const static int JALR = 0b000000;
     const static int JR = 0b000000;
     const static int LW = 0b100011;
     const static int SW = 0b101011;
@@ -184,6 +189,31 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     InstructionParseConfig BNE_CONFIG(bneRegex, Opcodes::BNE, 0, bneShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("BNE", BNE_CONFIG));
 
+    std::regex divRegex("DIV (.+), (.+)");
+    std::vector<int> divShifts{21, 16};
+    InstructionParseConfig DIV_CONFIG(divRegex, Opcodes::DIV, 0b11010, divShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("DIV", DIV_CONFIG));
+
+    std::regex divuRegex("DIVU (.+), (.+)");
+    std::vector<int> divuShifts{21, 16};
+    InstructionParseConfig DIVU_CONFIG(divuRegex, Opcodes::DIVU, 0b11011, divuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("DIVU", DIVU_CONFIG));
+
+    std::regex jRegex("J (.+)");
+    std::vector<int> jShifts{-1};
+    InstructionParseConfig J_CONFIG(jRegex, Opcodes::J, 0, jShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("J", J_CONFIG));
+
+    std::regex jalRegex("JAL (.+)");
+    std::vector<int> jalShifts{-1};
+    InstructionParseConfig JAL_CONFIG(jalRegex, Opcodes::JAL, 0, jalShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("JAL", JAL_CONFIG));
+
+    std::regex jalrRegex("JALR (.+), (.+)");
+    std::vector<int> jalrShifts{11, 21};
+    InstructionParseConfig JALR_CONFIG(jalrRegex, Opcodes::JALR, 0b1001, jalrShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("JALR", JALR_CONFIG));
+
     std::regex jrRegex("JR (.+)");
     std::vector<int> jrShifts{21};
     InstructionParseConfig JR_CONFIG(jrRegex, Opcodes::JR, 0b1000, jrShifts);
@@ -223,6 +253,9 @@ std::string convert_instruction_to_hex(const std::string &command,
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
             }
+        } else if (instrName == "JALR" && std::regex_search(command, matches, std::regex("JALR (.+)"))) {
+            code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
+            code += 31 << config.getBitShifts()[0];
         } else {
             std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
         }
@@ -324,6 +357,43 @@ TEST(Assembler, BNEToHexAssembly) {
     EXPECT_EQ("16b600ff", convert_instruction_to_hex("BNE $s5, $s6, 0xFF", configs));
     EXPECT_EQ("1634000a", convert_instruction_to_hex("BNE $s1, $s4, 10", configs));
     EXPECT_EQ("16760002", convert_instruction_to_hex("BNE $s3, $s6, 0b10", configs));
+}
+
+TEST(Assembler, DIVToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02be001a", convert_instruction_to_hex("DIV $s5, $s8", configs));
+    EXPECT_EQ("0253001a", convert_instruction_to_hex("DIV $s2, $s3", configs));
+    EXPECT_EQ("02f5001a", convert_instruction_to_hex("DIV $s7, $s5", configs));
+}
+
+TEST(Assembler, DIVUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("0251001b", convert_instruction_to_hex("DIVU $s2, $s1", configs));
+    EXPECT_EQ("0275001b", convert_instruction_to_hex("DIVU $s3, $s5", configs));
+    EXPECT_EQ("0236001b", convert_instruction_to_hex("DIVU $s1, $s6", configs));
+}
+
+TEST(Assembler, JToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("08001234", convert_instruction_to_hex("J 0x1234", configs));
+    EXPECT_EQ("0800000f", convert_instruction_to_hex("J 0b1111", configs));
+    EXPECT_EQ("08000094", convert_instruction_to_hex("J 148", configs));
+}
+
+TEST(Assembler, JALToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("0c0000ff", convert_instruction_to_hex("JAL 0xFF", configs));
+    EXPECT_EQ("0c00001d", convert_instruction_to_hex("JAL 0b11101", configs));
+    EXPECT_EQ("0c00008c", convert_instruction_to_hex("JAL 140", configs));
+}
+
+TEST(Assembler, JALRToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02008809", convert_instruction_to_hex("JALR $s1, $s0", configs));
+    EXPECT_EQ("02809009", convert_instruction_to_hex("JALR $s2, $s4", configs));
+    EXPECT_EQ("0240b809", convert_instruction_to_hex("JALR $s7, $s2", configs));
+    EXPECT_EQ("02a0f809", convert_instruction_to_hex("JALR $s5", configs));
+    EXPECT_EQ("02e0f809", convert_instruction_to_hex("JALR $s7", configs));
 }
 
 TEST(Assembler, JRToHexAssembly) {
