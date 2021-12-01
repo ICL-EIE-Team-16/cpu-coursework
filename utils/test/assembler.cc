@@ -43,7 +43,14 @@ public:
     const static int JAL = 0b000011;
     const static int JALR = 0b000000;
     const static int JR = 0b000000;
+    const static int LB = 0b100000;
+    const static int LBU = 0b100100;
+    const static int LH = 0b100001;
+    const static int LHU = 0b100101;
+    const static int LUI = 0b001111;
     const static int LW = 0b100011;
+    const static int LWL = 0b100010;
+    const static int LWR = 0b100110;
     const static int SW = 0b101011;
 };
 
@@ -219,10 +226,45 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     InstructionParseConfig JR_CONFIG(jrRegex, Opcodes::JR, 0b1000, jrShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("JR", JR_CONFIG));
 
+    std::regex lbRegex("LB (.+), (.+)\\((.+)\\)");
+    std::vector<int> lbShifts{16, -1, 21};
+    InstructionParseConfig LB_CONFIG(lbRegex, Opcodes::LB, 0, lbShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LB", LB_CONFIG));
+
+    std::regex lbuRegex("LBU (.+), (.+)\\((.+)\\)");
+    std::vector<int> lbuShifts{16, -1, 21};
+    InstructionParseConfig LBU_CONFIG(lbuRegex, Opcodes::LBU, 0, lbuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LBU", LBU_CONFIG));
+
+    std::regex lhRegex("LH (.+), (.+)\\((.+)\\)");
+    std::vector<int> lhShifts{16, -1, 21};
+    InstructionParseConfig LH_CONFIG(lhRegex, Opcodes::LH, 0, lhShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LH", LH_CONFIG));
+
+    std::regex lhuRegex("LHU (.+), (.+)\\((.+)\\)");
+    std::vector<int> lhuShifts{16, -1, 21};
+    InstructionParseConfig LHU_CONFIG(lhuRegex, Opcodes::LHU, 0, lhuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LHU", LHU_CONFIG));
+
+    std::regex luiRegex("LUI (.+), (.+)");
+    std::vector<int> luiShifts{16, -1};
+    InstructionParseConfig LUI_CONFIG(luiRegex, Opcodes::LUI, 0, luiShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LUI", LUI_CONFIG));
+
     std::regex lwRegex("LW (.+), (.+)\\((.+)\\)");
     std::vector<int> lwShifts{16, -1, 21};
     InstructionParseConfig LW_CONFIG(lwRegex, Opcodes::LW, 0, lwShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("LW", LW_CONFIG));
+
+    std::regex lwlRegex("LWL (.+), (.+)\\((.+)\\)");
+    std::vector<int> lwlShifts{16, -1, 21};
+    InstructionParseConfig LWL_CONFIG(lwlRegex, Opcodes::LWL, 0, lwlShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LWL", LWL_CONFIG));
+
+    std::regex lwrRegex("LWR (.+), (.+)\\((.+)\\)");
+    std::vector<int> lwrShifts{16, -1, 21};
+    InstructionParseConfig LWR_CONFIG(lwrRegex, Opcodes::LWR, 0, lwrShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("LWR", LWR_CONFIG));
 
     std::regex swRegex("SW (.+), (.+)\\((.+)\\)");
     std::vector<int> swShifts{16, -1, 21};
@@ -403,11 +445,60 @@ TEST(Assembler, JRToHexAssembly) {
     EXPECT_EQ("02200008", convert_instruction_to_hex("JR $s1", configs));
 }
 
+TEST(Assembler, LBToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("82d23456", convert_instruction_to_hex("LB $s2, 0x3456($s6)", configs));
+    EXPECT_EQ("82b1006f", convert_instruction_to_hex("LB $s1, 111($s5)", configs));
+    EXPECT_EQ("82700007", convert_instruction_to_hex("LB $s0, 0b111($s3)", configs));
+}
+
+TEST(Assembler, LBUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("92b41234", convert_instruction_to_hex("LBU $s4, 0x1234($s5)", configs));
+    EXPECT_EQ("92560016", convert_instruction_to_hex("LBU $s6, 22($s2)", configs));
+    EXPECT_EQ("92b2001d", convert_instruction_to_hex("LBU $s2, 0b11101($s5)", configs));
+}
+
+TEST(Assembler, LHToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("86911256", convert_instruction_to_hex("LH $s1, 0x1256($s4)", configs));
+    EXPECT_EQ("86930079", convert_instruction_to_hex("LH $s3, 121($s4)", configs));
+    EXPECT_EQ("86120007", convert_instruction_to_hex("LH $s2, 0b111($s0)", configs));
+}
+
+TEST(Assembler, LHUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("96727856", convert_instruction_to_hex("LHU $s2, 0x7856($s3)", configs));
+    EXPECT_EQ("96b4007a", convert_instruction_to_hex("LHU $s4, 122($s5)", configs));
+    EXPECT_EQ("9633001f", convert_instruction_to_hex("LHU $s3, 0b11111($s1)", configs));
+}
+
+TEST(Assembler, LUIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("3c120073", convert_instruction_to_hex("LUI $s2, 0b1110011", configs));
+    EXPECT_EQ("3c1504d2", convert_instruction_to_hex("LUI $s5, 1234", configs));
+    EXPECT_EQ("3c175234", convert_instruction_to_hex("LUI $s7, 0x5234", configs));
+}
+
 TEST(Assembler, LWToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("8e30000c", convert_instruction_to_hex("LW $s0, 12($s1)", configs));
     EXPECT_EQ("8e3200fc", convert_instruction_to_hex("LW $s2, 0xFC($s1)", configs));
     EXPECT_EQ("8e320064", convert_instruction_to_hex("LW $s2, 0b1100100($s1)", configs));
+}
+
+TEST(Assembler, LWLToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("8ab30070", convert_instruction_to_hex("LWL $s3, 112($s5)", configs));
+    EXPECT_EQ("8a7400fd", convert_instruction_to_hex("LWL $s4, 0xFD($s3)", configs));
+    EXPECT_EQ("8ad50064", convert_instruction_to_hex("LWL $s5, 0b1100100($s6)", configs));
+}
+
+TEST(Assembler, LWRToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("9ad10075", convert_instruction_to_hex("LWR $s1, 117($s6)", configs));
+    EXPECT_EQ("9a5500fa", convert_instruction_to_hex("LWR $s5, 0xfa($s2)", configs));
+    EXPECT_EQ("9a97001c", convert_instruction_to_hex("LWR $s7, 0b11100($s4)", configs));
 }
 
 TEST(Assembler, SWToHexAssembly) {
