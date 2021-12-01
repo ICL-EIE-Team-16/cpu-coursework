@@ -32,6 +32,11 @@ public:
     const static int BEQ = 0b000100;
     const static int BGEZ = 0b000001;
     const static int BGEZAL = 0b000001;
+    const static int BGTZ = 0b000111;
+    const static int BLEZ = 0b000110;
+    const static int BLTZ = 0b000001;
+    const static int BLTZAL = 0b000001;
+    const static int BNE = 0b000101;
     const static int JR = 0b000000;
     const static int LW = 0b100011;
     const static int SW = 0b101011;
@@ -154,6 +159,31 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     InstructionParseConfig BGEZAL_CONFIG(bgezalRegex, Opcodes::BGEZAL, 0b10001 << 16, bgezalShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("BGEZAL", BGEZAL_CONFIG));
 
+    std::regex bgtzRegex("BGTZ (.+), (.+)");
+    std::vector<int> bgtzShifts{21, -1};
+    InstructionParseConfig BGTZ_CONFIG(bgtzRegex, Opcodes::BGTZ, 0, bgtzShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BGTZ", BGTZ_CONFIG));
+
+    std::regex blezRegex("BLEZ (.+), (.+)");
+    std::vector<int> blezShifts{21, -1};
+    InstructionParseConfig BLEZ_CONFIG(blezRegex, Opcodes::BLEZ, 0, blezShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BLEZ", BLEZ_CONFIG));
+
+    std::regex bltzRegex("BLTZ (.+), (.+)");
+    std::vector<int> bltzShifts{21, -1};
+    InstructionParseConfig BLTZ_CONFIG(bltzRegex, Opcodes::BLTZ, 0, bltzShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BLTZ", BLTZ_CONFIG));
+
+    std::regex bltzalRegex("BLTZAL (.+), (.+)");
+    std::vector<int> bltzalShifts{21, -1};
+    InstructionParseConfig BLTZAL_CONFIG(bltzalRegex, Opcodes::BLTZAL, 0b10000 << 16, bltzalShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BLTZAL", BLTZAL_CONFIG));
+
+    std::regex bneRegex("BNE (.+), (.+), (.+)");
+    std::vector<int> bneShifts{21, 16, -1};
+    InstructionParseConfig BNE_CONFIG(bneRegex, Opcodes::BNE, 0, bneShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("BNE", BNE_CONFIG));
+
     std::regex jrRegex("JR (.+)");
     std::vector<int> jrShifts{21};
     InstructionParseConfig JR_CONFIG(jrRegex, Opcodes::JR, 0b1000, jrShifts);
@@ -259,6 +289,41 @@ TEST(Assembler, BGEZALToHexAssembly) {
     EXPECT_EQ("065100b7", convert_instruction_to_hex("BGEZAL $s2, 0b10110111", configs));
     EXPECT_EQ("06112222", convert_instruction_to_hex("BGEZAL $s0, 0x2222", configs));
     EXPECT_EQ("0631006f", convert_instruction_to_hex("BGEZAL $s1, 111", configs));
+}
+
+TEST(Assembler, BGTZToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("1e000007", convert_instruction_to_hex("BGTZ $s0, 0b111", configs));
+    EXPECT_EQ("1e200111", convert_instruction_to_hex("BGTZ $s1, 0x111", configs));
+    EXPECT_EQ("1e40000f", convert_instruction_to_hex("BGTZ $s2, 15", configs));
+}
+
+TEST(Assembler, BLEZToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("1aa0007b", convert_instruction_to_hex("BLEZ $s5, 123", configs));
+    EXPECT_EQ("1ae00123", convert_instruction_to_hex("BLEZ $s7, 0x123", configs));
+    EXPECT_EQ("1ac00007", convert_instruction_to_hex("BLEZ $s6, 0b111", configs));
+}
+
+TEST(Assembler, BLTZToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("06800015", convert_instruction_to_hex("BLTZ $s4, 0x15", configs));
+    EXPECT_EQ("0660000f", convert_instruction_to_hex("BLTZ $s3, 15", configs));
+    EXPECT_EQ("06e0000f", convert_instruction_to_hex("BLTZ $s7, 0b1111", configs));
+}
+
+TEST(Assembler, BLTZALToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("06700033", convert_instruction_to_hex("BLTZAL $s3, 0b110011", configs));
+    EXPECT_EQ("06f0000b", convert_instruction_to_hex("BLTZAL $s7, 11", configs));
+    EXPECT_EQ("0630011f", convert_instruction_to_hex("BLTZAL $s1, 0x11F", configs));
+}
+
+TEST(Assembler, BNEToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("16b600ff", convert_instruction_to_hex("BNE $s5, $s6, 0xFF", configs));
+    EXPECT_EQ("1634000a", convert_instruction_to_hex("BNE $s1, $s4, 10", configs));
+    EXPECT_EQ("16760002", convert_instruction_to_hex("BNE $s3, $s6, 0b10", configs));
 }
 
 TEST(Assembler, JRToHexAssembly) {
