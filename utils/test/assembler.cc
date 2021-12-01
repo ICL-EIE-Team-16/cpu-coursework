@@ -51,6 +51,10 @@ public:
     const static int LW = 0b100011;
     const static int LWL = 0b100010;
     const static int LWR = 0b100110;
+    const static int MFHI = 0b000000;
+    const static int MFLO = 0b000000;
+    const static int MTHI = 0b000000;
+    const static int MTLO = 0b000000;
     const static int SW = 0b101011;
 };
 
@@ -265,6 +269,26 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     std::vector<int> lwrShifts{16, -1, 21};
     InstructionParseConfig LWR_CONFIG(lwrRegex, Opcodes::LWR, 0, lwrShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("LWR", LWR_CONFIG));
+
+    std::regex mfhiRegex("MFHI (.+)");
+    std::vector<int> mfhiShifts{11};
+    InstructionParseConfig MFHI_CONFIG(mfhiRegex, Opcodes::MFHI, 0b010000, mfhiShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MFHI", MFHI_CONFIG));
+
+    std::regex mfloRegex("MFLO (.+)");
+    std::vector<int> mfloShifts{11};
+    InstructionParseConfig MFLO_CONFIG(mfloRegex, Opcodes::MFLO, 0b010010, mfloShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MFLO", MFLO_CONFIG));
+
+    std::regex mthiRegex("MTHI (.+)");
+    std::vector<int> mthiShifts{21};
+    InstructionParseConfig MTHI_CONFIG(mthiRegex, Opcodes::MTHI, 0b010001, mthiShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MTHI", MTHI_CONFIG));
+
+    std::regex mtloRegex("MTLO (.+)");
+    std::vector<int> mtloShifts{21};
+    InstructionParseConfig MTLO_CONFIG(mtloRegex, Opcodes::MTLO, 0b010011, mtloShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MTLO", MTLO_CONFIG));
 
     std::regex swRegex("SW (.+), (.+)\\((.+)\\)");
     std::vector<int> swShifts{16, -1, 21};
@@ -499,6 +523,24 @@ TEST(Assembler, LWRToHexAssembly) {
     EXPECT_EQ("9ad10075", convert_instruction_to_hex("LWR $s1, 117($s6)", configs));
     EXPECT_EQ("9a5500fa", convert_instruction_to_hex("LWR $s5, 0xfa($s2)", configs));
     EXPECT_EQ("9a97001c", convert_instruction_to_hex("LWR $s7, 0b11100($s4)", configs));
+}
+
+TEST(Assembler, MFLOToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("0000a012", convert_instruction_to_hex("MFLO $s4", configs));
+    EXPECT_EQ("0000b012", convert_instruction_to_hex("MFLO $s6", configs));
+}
+
+TEST(Assembler, MTHIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02200011", convert_instruction_to_hex("MTHI $s1", configs));
+    EXPECT_EQ("02e00011", convert_instruction_to_hex("MTHI $s7", configs));
+}
+
+TEST(Assembler, MTLOToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02400013", convert_instruction_to_hex("MTLO $s2", configs));
+    EXPECT_EQ("02800013", convert_instruction_to_hex("MTLO $s4", configs));
 }
 
 TEST(Assembler, SWToHexAssembly) {
