@@ -7,7 +7,7 @@ module ALU(
 );
 
 
-assign opcode_internal = op;
+
 
 typedef enum logic[5:0]{
     ADD = 6'b100000,
@@ -22,26 +22,27 @@ typedef enum logic[5:0]{
     SRL = 6'b000010,
     SRLV = 6'b000110,
     XOR = 6'b100110
-} opcode_internal;
+} opcode_decode;
 
 
 always @(*) begin
-    if(ADD) begin
+    if(op == ADD) begin
         r = a + b;
     end
 
-    else if(SUB) begin
+    if(op == SUB) begin
         r = a - b;
     end
-    else if(SRA) begin
+    
+    if(op == SRA) begin
         r = a>>>(sa);
     end
 
-    else if(SRAV) begin
+    if(op == SRAV) begin
         r = a>>>(b[4:0]);
     end
 
-    else if(SLT) begin
+    if(op == SLT) begin
         if(a<b)begin
             r = 32'h0001;
         end
@@ -50,50 +51,50 @@ always @(*) begin
         end
     end
 
+    if(op == AND) begin
+        r = a&b;
+    end
+
+    if(op == OR) begin
+        r = a|b;
+    end
+
+    if(op == SLL) begin
+        r = a<<sa;
+    end
+
+    if(op == SLLV) begin
+        r = a<<b[4:0];
+    end
+
+    if(op == SRL) begin
+        r = a>>sa;
+    end
+
+    if(op == SRLV) begin
+        r = a>>b[4:0];
+    end
+
+    if(op == XOR) begin
+        r = a^b;
+    end
+
     if(r > 0) begin
         positive = 1;
         zero = 0;
         negative = 0;
     end
 
-    else if(r < 0) begin
+    if(r < 0) begin
         positive = 0;
         zero = 0;
         negative = 1;
     end
 
-    else if(r == 0) begin
+    if(r == 0) begin
         positive = 0;
         zero = 1;
         negative = 0;
-    end
-
-    else if(AND) begin
-        r = a&b;
-    end
-
-    else if(OR) begin
-        r = a|b;
-    end
-
-    else if(SLL) begin
-        r = a<<sa;
-    end
-
-    else if(SLLV) begin
-        r = a<<b[4:0];
-    end
-
-    else if(SRL) begin
-        r = a>>sa;
-    end
-
-    else if(SRLV) begin
-        r = a>>b[4:0];
-    end
-
-    else if(XOR) begin
-        r = a^b;
     end
 
 
