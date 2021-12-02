@@ -130,7 +130,7 @@ initial begin
     exec_one = 0;
     exec_two = 0;
     #1
-    assert (r_type == 1)
+    assert (r_type == 0)
     assert (j_type == 0)
     assert (i_type == 0)
     assert (function_code == 6'b001001)
