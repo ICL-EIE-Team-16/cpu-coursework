@@ -1,4 +1,4 @@
-module IR_tb (); // test more robustly?? how??
+module IR_tb (); 
 logic [31:0] instruction;
 logic r_type; //control signals that go high depending on the type of instruction  
                      // mux control signals 
@@ -12,11 +12,18 @@ logic [4:0] register_two; // “
 logic [31:0] immediate; // only relevant to I_type instructions – immediate value (sign extended for ALU) 
 logic [25:0] memory; // only relevant to j_type instructions – memory address 
 logic [5:0] opcode;
+logic fetch;
+logic exec_one;
+logic exec_two;
 logic write_en;
 
+// Note that with testbenches that include fetch, instruction will be that of the previous instruction but all enables will go to 0 (i.e. rtype, itype, jtype and write_en)
 initial begin 
-    //test case 1 - testing an R-Type instruction 
+    //test case 1 - testing an R-Type instruction is HIGH in EXEC1 - SUCCESS
     instruction = 32'b00000010101011101010001010110000; //r_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 1)
     assert (j_type == 0)
@@ -31,9 +38,13 @@ initial begin
     assert (opcode == 6'b000000)
     assert (write_en == 1)
     $display("TESTCASE 1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
-
-    //test case 1.1 - testing an R-Type instruction with a low write_en - i.e JR
+    $display ("TESTCASE 1 - SUCCESS");
+   
+    //test case 1.1 - testing an R-Type instruction with a low write_en - i.e JR is HIGH in EXEC1 - SUCCESS
     instruction = 32'b00000000001000000000000000001000; //r_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 1)
     assert (j_type == 0)
@@ -48,9 +59,99 @@ initial begin
     assert (opcode == 6'b000000)
     assert (write_en == 0)
     $display ("TESTCASE 1.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 1.1 - SUCCESS");
+   
+    //test case 1.2 - R-Type is LOW in EXEC2 - SUCCESS
+    instruction = 32'b00000010101011101010001010110000; //r_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 1)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'b110000)
+    assert (shift == 5'b01010)
+    assert (destination_reg == 5'b10100)
+    assert (register_one == 5'b10101)
+    assert (register_two == 5'b01110)
+    assert (memory == 0)
+    assert (immediate == 0)
+    assert (opcode == 6'b000000)
+    assert (write_en == 0)
+    $display("TESTCASE 1.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 1.2 - SUCCESS");
+   
+    //test case 1.3 - JALR is HIGH in EXEC1 - SUCCESS
+    instruction = 32'b00000010101011101010001010001001; //r_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 1)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'b001001)
+    assert (shift == 5'b01010)
+    assert (destination_reg == 5'b10100)
+    assert (register_one == 5'b10101)
+    assert (register_two == 5'b01110)
+    assert (memory == 0)
+    assert (immediate == 0)
+    assert (opcode == 6'b000000)
+    assert (write_en == 1)
+    $display("TESTCASE 1.3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 1.3 - SUCCESS");
 
-    //test case 2 - Testing an I-type instruction and sign extend immediate by 0's
-    instruction = 32'b01001100101011100110000010000000; //i_type
+    //test case 1.4 - JALR is HIGH in EXEC2 - SUCCESS
+    instruction = 32'b00000010101011101010001010001001; //r_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 1)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'b001001)
+    assert (shift == 5'b01010)
+    assert (destination_reg == 5'b10100)
+    assert (register_one == 5'b10101)
+    assert (register_two == 5'b01110)
+    assert (memory == 0)
+    assert (immediate == 0)
+    assert (opcode == 6'b000000)
+    assert (write_en == 1)
+    $display("TESTCASE 1.4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 1.4 - SUCCESS");
+  
+    //test case 1.5 - LOW in FETCH?
+    instruction = 32'b00000010101011101010001010001001; //r_type
+    fetch = 1;
+    exec_one = 0;
+    exec_two = 0;
+    #1
+    assert (r_type == 1)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'b001001)
+    assert (shift == 5'b01010)
+    assert (destination_reg == 5'b10100)
+    assert (register_one == 5'b10101)
+    assert (register_two == 5'b01110)
+    assert (memory == 0)
+    assert (immediate == 0)
+    assert (opcode == 6'b000000)
+    assert (write_en == 0)
+    $display("TESTCASE 1.5: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 1.5 - SUCCESS");
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+    ///testing the sign extend 
+    //test case 2.0 - Testing an I-type instruction and sign extend immediate by 0's
+    instruction = 32'b00101000101011100110000010000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -62,12 +163,16 @@ initial begin
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
     assert (immediate == 32'b00000000000000000110000010000000) //sign extend by 0
-    assert (opcode == 6'b010011)
+    assert (opcode == 6'b001010)
     assert (write_en == 1)
-    $display("TESTCASE 2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.0: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.0 - SUCCESS");
 
-    //test case 2.1 - Testing an I-type instruction and sign extend immediate by 1's
-    instruction = 32'b01001100101011101110000010000000; //i_type
+    //test case 2.0.1 - Testing an I-type instruction and sign extend immediate by 1's
+    instruction = 32'b00101000101011101110000010000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -79,12 +184,18 @@ initial begin
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
     assert (immediate == 32'b11111111111111111110000010000000) // sign extend by 1 
-    assert (opcode == 6'b010011)
+    assert (opcode == 6'b001010)
     assert (write_en == 1)
-    $display("TESTCASE 2.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
-   
-    //test case 2.2 - Testing an I-type instruction and write enables is low for BEQ
+    $display("TESTCASE 2.0.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.0.1 - SUCCESS");
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+    //testing opcodes where write enables should never go high
+    //test case 2.1 - Testing an I-type instruction and write enables is low for BEQ in EXEC 1 and 2 
     instruction = 32'b00010000001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -98,10 +209,35 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000100) //BEQ
     assert (write_en == 0)
-    $display("TESTCASE 2.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1 - SUCCESS");
 
-    //test case 2.2.2 - Testing an I-type instruction and write enables is low for BGEZ
+    //test case 2.1.0 - Testing an I-type instruction and write enables is low for BEQ in EXEC 1 and 2 
+    instruction = 32'b00010000001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b00010)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b000100) //BEQ
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.0: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.0 - SUCCESS");
+
+    //test case 2.1.2 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
     instruction = 32'b00000100001000011000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -115,27 +251,36 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000001) //BGEZ
     assert (write_en == 0)
-    $display("TESTCASE 2.2.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.2 - SUCCESS");
 
-    //test case 2.2.3 - Testing an I-type instruction and write enables is high for BGEZAL 
-    instruction = 32'b00000100001100011000000000000000 ; //i_type
+    //test case 2.1.3 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
+    instruction = 32'b00000100001000011000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
     assert (i_type == 1)
     assert (function_code == 6'd0)
     assert (shift == 5'd0)
-    assert (destination_reg == 5'b10001)
+    assert (destination_reg == 5'b00001)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
-    assert (opcode == 6'b000001) //BGEZAL
-    assert (write_en == 1)
-    $display("TESTCASE 2.2.3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    assert (opcode == 6'b000001) //BGEZ
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.3 - SUCCESS");
 
-    //test case 2.2.4 - Testing an I-type instruction and write enables is low for BGTZ
+    
+    //test case 2.1.4 - Testing an I-type instruction and write enables is low for BGTZ
     instruction = 32'b00011100001000001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -149,10 +294,14 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000111) //BGTZ
     assert (write_en == 0)
-    $display("TESTCASE 2.2.4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1,4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.4 - SUCCESS");
 
-    //test case 2.2.5 - Testing an I-type instruction and write enables is low for BLEZ
+    //test case 2.1.5 - Testing an I-type instruction and write enables is low for BLEZ
     instruction = 32'b00011000001000001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -166,15 +315,19 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000110) //BLEZ
     assert (write_en == 0)
-    $display("TESTCASE 2.2.5: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1.5 ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.5 - SUCCESS");
 
-    //test case 2.2.6 - Testing an I-type instruction and write enables is low for BLTZ
+    //test case 2.1.6 - Testing an I-type instruction and write enables is low for BLTZ
     instruction = 32'b00000100001000001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
     assert (i_type == 1)
-    assert (function_code == 6'd0)
+    assert (function_code == 6'd0) 
     assert (shift == 5'd0)
     assert (destination_reg == 5'b00000)
     assert (register_one == 5'b00001)
@@ -183,27 +336,14 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000001) //BLTZ
     assert (write_en == 0)
-    $display("TESTCASE 2.2.6: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1.6: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.6 - SUCCESS");
 
-    //test case 2.2.7 - Testing an I-type instruction and write enables is high for BLTZAL 
-    instruction = 32'b00000100001100001000000000000000; //i_type
-    #1
-    assert (r_type == 0)
-    assert (j_type == 0)
-    assert (i_type == 1)
-    assert (function_code == 6'd0)
-    assert (shift == 5'd0)
-    assert (destination_reg == 5'b10000)
-    assert (register_one == 5'b00001)
-    assert (register_two == 5'd0)
-    assert (memory == 26'd0)
-    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
-    assert (opcode == 6'b000001) //BLTZAL
-    assert (write_en == 1)
-    $display("TESTCASE 2.2.7: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
-
-    //test case 2.2.8 - Testing an I-type instruction and write enables is low for BNE 
+    //test case 2.1.7 - Testing an I-type instruction and write enables is low for BNE 
     instruction = 32'b00010100001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
     #1
     assert (r_type == 0)
     assert (j_type == 0)
@@ -217,11 +357,376 @@ initial begin
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
     assert (opcode == 6'b000101) //BNE
     assert (write_en == 0)
-    $display("TESTCASE 2.2.8: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display("TESTCASE 2.1.7: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.7 - SUCCESS");
 
+    //test case 2.1.8 - Testing SB is never high 
+    instruction = 32'b10100000001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b00010)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b101000) //SB
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.8: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.8 - SUCCESS");
+    
+    //test case 2.1.8.1 - Testing SB is never high 
+    instruction = 32'b10100000001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b00010)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b101000) //SB
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.8.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.8.1 - SUCCESS");
 
-    //test case 3 - Testing a J-type instruction and write enable is high for JAL
+    //test case 2.1.9 - Testing SW is never high
+    instruction = 32'b10101100001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b00010)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b101011) //SW
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.9: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.9 - SUCCESS");
+
+    //test case 2.1.9.1 - Testing SW is never high
+    instruction = 32'b10101100001000101000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b00010)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b101011) //SW
+    assert (write_en == 0)
+    $display("TESTCASE 2.1.9.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.1.9.1 - SUCCESS");
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+    //testing opcodes where write enables should only go high in EXEC2
+    //test case 2.2 - Testing an I-type instruction and write enables is high for BGEZAL in EXEC 2 and low in EXEC 1 
+    instruction = 32'b00000100001100011000000000000000 ; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10001)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b000001) //BGEZAL
+    assert (write_en == 1)
+    $display("TESTCASE 2.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2 - SUCCESS");
+
+    //test case 2.2.1 - Testing an I-type instruction and write enables is high for BGEZAL in EXEC 2 and low in EXEC 1 
+    instruction = 32'b00000100001100011000000000000000 ; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10001)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b000001) //BGEZAL
+    assert (write_en == 0)
+    $display("TESTCASE 2.2.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.1 - SUCCESS");
+
+    //test case 2.2.2 - Testing an I-type instruction and write enables is high for BLTZAL in EXEC2 but low in EXEC1
+    instruction = 32'b00000100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b000001) //BLTZAL
+    assert (write_en == 1)
+    $display("TESTCASE 2.2.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.2 - SUCCESS");
+
+    //test case 2.2.3 - Testing an I-type instruction and write enables is high for BLTZAL in EXEC2 but low in EXEC1
+    instruction = 32'b00000100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b000001) //BLTZAL
+    assert (write_en == 0)
+    $display("TESTCASE 2.2.3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.3 - SUCCESS");
+
+    //test case 2.2.4 - Testing write enable for LB is high in EXEC2 and not in EXEC1
+    instruction = 32'b10000000001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b100000) //LB
+    assert (write_en == 0)
+    $display("TESTCASE 2.2.4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.4 - SUCCESS");
+    
+    //testcase 2.2.4.1 - Testing write enable for LB
+    instruction = 32'b10000000001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b100000) //LB
+    assert (write_en == 1)
+    $display("TESTCASE 2.2.4.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.4.1 - SUCCESS");
+   
+    //test case 2.2.5 - Testing write enable for LUI is high in EXEC2 and not in EXEC1
+    instruction = 32'b00111100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001111) //LUI
+    assert (write_en == 0)
+    $display("TESTCASE 2.2.5: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.5 - SUCCESS");
+    
+    //testcase 2.2.5.1 - Testing write enable for LUI
+    instruction = 32'b00111100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001111) //LUI
+    assert (write_en == 1)
+    $display("TESTCASE 2.2.5.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.2.5.1 - SUCCESS");
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+    //testing opcodes where write enables should only go high in EXEC1
+    //test case 2.3.1 - Testing write enable for ADDI is only high in EXEC 1 and not in EXEC2
+    instruction = 32'b00100000001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001000) //ADDI
+    assert (write_en == 1)
+    $display("TESTCASE 2.3.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.3.1 - SUCCESS");
+    
+    //testcase 2.3.1.1 - Testing write enable for ADDI
+    instruction = 32'b00100000001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001000) //ADDI
+    assert (write_en == 0)
+    $display("TESTCASE 2.3.1.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.3.1.1 - SUCCESS");
+
+    //test case 2.3.2 - Testing write enable for SLTIU is only high in EXEC 1 and not in EXEC2 
+    instruction = 32'b00101100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001011) //SLTIU
+    assert (write_en == 1)
+    $display("TESTCASE 2.3.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.3.2 - SUCCESS");
+    
+    //testcase 2.3.2.1 - Testing write enable for SLTIU
+    instruction = 32'b00101100001100001000000000000000; //i_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 1)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001011) //SLTIU
+    assert (write_en == 0)
+    $display("TESTCASE 2.3.2.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.3.2.1 - SUCCESS");   
+
+    //testcase 2.4 - LOW in FETCH 
+    instruction = 32'b00101100001100001000000000000000; //i_type
+    fetch = 1;
+    exec_one = 0;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'b10000)
+    assert (register_one == 5'b00001)
+    assert (register_two == 5'd0)
+    assert (memory == 26'd0)
+    assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
+    assert (opcode == 6'b001011) //SLTIU
+    assert (write_en == 0)
+    $display("TESTCASE 2.4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 2.4 - SUCCESS");
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+    //test case 3 - Testing a J-type instruction and write enable is high for JAL in EXEC2 - SUCCESS
     instruction = 32'b00001110101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
     #1
     assert (r_type == 0)
     assert (j_type == 1)
@@ -236,9 +741,13 @@ initial begin
     assert (opcode == 6'b000011) //JAL
     assert (write_en == 1)
     $display("TESTCASE 3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 3 - SUCCESS");
 
-    //test case 3.2 - Testing a J-type instruction and write enable is low for J
+    //test case 3.1 - Testing a J-type instruction and write enable is low for J in EXEC2 - SUCCESS
     instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
     #1
     assert (r_type == 0)
     assert (j_type == 1)
@@ -252,7 +761,123 @@ initial begin
     assert (immediate == 32'd0)
     assert (opcode == 6'b000010) //J
     assert (write_en == 0)
+    $display("TESTCASE 3.1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 3.1 - SUCCESS");
+
+    //test case 3.2 - Testing a J-type instruction and write enable is LOW for JAL in EXEC1 - SUCCESS
+    instruction = 32'b00001110101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 1)
+    assert (i_type == 0)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'd0)
+    assert (register_one == 5'd0)
+    assert (register_two == 5'd0)
+    assert (memory == 26'b10101110111110011000001100)
+    assert (immediate == 32'd0)
+    assert (opcode == 6'b000011) //JAL
+    assert (write_en == 0)
     $display("TESTCASE 3.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 3.2 - SUCCESS");
+
+    //test case 3.3 - Testing a J-type instruction and write enable is LOW for J in EXEC1 - SUCCESS
+    instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 1)
+    assert (i_type == 0)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'd0)
+    assert (register_one == 5'd0)
+    assert (register_two == 5'd0)
+    assert (memory == 26'b10101110111110011000001100)
+    assert (immediate == 32'd0)
+    assert (opcode == 6'b000010) //J
+    assert (write_en == 0)
+    $display("TESTCASE 3.3: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 3.3 - SUCCESS");
+
+    //test case 3.4 - LOW in FETCH 
+    instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 1;
+    exec_one = 0;
+    exec_two = 0;
+    #1
+    assert (r_type == 0)
+    assert (j_type == 0)
+    assert (i_type == 0)
+    assert (function_code == 6'd0)
+    assert (shift == 5'd0)
+    assert (destination_reg == 5'd0)
+    assert (register_one == 5'd0)
+    assert (register_two == 5'd0)
+    assert (memory == 26'b10101110111110011000001100)
+    assert (immediate == 32'd0)
+    assert (opcode == 6'b000010) //J
+    assert (write_en == 0)
+    $display("TESTCASE 3.4: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    $display ("TESTCASE 3.4 - SUCCESS");
+
+    $display("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+    
+    //test case 4 - Testing FETCH, EXEC 1, EXEC 2
+    //fetch
+    instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 1;
+    exec_one = 0;
+    exec_two = 0;    
+    #1
+    $display("TESTCASE fetch: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+
+    //exec1
+    instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    $display("TESTCASE exec1: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    #1
+    
+    //exec2
+    instruction = 32'b00001010101110111110011000001100; //j_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    $display("TESTCASE exec2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+
+    //fetch
+    instruction = 32'b00000000001000000000000000001000; //r_type
+    fetch = 1;
+    exec_one = 0;
+    exec_two = 0;    
+    #1
+    $display("TESTCASE fetch.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+
+    //exec1
+    instruction = 32'b00000000001000000000000000001000; //r_type
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    $display("TESTCASE exec1.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
+    
+    
+    //exec2
+    instruction = 32'b00000000001000000000000000001000; //r_type
+    fetch = 0;
+    exec_one = 0;
+    exec_two = 1;
+    #1
+    $display("TESTCASE exec2.2: ","opcode:",opcode,", r_type = ", r_type,", j_type = ", j_type, ", i_type = ", i_type, ", function_code = ", function_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
 
 end 
 
@@ -269,7 +894,10 @@ IR_decode dut(
     .memory(memory),
     .immediate(immediate),
     .opcode(opcode),
-    .write_en(write_en)
+    .write_en(write_en),
+    .fetch(fetch),
+    .exec_one(exec_one),
+    .exec_two(exec_two)
     );
 
 endmodule 
