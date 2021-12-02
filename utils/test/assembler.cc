@@ -62,7 +62,19 @@ public:
     const static int SB = 0b101000;
     const static int SH = 0b101001;
     const static int SLL = 0b000000;
+    const static int SLLV = 0b000000;
+    const static int SLT = 0b000000;
+    const static int SLTI = 0b001010;
+    const static int SLTIU = 0b001011;
+    const static int SLTU = 0b000000;
+    const static int SRA = 0b000000;
+    const static int SRAV = 0b000000;
+    const static int SRL = 0b000000;
+    const static int SRLV = 0b000000;
+    const static int SUBU = 0b000000;
     const static int SW = 0b101011;
+    const static int XOR = 0b000000;
+    const static int XORI = 0b001110;
 };
 
 std::map<std::string, int> registers{
@@ -332,10 +344,70 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     InstructionParseConfig SLL_CONFIG(sllRegex, Opcodes::SLL, 0, sllShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SLL", SLL_CONFIG));
 
+    std::regex sllvRegex("SLLV[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sllvShifts{11, 16, 21};
+    InstructionParseConfig SLLV_CONFIG(sllvRegex, Opcodes::SLLV, 0b000100, sllvShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLLV", SLLV_CONFIG));
+
+    std::regex sltRegex("SLT[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sltShifts{11, 21, 16};
+    InstructionParseConfig SLT_CONFIG(sltRegex, Opcodes::SLLV, 0b101010, sltShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLT", SLT_CONFIG));
+
+    std::regex sltiRegex("SLTI[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sltiShifts{16, 21, -1};
+    InstructionParseConfig SLTI_CONFIG(sltiRegex, Opcodes::SLTI, 0, sltiShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLTI", SLTI_CONFIG));
+
+    std::regex sltiuRegex("SLTIU[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sltiuShifts{16, 21, -1};
+    InstructionParseConfig SLTIU_CONFIG(sltiuRegex, Opcodes::SLTIU, 0, sltiuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLTIU", SLTIU_CONFIG));
+
+    std::regex sltuRegex("SLTU[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sltuShifts{11, 21, 16};
+    InstructionParseConfig SLTU_CONFIG(sltuRegex, Opcodes::SLTU, 0b101011, sltuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLTU", SLTU_CONFIG));
+
+    std::regex sraRegex("SRA[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sraShifts{11, 16, 6};
+    InstructionParseConfig SRA_CONFIG(sraRegex, Opcodes::SRA, 0b000011, sraShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SRA", SRA_CONFIG));
+
+    std::regex sravRegex("SRAV[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sravShifts{11, 16, 21};
+    InstructionParseConfig SRAV_CONFIG(sravRegex, Opcodes::SRAV, 0b000111, sravShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SRAV", SRAV_CONFIG));
+
+    std::regex srlRegex("SRL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> srlShifts{11, 16, 6};
+    InstructionParseConfig SRL_CONFIG(srlRegex, Opcodes::SRL, 0b000010, srlShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SRL", SRL_CONFIG));
+
+    std::regex srlvRegex("SRLV[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> srlvShifts{11, 16, 21};
+    InstructionParseConfig SRLV_CONFIG(srlvRegex, Opcodes::SRLV, 0b000110, srlvShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SRLV", SRLV_CONFIG));
+
+    std::regex subuRegex("SUBU[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> subuShifts{11, 21, 16};
+    InstructionParseConfig SUBU_CONFIG(subuRegex, Opcodes::SUBU, 0b100011, subuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SUBU", SUBU_CONFIG));
+
     std::regex swRegex("SW (.+), (.+)\\((.+)\\)");
     std::vector<int> swShifts{16, -1, 21};
     InstructionParseConfig SW_CONFIG(swRegex, Opcodes::SW, 0, swShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SW", SW_CONFIG));
+
+    std::regex xorRegex("XOR[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> xorShifts{11, 21, 16};
+    InstructionParseConfig XOR_CONFIG(xorRegex, Opcodes::XOR, 0b100110, xorShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("XOR", XOR_CONFIG));
+
+    std::regex xoriRegex("XORI[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> xoriShifts{16, 21, -1};
+    InstructionParseConfig XORI_CONFIG(xoriRegex, Opcodes::XORI, 0, xoriShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("XORI", XORI_CONFIG));
 
     return configs;
 }
@@ -630,9 +702,89 @@ TEST(Assembler, SLLToHexAssembly) {
     EXPECT_EQ("0015bcc0", convert_instruction_to_hex("SLL $s7,  $s5,     $s3", configs));
 }
 
+TEST(Assembler, SLLVToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02d5a004", convert_instruction_to_hex("SLLV  $s4, $s5,    $s6", configs));
+    EXPECT_EQ("02f59004", convert_instruction_to_hex("SLLV $s2,     $s5, $s7", configs));
+    EXPECT_EQ("02728804", convert_instruction_to_hex("SLLV $s1, $s2,    $s3", configs));
+}
+
+TEST(Assembler, SLTToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("03d1b82a", convert_instruction_to_hex("SLT   $s7, $s8,   $s1", configs));
+    EXPECT_EQ("02d1a02a", convert_instruction_to_hex("SLT $s4,    $s6,    $s1", configs));
+    EXPECT_EQ("02b1902a", convert_instruction_to_hex("SLT $s2, $s5, $s1", configs));
+}
+
+TEST(Assembler, SLTIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("2ab60011", convert_instruction_to_hex("SLTI  $s6,  $s5, 0x11", configs));
+    EXPECT_EQ("2a91000f", convert_instruction_to_hex("SLTI $s1, $s4, 0b1111", configs));
+    EXPECT_EQ("2a710070", convert_instruction_to_hex("SLTI $s1, $s3, 112", configs));
+}
+
+TEST(Assembler, SLTIUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("2e540a11", convert_instruction_to_hex("SLTIU $s4,  $s2,   0xA11", configs));
+    EXPECT_EQ("2e92003f", convert_instruction_to_hex("SLTIU $s2, $s4, 0b111111", configs));
+    EXPECT_EQ("2eb6006f", convert_instruction_to_hex("SLTIU $s6, $s5, 111", configs));
+}
+
+TEST(Assembler, SLTUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("0275882b", convert_instruction_to_hex("SLTU $s1,  $s3,    $s5", configs));
+    EXPECT_EQ("02b6a02b", convert_instruction_to_hex("SLTU $s4, $s5, $s6", configs));
+    EXPECT_EQ("02d7882b", convert_instruction_to_hex("SLTU $s1, $s6, $s7", configs));
+}
+
+TEST(Assembler, SRAToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("00128cc3", convert_instruction_to_hex("SRA $s1,  $s2, $s3", configs));
+    EXPECT_EQ("00178d03", convert_instruction_to_hex("SRA $s1,  $s7,     $s4", configs));
+    EXPECT_EQ("00129c43", convert_instruction_to_hex("SRA $s3,  $s2,     $s1", configs));
+}
+
+TEST(Assembler, SRAVToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02b49007", convert_instruction_to_hex("SRAV   $s2,   $s4, $s5", configs));
+    EXPECT_EQ("0291b807", convert_instruction_to_hex("SRAV $s7,  $s1,   $s4", configs));
+}
+
+TEST(Assembler, SRLToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("00168d02", convert_instruction_to_hex("SRL $s1,      $s6, $s4", configs));
+    EXPECT_EQ("001794c2", convert_instruction_to_hex("SRL $s2, $s7, $s3", configs));
+}
+
+TEST(Assembler, SRLVToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02548806", convert_instruction_to_hex("SRLV      $s1, $s4, $s2", configs));
+    EXPECT_EQ("0235b006", convert_instruction_to_hex("SRLV $s6, $s5,    $s1", configs));
+}
+
+TEST(Assembler, SUBUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02349823", convert_instruction_to_hex("SUBU      $s3, $s1, $s4", configs));
+    EXPECT_EQ("0253a823", convert_instruction_to_hex("SUBU $s5,    $s2, $s3", configs));
+    EXPECT_EQ("0237b023", convert_instruction_to_hex("SUBU $s6, $s1,    $s7", configs));
+}
+
 TEST(Assembler, SWToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("ae30000e", convert_instruction_to_hex("SW $s0, 14($s1)", configs));
     EXPECT_EQ("ae3200fd", convert_instruction_to_hex("SW $s2, 0xFD($s1)", configs));
     EXPECT_EQ("ae320064", convert_instruction_to_hex("SW $s2, 0b1100100($s1)", configs));
+}
+
+TEST(Assembler, XORToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02b28826", convert_instruction_to_hex("XOR $s1, $s5, $s2", configs));
+    EXPECT_EQ("02779026", convert_instruction_to_hex("XOR $s2, $s3,  $s7", configs));
+}
+
+TEST(Assembler, XORIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("3a341425", convert_instruction_to_hex("XORI  $s4, $s1, 0x1425", configs));
+    EXPECT_EQ("3ab1003d", convert_instruction_to_hex("XORI $s1, $s5, 0b111101", configs));
+    EXPECT_EQ("3a9504e6", convert_instruction_to_hex("XORI $s5, $s4, 1254", configs));
 }
