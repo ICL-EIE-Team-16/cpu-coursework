@@ -33,10 +33,12 @@ initial begin
     assign op = ADD;
     #1
     assert(r==a+b) else $fatal(1, "Add error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==1 && zero==0) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SUB;
     #1
     assert(r==a-b) else $fatal(1, "Sub error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==1 && positive==0 && zero==0) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SRA;
     #1
@@ -91,10 +93,12 @@ initial begin
     assign op = ADD;
     #1
     assert(r==a+b) else $fatal(1, "Add error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==1 && zero==0) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SUB;
     #1
     assert(r==a-b) else $fatal(1, "Sub error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==1 && positive==0 && zero==0) else $display("Flag error: r= %d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SRA;
     #1
@@ -106,7 +110,7 @@ initial begin
 
     assign op = SLT;
     #1
-    assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
 
     assign op = AND;
     #1
@@ -149,10 +153,13 @@ initial begin
     assign op = ADD;
     #1
     assert(r==a+b) else $fatal(1, "Add error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==0 && zero==1) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
+    //how can r equal 65536 (33'h1ffff) here when r only has 32 bits??
 
     assign op = SUB;
     #1
     assert(r==a-b) else $fatal(1, "Sub error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==1 && zero==0) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SRA;
     #1
@@ -209,10 +216,12 @@ initial begin
     assign op = ADD;
     #1
     assert(r==a+b) else $fatal(1, "Add error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==1 && zero==0) else $display("Flag error: r=%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SUB;
     #1
     assert(r==a-b) else $fatal(1, "Sub error, values: a=%d, b=%d, r=%d", a, b, r);
+    assert(negative==0 && positive==1 && zero==0) else $display("Flag error: r0%d, negative=%d, positive=%d, zero=%d", r, negative, positive, zero);
 
     assign op = SRA;
     #1
