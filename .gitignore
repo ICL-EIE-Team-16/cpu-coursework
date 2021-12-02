@@ -163,3 +163,5 @@ fabric.properties
 *.vcd
 /src/memory/build
 /src/memory/*.sh
+
+./bin/*
