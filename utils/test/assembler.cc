@@ -55,6 +55,13 @@ public:
     const static int MFLO = 0b000000;
     const static int MTHI = 0b000000;
     const static int MTLO = 0b000000;
+    const static int MULT = 0b000000;
+    const static int MULTU = 0b000000;
+    const static int OR = 0b000000;
+    const static int ORI = 0b001101;
+    const static int SB = 0b101000;
+    const static int SH = 0b101001;
+    const static int SLL = 0b000000;
     const static int SW = 0b101011;
 };
 
@@ -289,6 +296,41 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     std::vector<int> mtloShifts{21};
     InstructionParseConfig MTLO_CONFIG(mtloRegex, Opcodes::MTLO, 0b010011, mtloShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("MTLO", MTLO_CONFIG));
+
+    std::regex multRegex("MULT (.+), (.+)");
+    std::vector<int> multShifts{21, 16};
+    InstructionParseConfig MULT_CONFIG(multRegex, Opcodes::MULT, 0b011000, multShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MULT", MULT_CONFIG));
+
+    std::regex multuRegex("MULTU[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> multuShifts{21, 16};
+    InstructionParseConfig MULTU_CONFIG(multuRegex, Opcodes::MULTU, 0b011001, multuShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("MULTU", MULTU_CONFIG));
+
+    std::regex orRegex("OR[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> orShifts{11, 21, 16};
+    InstructionParseConfig OR_CONFIG(orRegex, Opcodes::OR, 0b100101, orShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("OR", OR_CONFIG));
+
+    std::regex oriRegex("ORI[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> oriShifts{16, 21, -1};
+    InstructionParseConfig ORI_CONFIG(oriRegex, Opcodes::ORI, 0, oriShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("ORI", ORI_CONFIG));
+
+    std::regex sbRegex("SB[\\s?]+(\\S+),[\\s?]+(\\S+)\\((\\S+)\\)");
+    std::vector<int> sbShifts{16, -1, 21};
+    InstructionParseConfig SB_CONFIG(sbRegex, Opcodes::SB, 0, sbShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SB", SB_CONFIG));
+
+    std::regex shRegex("SH[\\s?]+(\\S+),[\\s?]+(\\S+)\\((\\S+)\\)");
+    std::vector<int> shShifts{16, -1, 21};
+    InstructionParseConfig SH_CONFIG(shRegex, Opcodes::SH, 0, shShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SH", SH_CONFIG));
+
+    std::regex sllRegex("SLL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
+    std::vector<int> sllShifts{11, 16, 6};
+    InstructionParseConfig SLL_CONFIG(sllRegex, Opcodes::SLL, 0, sllShifts);
+    configs.insert(std::pair<std::string, InstructionParseConfig>("SLL", SLL_CONFIG));
 
     std::regex swRegex("SW (.+), (.+)\\((.+)\\)");
     std::vector<int> swShifts{16, -1, 21};
@@ -541,6 +583,51 @@ TEST(Assembler, MTLOToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("02400013", convert_instruction_to_hex("MTLO $s2", configs));
     EXPECT_EQ("02800013", convert_instruction_to_hex("MTLO $s4", configs));
+}
+
+TEST(Assembler, MULTToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02560018", convert_instruction_to_hex("MULT $s2, $s6", configs));
+    EXPECT_EQ("02970018", convert_instruction_to_hex("MULT $s4, $s7", configs));
+}
+
+TEST(Assembler, MULTUToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02350019", convert_instruction_to_hex("MULTU     $s1,    $s5", configs));
+    EXPECT_EQ("02970019", convert_instruction_to_hex("MULTU $s4,   $s7", configs));
+}
+
+TEST(Assembler, ORToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("02538825", convert_instruction_to_hex("OR $s1, $s2, $s3", configs));
+    EXPECT_EQ("02f59025", convert_instruction_to_hex("OR $s2, $s7,   $s5", configs));
+}
+
+TEST(Assembler, ORIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("3672000f", convert_instruction_to_hex("ORI $s2, $s3, 0b1111", configs));
+    EXPECT_EQ("36b400ff", convert_instruction_to_hex("ORI $s4, $s5,   0xFF", configs));
+}
+
+TEST(Assembler, SBToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("a233000a", convert_instruction_to_hex("SB $s3, 10($s1)", configs));
+    EXPECT_EQ("a2b20010", convert_instruction_to_hex("SB    $s2, 0x10($s5)", configs));
+    EXPECT_EQ("a2d40002", convert_instruction_to_hex("SB $s4,   0b10($s6)", configs));
+}
+
+TEST(Assembler, SHToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("a672000b", convert_instruction_to_hex("SH $s2,   11($s3)", configs));
+    EXPECT_EQ("a6f40010", convert_instruction_to_hex("SH $s4, 0x10($s7)", configs));
+    EXPECT_EQ("a6b6000a", convert_instruction_to_hex("SH $s6,  0b1010($s5)", configs));
+}
+
+TEST(Assembler, SLLToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("0012ad00", convert_instruction_to_hex("SLL $s5,   $s2, $s4", configs));
+    EXPECT_EQ("00148d80", convert_instruction_to_hex("SLL $s1,  $s4,    $s6", configs));
+    EXPECT_EQ("0015bcc0", convert_instruction_to_hex("SLL $s7,  $s5,     $s3", configs));
 }
 
 TEST(Assembler, SWToHexAssembly) {
