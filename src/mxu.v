@@ -12,6 +12,8 @@ input logic ex1,
 input logic ex2,
 input logic[6:0] instcode,
 input logic[31:0] pc_address,
+input logic[31:0] alu_address,
+output logic[31:0] mem_address,
 output logic[31:0] dataout,
 output logic [31:0] memout,
 output logic read,
@@ -40,9 +42,9 @@ always_comb begin
 
 
     if (fetch)
-        memout = pc_address;
+        mem_address = pc_address;
     else
-        memout = datain;
+        mem_address = datain;
 end
 
 
@@ -52,7 +54,7 @@ always_comb begin
         read = 1;
     else if (ex1) begin
         if (instcode == LB || instcode == LBU || instcode == LH || instcode == LHU || instcode == LUI || instcode == LW || instcode == LWL || instcode == LWR)
-            read = 1;
+            read = 0;
     end
     else
         read = 0;

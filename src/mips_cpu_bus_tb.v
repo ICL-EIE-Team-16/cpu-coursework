@@ -16,7 +16,7 @@ logic[31:0] readdata;
 
 initial begin
     $dumpfile("waves.vcd");
-    $dumpvars(2, mips_cpu_bus_tb);
+    $dumpvars(3, mips_cpu_bus_tb);
 end
 
 initial begin
