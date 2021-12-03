@@ -1,83 +1,289 @@
-module PC (
-    input logic clk, reset,
-    input logic cycle_1, cycle_2,
-    //input logic[31:0] instruction,
-    input logic [5:0] opcode,
-    input logic[15:0] offset,
-    input logic[25:0] instr_index,
-    input logic[4:0] branch_param,
-    input logic[31:0] register_data,
-    input logic zero, positive, negative,
-    output logic[31:0] address,
-    output logic halt
-);
-    logic[31:0] address_a; //PC+4 and PC+Branch_offset are multiplexed to give adress_a
-    logic[31:0] address_b; //REG[rs] (jump register instruction) and PC[31:28]||jump_index||00 (jump instruction) 
-    // are multiplexed to give adress_b (adress after a jump instrution)
-    logic[31:0] next_address; //next adress to be fetched, PC gets updated with this value after each cycle.
-    // adress_a and adress_b are multiplexed to give next_adress.
+module PCv2_tb ();
 
-    enum logic[5:0] {SPECIAL, REGIMM, J, JAL, BEQ, BNE, BLEZ, BGTZ} opcode_def;
-    enum logic[4:0] {BLTZ, BGEZ, BLTZAL=16, BGEZAL} branch_param_def;
+    logic clk, reset;
+    logic fetch, exec1, exec2;
+    logic[6:0] internal_code;
+    logic[15:0] offset;
+    logic[25:0] instr_index;
+    //logic[4:0] branch_param;
+    logic[31:0] register_data;
+    logic zero, positive, negative;
+    logic[31:0] address;
+    logic halt;
     
+    //set a clock
+    initial begin
+
+        $dumpfile("PCv2_tb.vcd");
+        $dumpvars(0, PCv2_tb);
+
+        clk = 0;
+        repeat (1000) begin
+            #1 clk = !clk;
+        end
+    end
+
+    //define the chages of state at each cycle and what state the machine starts from after a reset:
+    initial begin
+        //@(posedge clk) 
+        repeat (1000) begin
+            @(posedge clk);
+            $display("fetch=%b, exec1=%b, exec2=%b, time=%t", fetch, exec1, exec2, $time);
+            if (reset == 0) begin
+                exec2 = 0;
+                fetch = 1;
+                @(posedge clk);
+                $display("fetch=%b, exec1=%b, exec2=%b, time=%t", fetch, exec1, exec2, $time);
+                fetch = 0;
+                exec1 = 1;
+                @(posedge clk);
+                $display("fetch=%b, exec1=%b, exec2=%b, time=%t", fetch, exec1, exec2, $time);
+                exec1 = 0;
+                exec2 = 1;
+            end
+        end
+    end
     
-    always @(*) begin
+    // initialise the PC
+    initial begin
+        reset = 0;
+        fetch = 0; exec1 = 0; exec2 = 0;
+        internal_code = 1;
+        offset = 0;
+        instr_index = 0;
+        //branch_param = 0;
+        register_data = 0;
+        zero = 0;
+        positive = 0;
+        negative = 0;
+        #1 reset = 1;
+        #9;
+        reset = 0;
         
-        if ((opcode == BEQ) && zero) begin
-            address_a = address + {{14{offset[15]}}, offset, 2'b00};
-        end
-        else if ((opcode == BGTZ) && positive) begin
-            address_a = address + {{14{offset[15]}}, offset, 2'b00};
-        end
-        else if ((opcode == BLEZ) && (zero || negative)) begin
-            address_a = address + {{14{offset[15]}}, offset, 2'b00};
-        end
-        else if ((opcode == BNE) && (negative || positive)) begin
-            address_a = address + {{14{offset[15]}}, offset, 2'b00};
-        end
-        else if ((opcode == REGIMM) && ((((branch_param == BGEZ) || (branch_param == BGEZAL)) && (positive || zero)) || (((branch_param == BLTZ) || (branch_param == BLTZAL)) && negative))) begin
-            address_a = address + {{14{offset[15]}}, offset, 2'b00};
-        end
-        else begin
-            address_a = address+4;
-        end
+        //test jr instruction
+        #7 register_data = 32'h4;
+        @(posedge exec1);
+        internal_code = 41; // jump-register instruction
+        @(posedge exec1);
+        assert (address == 32'hbfc0000c) else $fatal(2, "Expected address = 32'hbfc0000c"); // check correctness of branch delay slot
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'h4) else $fatal(2, "Expected address = 32'h4"); //check jump from 2 instructions ago was executed
+        @(posedge exec1);
+        assert (address == 32'h8) else $fatal(2, "Expected address = 32'h8");
+    
+        //test jump instruction
+        internal_code = 38; // J
+        instr_index = 26'd25000; //jump to address 100000
+        @(posedge exec1);
+        assert (address == 32'hc) else $fatal(2, "Expected address = 32'hc");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd100000) else $fatal(2, "Expected address = 100000");
+        @(posedge exec1);
+        assert (address == 32'd100004) else $fatal(2, "Expected address = 100004");
 
+        //test jump and link instruction
+        internal_code = 39; // JAL
+        instr_index = 26'd50000; // jump to address 200000
+        @(posedge exec1);
+        assert (address == 32'd100008) else $fatal(2, "Expected address = 100008");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd200000) else $fatal(2, "Expected address = 200000");
+        @(posedge exec1);
+        assert (address == 32'd200004) else $fatal(2, "Expected address = 200004");
 
-        if (opcode == SPECIAL) begin     //If jump register instruction
-            address_b = register_data;
-        end
-        else begin
-            address_b = {address[31:28], instr_index, 2'b00};
-        end
+        //test BEQ instruction
+        internal_code = 30;
+        offset = 25000; // jump to PC + 100000
+        @(posedge exec1);
+        assert (address == 32'd200008) else $fatal(2, "Expected address = 200008");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd200012) else $fatal(2, "Expected address = 200012"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 30;
+        offset = 25000;
+        zero = 1;
+        @(posedge exec1);
+        assert (address == 32'd200016) else $fatal(2, "Expected address = 200016");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd300012) else $fatal(2, "Expected address = 300012"); //check branch from 2 instructions ago was executed
 
+        //test BGEZ instruction
+        internal_code = 31;
+        //branch_param = 5'b00001;
+        offset = 25000; // jump to PC + 100000
+        zero = 0;
+        negative = 1;
+        @(posedge exec1);
+        assert (address == 32'd300016) else $fatal(2, "Expected address = 300016");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd300020) else $fatal(2, "Expected address = 300020"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 31;
+        offset = 25000;
+        negative = 0;
+        positive = 1;
+        @(posedge exec1);
+        assert (address == 32'd300024) else $fatal(2, "Expected address = 300024");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd400020) else $fatal(2, "Expected address = 400020"); //check branch from 2 instructions ago was executed
 
-        if (((opcode == SPECIAL) || (opcode == J)) || (opcode == JAL)) begin //if jump (or jump register) instruction, i.e. OPcode = 000000 or 000010 or 000011
-            next_address = address_b;
-        end
-        else begin
-            next_address = address_a;
-        end
-            //This is the last multiplexer
+        //test BGEZAL instruction
+        internal_code = 32;
+        //branch_param = 5'b10001;
+        offset = 25000; // jump to PC + 100000
+        positive = 0;
+        negative = 1;
+        @(posedge exec1);
+        assert (address == 32'd400024) else $fatal(2, "Expected address = 400024");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd400028) else $fatal(2, "Expected address = 400028"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 32;
+        offset = 25000;
+        negative = 0;
+        positive = 1;
+        @(posedge exec1);
+        assert (address == 32'd400032) else $fatal(2, "Expected address = 400032");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd500028) else $fatal(2, "Expected address = 500028"); //check branch from 2 instructions ago was executed
 
-        if (address == 0) begin
-            halt = 1;
-        end
+        //test BGTZ instruction
+        internal_code = 33;
+        //branch_param = 5'b00000;
+        offset = 25000; // jump to PC + 100000
+        positive = 0;
+        zero = 1;
+        @(posedge exec1);
+        assert (address == 32'd500032) else $fatal(2, "Expected address = 500032");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd500036) else $fatal(2, "Expected address = 500036"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 33;
+        offset = 25000;
+        zero = 0;
+        positive = 1;
+        @(posedge exec1);
+        assert (address == 32'd500040) else $fatal(2, "Expected address = 500040");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd600036) else $fatal(2, "Expected address = 600036"); //check branch from 2 instructions ago was executed
+
+      //test BLEZ instruction
+        internal_code = 34;
+        offset = 25000; // jump to PC + 100000
+        positive = 1;
+        zero = 0;
+        @(posedge exec1);
+        assert (address == 32'd600040) else $fatal(2, "Expected address = 600040");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd600044) else $fatal(2, "Expected address = 600044"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 34;
+        offset = 25000;
+        negative = 1;
+        positive = 0;
+        @(posedge exec1);
+        assert (address == 32'd600048) else $fatal(2, "Expected address = 600048");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd700044) else $fatal(2, "Expected address = 700044"); //check branch from 2 instructions ago was executed
+
+        //test BLTZ instruction
+        internal_code = 35;
+        //branch_param = 5'b00000;
+        offset = 25000; // jump to PC + 100000
+        negative = 0;
+        positive = 1;
+        @(posedge exec1);
+        assert (address == 32'd700048) else $fatal(2, "Expected address = 700048");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd700052) else $fatal(2, "Expected address = 700052"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 35;
+        offset = 25000;
+        negative = 1;
+        positive = 0;
+        @(posedge exec1);
+        assert (address == 32'd700056) else $fatal(2, "Expected address = 700056");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd800052) else $fatal(2, "Expected address = 800052"); //check branch from 2 instructions ago was executed
+
+        //test BLTZAL instruction
+        internal_code = 36;
+        //branch_param = 5'b10000;
+        offset = 25000; // jump to PC + 100000
+        negative = 0;
+        zero = 1;
+        @(posedge exec1);
+        assert (address == 32'd800056) else $fatal(2, "Expected address = 800056");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd800060) else $fatal(2, "Expected address = 800060"); //branch shouldn't have happened as condition wasn't met
+        internal_code = 36;
+        offset = 25000;
+        zero = 0;
+        negative = 1;
+        @(posedge exec1);
+        assert (address == 32'd800064) else $fatal(2, "Expected address = 800064");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd900060) else $fatal(2, "Expected address = 900060"); //check branch from 2 instructions ago was executed
+
+        //test BNE instruction
+        internal_code = 37;
+        offset = 25000; // jump to PC + 100000
+        negative = 0;
+        zero = 1;
+        @(posedge exec1);
+        assert (address == 32'd900064) else $fatal(2, "Expected address = 900064");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd900068) else $fatal(2, "Address = %d, Expected address = 900068", address); //branch shouldn't have happened as condition wasn't met
+        internal_code = 37;
+        offset = 25000;
+        zero = 0;
+        positive = 1;
+        @(posedge exec1);
+        assert (address == 32'd900072) else $fatal(2, "Expected address = 900072");
+        internal_code = 1; //non-jump
+        @(posedge exec1);
+        assert (address == 32'd1000068) else $fatal(2, "Expected address = 1000068"); //check branch from 2 instructions ago was executed
+
+        //Test halt behavior
+        internal_code = 41; //jump register instruction
+        register_data = 0; // jump to address 0;
+        @(posedge exec1);
+        internal_code = 1; //non jump instruction which would normally increment the PC by 4
+        //however PC should not be incrememnted anymore as address 0 was fetched so CPU is halted.
+
 
     end
-
-    always_ff @(posedge clk) begin
-        if (reset == 1) begin
-            address <= 32'hBFC00000;
-        end
-        else if (halt) begin
-            address <= 0;
-        end
-        else if (cycle_1 == 1) begin
-            address <= address;
-        end
-        else if (cycle_2 == 1) begin
-            address <= next_address;
+    
+    initial begin
+        repeat (1000) begin
+            @(posedge fetch);
+            $display("PC=%d", address);
         end
     end
+
+    PCv2 dut(
+        .clk(clk), .reset(reset),
+        .fetch(fetch), .exec1(exec1), .exec2(exec2),
+        .internal_code(internal_code),
+        .offset(offset),
+        .instr_index(instr_index),
+        //.branch_param(branch_param),
+        .register_data(register_data),
+        .zero(zero), .positive(positive), .negative(negative),
+        .address(address),
+        .halt(halt)
+    );
     
 endmodule
