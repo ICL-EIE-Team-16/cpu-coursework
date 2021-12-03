@@ -29,31 +29,52 @@ set -e
 
 # Check whether the simulator returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "${TESTCASE}, FAIL"
+   echo "${TESTCASE}, FAIL - SIMULATION"
    exit
 fi
 
 >&2 echo "      Extracting result of OUT instructions"
 # This is the prefix for simulation output lines containing result of OUT instruction
-PATTERN="Memory OUT: "
+RAM_PATTERN="Memory OUT: "
+REG_PATTERN="REG : INFO : "
 NOTHING=""
-# Use "grep" to look only for lines containing PATTERN
+# Use "grep" to look only for lines containing RAM_PATTERN
 set +e
-grep "${PATTERN}" test-inputs/3-output/MIPS_tb_${TESTCASE}.stdout > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-lines
+grep "${RAM_PATTERN}" test-inputs/3-output/MIPS_tb_${TESTCASE}.stdout > test-inputs/3-output/MIPS_tb_${TESTCASE}.ram-out-lines
 set -e
 # Use "sed" to replace "Memory OUT: " with nothing
-sed -e "s/${PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out
+sed -e "s/${RAM_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.ram-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-ram
+
+# Use "grep" to look only for lines containing REG_PATTERN
+set +e
+grep "${REG_PATTERN}" test-inputs/3-output/MIPS_tb_${TESTCASE}.stdout > test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines
+set -e
+# Use "sed" to replace "Memory OUT: " with nothing
+sed -e "s/${REG_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg
 
 >&2 echo "  4 - Comparing output"
 # Note the -w to ignore whitespace
 set +e
-diff -w test-inputs/4-reference/${TESTCASE}.ref test-inputs/3-output/MIPS_tb_${TESTCASE}.out
-RESULT=$?
+diff -w test-inputs/4-reference/${TESTCASE}.ref test-inputs/3-output/MIPS_tb_${TESTCASE}.out-ram
+RESULT_RAM=$?
+set -e
+
+# Note the -w to ignore whitespace
+set +e
+diff -w test-inputs/4-reference/${TESTCASE}-reg.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg
+RESULT_REG=$?
 set -e
 
 # Based on whether differences were found, either pass or fail
-if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "      ${TESTCASE}, FAIL"
+if [[ "${RESULT_RAM}" -ne 0 ]] ; then
+   echo "      ${TESTCASE}, FAIL - RAM"
 else
-   echo "      ${TESTCASE}, PASS"
+   echo "      ${TESTCASE}, PASS - RAM"
+fi
+
+# Based on whether differences were found, either pass or fail
+if [[ "${RESULT_REG}" -ne 0 ]] ; then
+   echo "      ${TESTCASE}, FAIL - REG"
+else
+   echo "      ${TESTCASE}, PASS - REG"
 fi
