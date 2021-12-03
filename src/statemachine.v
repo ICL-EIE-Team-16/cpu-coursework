@@ -1,4 +1,5 @@
 module statemachine (
+input logic clk,
 input logic reset,
 input logic halt,
 output logic fetch,

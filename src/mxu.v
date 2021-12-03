@@ -10,7 +10,7 @@ input logic[31:0] memin,
 input logic fetch,
 input logic ex1,
 input logic ex2,
-input logic[6:0] in_instcode,
+input logic[6:0] instcode,
 input logic[31:0] pc_address,
 output logic[31:0] dataout,
 output logic [31:0] memout,
@@ -31,13 +31,14 @@ typedef enum logic[6:0] {
         SB = 7'd50,
         SH = 7'd51,
         SW = 7'd52
-    } instcode;
-
-assign byteenable = 15;
-assign dataout = memin;
-assign memout = datain;
+    } instcode_t;
 
 always_comb begin
+    byteenable = 15;
+    dataout = memin;
+    memout = datain;
+
+
     if (fetch)
         memout = pc_address;
     else
