@@ -2,6 +2,7 @@ module ALU(
     input logic[31:0] a, b,
     input logic[5:0] sa,
     input logic[5:0] op,
+    input logic[5:0] op_immediate,
     output logic zero, positive, negative,
     output logic[31:0] r
 );
@@ -10,11 +11,12 @@ module ALU(
 
 
 typedef enum logic[5:0]{
-    ADD = 6'b100000,
-    SUB = 6'b100010,
+    ADDU = 6'b100001,
+    ADDIU = 6'b001001,
+    SUBU = 6'b100011,
     SRA = 6'b000011,
     SRAV = 6'b000111,
-    SLT = 6'b101010,
+    SLTU = 6'b101011,
     AND = 6'b100100,
     OR = 6'b100101,
     SLL = 6'b000000,
@@ -26,57 +28,64 @@ typedef enum logic[5:0]{
 
 
 always @(*) begin
-    if(op == ADD) begin
-        r = a + b;
-    end
+    if(op_immediate == 6'b000000) begin
 
-    if(op == SUB) begin
-        r = a - b;
-    end
-    
-    if(op == SRA) begin
-        r = a>>>(sa);
-    end
-
-    if(op == SRAV) begin
-        r = a>>>(b[4:0]);
-    end
-
-    if(op == SLT) begin
-        if(a<b)begin
-            r = 32'h0001;
+        if(op == ADDU) begin
+            r = a + b;
         end
-        else begin
-            r = 32'h0000;
+
+        if(op == SUBU) begin
+            r = a - b;
+        end
+        
+        if(op == SRA) begin
+            r = a>>>(sa);
+        end
+
+        if(op == SRAV) begin
+            r = a>>>(b[4:0]);
+        end
+
+        if(op == SLTU) begin
+            if(a<b)begin
+                r = 32'h0001;
+            end
+            else begin
+                r = 32'h0000;
+            end
+        end
+
+        if(op == AND) begin
+            r = a&b;
+        end
+
+        if(op == OR) begin
+            r = a|b;
+        end
+
+        if(op == SLL) begin
+            r = a<<sa;
+        end
+
+        if(op == SLLV) begin
+            r = a<<b[4:0];
+        end
+
+        if(op == SRL) begin
+            r = a>>sa;
+        end
+
+        if(op == SRLV) begin
+            r = a>>b[4:0];
+        end
+
+        if(op == XOR) begin
+            r = a^b;
         end
     end
 
-    if(op == AND) begin
-        r = a&b;
-    end
-
-    if(op == OR) begin
-        r = a|b;
-    end
-
-    if(op == SLL) begin
-        r = a<<sa;
-    end
-
-    if(op == SLLV) begin
-        r = a<<b[4:0];
-    end
-
-    if(op == SRL) begin
-        r = a>>sa;
-    end
-
-    if(op == SRLV) begin
-        r = a>>b[4:0];
-    end
-
-    if(op == XOR) begin
-        r = a^b;
+    if(op_immediate == ADDIU) begin
+            r = a + b;
     end
 
     if(r[31] == 1) begin
@@ -84,8 +93,8 @@ always @(*) begin
         zero = 0;
         negative = 1;
     end
-    //this will fail in cases where r is positive and larger than 16^3; will have to better distinguish positive from negative results
-    //can't use r < 0 as condition as it will never be true
+        //this will fail in cases where r is positive and larger than 16^3; will have to better distinguish positive from negative results
+        //can't use r < 0 as condition as it will never be true
 
     else if(r > 0) begin
         positive = 1;
