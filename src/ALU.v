@@ -1,8 +1,8 @@
 module ALU(
     input logic[31:0] a, b,
     /*input logic[5:0] sa,*/
-    input logic[5:0] op,
-    input logic[5:0] op_immediate,
+    input logic[5:0] op, //fn code, bits [5:0] of instruction word
+    input logic[5:0] op_immediate, //bits [31:26] of instruction word
     /*output logic zero, positive, negative,*/
     output logic[31:0] r
 );
