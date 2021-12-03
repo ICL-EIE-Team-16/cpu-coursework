@@ -7,14 +7,14 @@ LW $s5, 10($s0)
 LW $s6, 14($s0)
 LW $s7, 18($s0)
 LW $s8, 1C($s0)
-ADDUI $t0, $s1, $s2
-ADDUI $t1, $s3, $s4
-ADDUI $t2, $s5, $s6
-ADDUI $t3, $s7, $s8
+ADDU $t0, $s1, $s2
+ADDU $t1, $s3, $s4
+ADDU $t2, $s5, $s6
+ADDU $v0, $s7, $s8
 SW $t0, 20($s0)
 SW $t1, 24($s0)
 SW $t2, 28($s0)
-SW $t3, 2C($s0)
+SW $v0, 2C($s0)
 # Data
 0x20: 0x12345678
 0x24: 0x23456789

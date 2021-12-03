@@ -1,8 +1,8 @@
 ADDIU $s0, $zero, 0x11
 LW $s1, 0($s0)
 LW $s2, 4($s0)
-SUBU $s3, $s1, $s2
-SW $s3, 2($s0)
+SUBU $v0, $s1, $s2
+SW $v0, 2($s0)
 # Data - 0x10 - operand A; 0x11 - operand B; 0x12 - result will be stored
 0x10: 0xFFFF
 0x14: 0x0001

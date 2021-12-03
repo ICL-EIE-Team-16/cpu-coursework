@@ -6,5 +6,5 @@ ADDIU $s2, $zero, 0x7
 # In the case of error - the following line will be executed
 ADDIU $s2, $zero, 0x8
 # In the case of successful jump - the following line will be executed
-ADDIU $s2, $zero, 0x9
-SW $s2, 0($s1)
+ADDIU $v0, $zero, 0x9
+SW $v0, 0($s1)

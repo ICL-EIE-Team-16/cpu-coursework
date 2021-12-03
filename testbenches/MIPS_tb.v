@@ -76,11 +76,10 @@ module MIPS_tb;
         #20;
         reset = 0;
         #1000;
-
-        $finish;
     end
 
     always @(negedge active) begin
         $display("REG v0: OUT: %h", register_v0);
+        $finish;
     end
 endmodule
