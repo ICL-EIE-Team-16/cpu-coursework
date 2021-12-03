@@ -21,7 +21,7 @@ logic[6:0] instcode;
 
     statemachine sm(.reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2));
     mxu mainmxu(.din(databus), .memin(readdata), .fetch(fetch), .ex1(exec1), .ex2(exec2), .in_instcode(instcode), .dataout(), .memout(writedata), .read(read), .write(write), .byteenable(byteenable));
-    alu mainalu(.a(), .b(), .sa(), .op(), .zero(), .positive(), .negative(), .r());
+    alu mainalu(.a(), .b(), .op(), .r());
     mipsregisterfile regfile(.clk(clk), .reset(reset), .write_enable(), .f);
 
     input logic clk,
