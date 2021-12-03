@@ -1,5 +1,6 @@
+//add in 7 bit instruction code 
 module IR_decode( 
-input logic [31:0] instruction, 
+input logic [31:0] current_instruction, 
 input logic fetch,
 input logic exec_one,
 input logic exec_two,
@@ -17,7 +18,21 @@ output logic [31:0] immediate, // only relevant to I_type instructions – immed
 output logic [25:0] memory, // only relevant to j_type instructions – memory address 
 output logic write_en, // for register files 
 output logic [5:0] opcode
+//output logic [6:0] instruction_code
 );  
+
+logic [31:0] saved_instruction;
+logic [31:0] instruction; 
+
+always@(*) begin 
+    if (exec_one==1)begin 
+        instruction = current_instruction;
+        saved_instruction = current_instruction;
+    end 
+    else if (exec_two == 1) begin 
+        instruction = saved_instruction;
+    end 
+end
  
 always@(*) begin 
     if ((exec_one == 1)||(exec_two==1)) begin
@@ -142,5 +157,8 @@ always@(*) begin //make sure enables go high in the right cycle
     end 
 
 end
+
+//decoding the instruction code which will replace opcode, rtype, itype and jtype outputs
+
 
 endmodule
