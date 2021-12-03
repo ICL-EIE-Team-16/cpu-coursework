@@ -5,7 +5,8 @@ module MIPS_tb;
     parameter TIMEOUT_CYCLES = 10000;
 
     logic clk;
-    logic rst;
+    logic reset;
+    logic active;
 
     logic running;
 
@@ -14,8 +15,10 @@ module MIPS_tb;
     logic read;
     logic[31:0] writedata;
     logic[31:0] readdata;
+    logic[31:0] register_v0;
 
     RAM_32x4096_delay1 #(RAM_INIT_FILE) ramInst(clk, address, write, read, writedata, readdata);
+    mips_cpu dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0));
 
     // Generate clock
     initial begin
@@ -32,6 +35,7 @@ module MIPS_tb;
     end
 
     initial begin
+        reset = 0;
         $display("REG : INFO : $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra");
         #5;
         address = 0;
@@ -65,7 +69,18 @@ module MIPS_tb;
         $display("Memory OUT: %h", readdata);
         $display("TB : finished; running=0");
 
-        $finish;
+        #5;
 
+        reset = 1;
+
+        #20;
+        reset = 0;
+        #1000;
+
+        $finish;
+    end
+
+    always @(negedge active) begin
+        $display("REG v0: OUT: %h", register_v0);
     end
 endmodule
