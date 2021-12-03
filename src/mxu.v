@@ -5,10 +5,12 @@
 // Created : 03. Dec 2021 12:14
 //-------------------------------------------------------------------
 module mxu (
+input logic[31:0] din,
 input logic fetch,
 input logic ex1,
 input logic ex2,
 input logic[6:0] in_instcode,
+output logic[31:0] dout,
 output logic read,
 output logic write,
 output logic[3:0] byteenable
@@ -28,5 +30,30 @@ typedef enum logic[6:0] {
         SW = 7'd52
     } instcode;
 
+assign byteenable = 15;
+assign dout = din;
+
+//Read  signal
+always_comb begin
+    if (fetch)
+        read = 1;
+    else if (ex1) begin
+        if (instcode == LB || instcode == LBU || instcode == LH || instcode == LHU || instcode == LUI || instcode == LW || instcode == LWL || instcode == LWR)
+            read = 1;
+    end
+    else
+        read = 0;
+end
+
+
+//Write signal
+always_comb begin
+    if (ex1) begin
+        if (instcode == SB || instcode == SW)
+            write = 1;
+    end
+    else
+        write = 0;
+end
 
 endmodule
