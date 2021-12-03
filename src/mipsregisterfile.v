@@ -8,7 +8,8 @@ module mipsregisterfile(
     input logic [4:0] write_register, //destination_register from IR_Decode
     input logic [31:0] write_data,
     output logic [31:0] register_a_data, 
-    output logic [31:0] register_b_data
+    output logic [31:0] register_b_data,
+    output logic [31:0] v0
     );
 
     logic [31:0] regs [31:0];
@@ -23,7 +24,7 @@ module mipsregisterfile(
             register_b_data = regs[register_b_index];
         else
             register_b_data = 0;
-    
+        v0 = regs[2];
     end
 
     always_ff @(posedge clk ) begin

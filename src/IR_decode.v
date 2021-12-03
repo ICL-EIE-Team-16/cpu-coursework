@@ -86,7 +86,7 @@ typedef enum logic [6:0] {
 always@(*) begin 
     if (exec_one==1)begin 
         instruction = current_instruction;
-        saved_instruction = current_instruction;
+        saved_instruction <= current_instruction;
     end 
     else if (exec_two == 1) begin 
         instruction = saved_instruction;
