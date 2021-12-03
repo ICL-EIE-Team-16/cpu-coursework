@@ -465,6 +465,7 @@ TEST(Assembler, ADDUToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("02328021", convert_instruction_to_hex("ADDU $s0, $s1, $s2", configs));
     EXPECT_EQ("00641021", convert_instruction_to_hex("ADDU $v0, $v1, $a0", configs));
+    EXPECT_EQ("02321021", convert_instruction_to_hex("ADDU $v0, $s1, $s2", configs));
 }
 
 TEST(Assembler, ADDUIToHexAssembly) {
