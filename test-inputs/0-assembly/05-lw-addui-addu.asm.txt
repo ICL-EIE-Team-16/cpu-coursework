@@ -1,20 +1,20 @@
 ADDIU $s0, $zero, 0x20
-LW $s1, 0($s0)
-LW $s2, 4($s0)
-LW $s3, 8($s0)
-LW $s4, C($s0)
-LW $s5, 10($s0)
-LW $s6, 14($s0)
-LW $s7, 18($s0)
-LW $s8, 1C($s0)
+LW $s1, 0x0($s0)
+LW $s2, 0x4($s0)
+LW $s3, 0x8($s0)
+LW $s4, 0xC($s0)
+LW $s5, 0x10($s0)
+LW $s6, 0x14($s0)
+LW $s7, 0x18($s0)
+LW $s8, 0x1C($s0)
 ADDU $t0, $s1, $s2
 ADDU $t1, $s3, $s4
 ADDU $t2, $s5, $s6
 ADDU $v0, $s7, $s8
-SW $t0, 20($s0)
-SW $t1, 24($s0)
-SW $t2, 28($s0)
-SW $v0, 2C($s0)
+SW $t0, 0x20($s0)
+SW $t1, 0x24($s0)
+SW $t2, 0x28($s0)
+SW $v0, 0x2C($s0)
 # Data
 0x20: 0x12345678
 0x24: 0x23456789

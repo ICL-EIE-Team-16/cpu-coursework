@@ -41,12 +41,13 @@ int register_name_to_index(const std::string &registerName) {
 unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     immediateConst = trim(immediateConst);
 
+    std::cout << "immediateConst: " << immediateConst << std::endl;
     if (immediateConst.substr(0, 2) == "0x") {
-        return std::stoi(immediateConst, nullptr, 16);
+        return std::stoul(immediateConst, nullptr, 16);
     } else if (immediateConst.substr(0, 2) == "0b") {
-        return std::stoi(immediateConst.substr(2), nullptr, 2);
+        return std::stoul(immediateConst.substr(2), nullptr, 2);
     } else {
-        return std::stoi(immediateConst);
+        return std::stoul(immediateConst);
     }
 }
 
@@ -414,6 +415,104 @@ int main() {
     while (getline(std::cin, line)) {
         lines.push_back(line);
     }
+
+    /*lines.push_back("# ALU operations tested by this program");
+    lines.push_back("# ADDIU, ADDU, AND, ANDI, DIV, DIVU, MULT, MULTU, OR, ORI, SLL, SLLV, SRA, SRAV, SRL, SRLV");
+    lines.push_back("ADDIU $s0, $zero, 0x30");
+    lines.push_back("SW $s0, 2($s0)");
+    lines.push_back("LW $s1, 0($s0)");
+    lines.push_back("LW $s2, 1($s0)");
+    lines.push_back("ADDU $s3, $s1, $s2");
+    lines.push_back("SW $s3, 3($s0)");
+    lines.push_back("AND $s4, $s1, $s2");
+    lines.push_back("SW $s4, 4($s0)");
+    lines.push_back("ANDI $s5, $s1, 0x1032");
+    lines.push_back("SW $s5, 5($s0)");
+    lines.push_back("ADDIU $s1, $zero, 0x800000FF");
+    lines.push_back("ADDIU $s2, $zero, 0x3");
+    lines.push_back("DIV $s1, $s2");
+    lines.push_back("MTHI $s6");
+    lines.push_back("SW $s6, 6($s0)");
+    lines.push_back("MTLO $s7");
+    lines.push_back("SW $s7, 7($s0)");
+    lines.push_back("ADDIU $s1, $zero, 0xFF");
+    lines.push_back("ADDIU $s2, $zero, 0x3");
+    lines.push_back("DIVU $s1, $s2");
+    lines.push_back("MTHI $s3");
+    lines.push_back("MTLO $s4");
+    lines.push_back("SW $s3, 8($s0)");
+    lines.push_back("SW $s4, 9($s0)");
+    lines.push_back("LW $s1, 0($s0)");
+    lines.push_back("LW $s2, 1($s0)");
+    lines.push_back("MULT $s1, $s2");
+    lines.push_back("MTHI $s3");
+    lines.push_back("MTLO $s4");
+    lines.push_back("SW $s3, A($s0)");
+    lines.push_back("SW $s4, B($s0)");
+    lines.push_back("ADDIU $s1, $zero, 0x7FFFFFFF");
+    lines.push_back("ADDIU $s2, $zero, 0x80000000");
+    lines.push_back("MULT $s1, $s2");
+    lines.push_back("MTHI $s3");
+    lines.push_back("MTLO $s4");
+    lines.push_back("SW $s3, C($s0)");
+    lines.push_back("SW $s4, D($s0)");
+    lines.push_back("LW $s1, 0($s0)");
+    lines.push_back("LW $s2, 1($s0)");
+    MULTU $s1, $s2
+    MTHI $s3
+    MTLO $s4
+    SW $s3, E($s0)
+    SW $s4, F($s0)
+    ADDIU $s1, $zero, 0x12345678
+    ADDIU $s2, $zero, 0x87654321
+    OR $s3, $s1, $s2
+    SW $s3, 10($s0)
+    ORI $s3, $s1, 0x80000123
+    SW $s3, 11($s0)
+    ADDIU $s1, $zero, 0x12345678
+    ADDIU $s2, $zero, 0x5
+    ADDIU $s3, $zero, 0x6
+    SLL $s4, $s1, 0x4
+    SLL $s5, $s1, 3
+    SW $s4, 12($s0)
+    SW $s5, 13($s0)
+    SLLV $s4, $s1, $s2
+    SLLV $s5, $s1, $s3
+    SW $s4, 14($s0)
+    SW $s5, 15($s0)
+    ADDIU $s1, $zero, 0x81111111
+    ADDIU $s2, $zero, 0x71111111
+    SRA $s3, $s1, 0x5
+    SRA $s4, $s2, 0x7
+    SW $s3, 16($s0)
+    SW $s4, 17($s0)
+    ADDIU $s3, $zero, 0x8
+    ADDIU $s4, $zero, 0x4
+    SRAV $s5, $s1, $s3
+    SRAV $s6, $s2, $s4
+    SW $s5, 18($s0)
+    SW $s6, 19($s0)
+    SRL $s7, $s1, 0x3
+    SRL $s8, $s2, 0x6
+    SW $s7, 1A($s0)
+    SW $s8, 1B($s0)
+    ADDIU $s3, $zero, 0x5
+    ADDIU $s4, $zero, 0x9
+    SRLV $s5, $s1, $s3
+    SRLV $s6, $s2, $s4
+    SW $s5, 1C($s0)
+    SW $s6, 1D($s0)
+    LW $s1, 0($s0)
+    LW $s2, 1($s0)
+    SUBU $s3, $s2, $s1
+    SW $s3, 1E($s0)
+    XOR $s4, $s1, $s2
+    SW $s4, 1F($s0)
+    XORI $s5, $s1, 0x5678
+    SW $s5, 20($s0)
+    # Data
+    0x30: 0x12341234
+    0x31: 0x92341234*/
 
     std::map<int, std::string> ramContent = convert_lines_to_ram_content(lines);
     std::cout << convert_ram_content_to_string(ramContent);

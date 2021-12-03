@@ -147,12 +147,13 @@ int register_name_to_index(const std::string &registerName) {
 unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     immediateConst = trim(immediateConst);
 
+    std::cout << "immediateConst: " << immediateConst << std::endl;
     if (immediateConst.substr(0, 2) == "0x") {
-        return std::stoi(immediateConst, nullptr, 16);
+        return std::stoul(immediateConst, nullptr, 16);
     } else if (immediateConst.substr(0, 2) == "0b") {
-        return std::stoi(immediateConst.substr(2), nullptr, 2);
+        return std::stoul(immediateConst.substr(2), nullptr, 2);
     } else {
-        return std::stoi(immediateConst);
+        return std::stoul(immediateConst);
     }
 }
 
@@ -459,6 +460,7 @@ TEST(Assembler, DecimalTo8CharHex) {
     EXPECT_EQ("0000000f", decimal_to_8_char_hex(15));
     EXPECT_EQ("ffffffff", decimal_to_8_char_hex(4294967295));
     EXPECT_EQ("0000ffff", decimal_to_8_char_hex(convert_immediate_const_to_int("0b1111111111111111")));
+    EXPECT_EQ("ffffffff", decimal_to_8_char_hex(convert_immediate_const_to_int("0xFFFFFFFF")));
 }
 
 TEST(Assembler, ADDUToHexAssembly) {
