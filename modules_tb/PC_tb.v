@@ -1,14 +1,14 @@
-module PCv2_tb ();
+module PC_tb ();
 
     logic clk, reset;
     logic fetch, exec1, exec2;
     logic[6:0] internal_code;
     logic[15:0] offset;
     logic[25:0] instr_index;
-    //logic[4:0] branch_param;
     logic[31:0] register_data;
     logic zero, positive, negative;
     logic[31:0] address;
+    logic link;
     logic halt;
     
     //set a clock
@@ -25,7 +25,6 @@ module PCv2_tb ();
 
     //define the chages of state at each cycle and what state the machine starts from after a reset:
     initial begin
-        //@(posedge clk) 
         repeat (1000) begin
             @(posedge clk);
             $display("fetch=%b, exec1=%b, exec2=%b, time=%t", fetch, exec1, exec2, $time);
@@ -51,7 +50,6 @@ module PCv2_tb ();
         internal_code = 1;
         offset = 0;
         instr_index = 0;
-        //branch_param = 0;
         register_data = 0;
         zero = 0;
         positive = 0;
@@ -113,7 +111,6 @@ module PCv2_tb ();
 
         //test BGEZ instruction
         internal_code = 31;
-        //branch_param = 5'b00001;
         offset = 25000; // jump to PC + 100000
         zero = 0;
         negative = 1;
@@ -134,7 +131,6 @@ module PCv2_tb ();
 
         //test BGEZAL instruction
         internal_code = 32;
-        //branch_param = 5'b10001;
         offset = 25000; // jump to PC + 100000
         positive = 0;
         negative = 1;
@@ -155,7 +151,6 @@ module PCv2_tb ();
 
         //test BGTZ instruction
         internal_code = 33;
-        //branch_param = 5'b00000;
         offset = 25000; // jump to PC + 100000
         positive = 0;
         zero = 1;
@@ -196,7 +191,6 @@ module PCv2_tb ();
 
         //test BLTZ instruction
         internal_code = 35;
-        //branch_param = 5'b00000;
         offset = 25000; // jump to PC + 100000
         negative = 0;
         positive = 1;
@@ -217,7 +211,6 @@ module PCv2_tb ();
 
         //test BLTZAL instruction
         internal_code = 36;
-        //branch_param = 5'b10000;
         offset = 25000; // jump to PC + 100000
         negative = 0;
         zero = 1;
@@ -279,10 +272,10 @@ module PCv2_tb ();
         .internal_code(internal_code),
         .offset(offset),
         .instr_index(instr_index),
-        //.branch_param(branch_param),
         .register_data(register_data),
         .zero(zero), .positive(positive), .negative(negative),
         .address(address),
+        .link(link),
         .halt(halt)
     );
     

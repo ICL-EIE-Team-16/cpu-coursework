@@ -1,14 +1,13 @@
-module PCv2 (
+module PC (
     input logic clk, reset,
     input logic fetch, exec1, exec2,
-    //input logic[31:0] instruction,
     input logic [6:0] internal_code,
     input logic[15:0] offset,
     input logic[25:0] instr_index,
-    //input logic[4:0] branch_param,
     input logic[31:0] register_data,
     input logic zero, positive, negative,
     output logic[31:0] address,
+    output logic link,
     output logic halt
 );
     logic[31:0] next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
@@ -68,6 +67,13 @@ module PCv2 (
         end
         else begin
             jump = 0;
+        end
+
+        if ((internal_code == BGEZAL) || (internal_code == BLTZAL) || (internal_code == JALR) || (internal_code == JAL)) begin
+            link = 1;
+        end
+        else begin
+            link = 0;
         end
 
         if (address == 0) begin
