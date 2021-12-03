@@ -6,7 +6,6 @@
 #include "instruction-parse-config.h"
 
 
-
 std::string trim(std::string str) {
     str.erase(0, str.find_first_not_of(' '));
     str.erase(str.find_last_not_of(' ') + 1);
@@ -49,6 +48,12 @@ unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     } else {
         return std::stoi(immediateConst);
     }
+}
+
+bool is_line_comment(const std::string &command) {
+    std::regex commentLineRegex("^\\#.*");
+    std::smatch matches;
+    return std::regex_search(command, matches, commentLineRegex);
 }
 
 std::map<std::string, InstructionParseConfig> initializeConfigMap() {
@@ -309,8 +314,8 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
 
 std::string convert_instruction_to_hex(const std::string &command,
                                        const std::map<std::string, InstructionParseConfig> configs) {
-    unsigned int code = 0;
     std::string trimmedCommand = trim(command);
+    unsigned int code = 0;
     std::string instrName = trimmedCommand.substr(0, trimmedCommand.find(" "));
     auto it = configs.find(instrName);
 
@@ -343,10 +348,68 @@ std::string convert_instruction_to_hex(const std::string &command,
     return decimal_to_8_char_hex(code);
 }
 
+std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string> &lines) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    std::map<int, std::string> result;
+    std::vector<std::string> linesWithoutComments;
+
+    std::copy_if(lines.begin(), lines.end(), std::back_inserter(linesWithoutComments),
+                 [](std::string line) { return !is_line_comment(line); });
+
+    std::regex dataLineRegex("0[xX]([\\da-fA-F]+):\\s*(\\S*)");
+
+    for (int i = 0; i < linesWithoutComments.size(); i++) {
+        std::string line = linesWithoutComments[i];
+        std::smatch dataMatches;
+        if (std::regex_search(line, dataMatches, dataLineRegex)) {
+            std::string addressWithoutBase = dataMatches[1];
+            std::string addressWithBase = "0x" + addressWithoutBase;
+            int address = convert_immediate_const_to_int(addressWithBase);
+            std::string data = decimal_to_8_char_hex(convert_immediate_const_to_int(dataMatches[2]));
+            result.insert(std::pair<int, std::string>(address, data));
+        } else {
+            result.insert(std::pair<int, std::string>(i, convert_instruction_to_hex(line, configs)));
+        }
+    }
+
+    return result;
+}
+
+std::string generate_n_lines_of_zeroes(int n) {
+    std::string result = "";
+    for (int i = 0; i < n; i++) {
+        result += "00000000\n";
+    }
+    return result;
+}
+
+std::string convert_ram_content_to_string(std::map<int, std::string>& ramContent) {
+    std::string result = "";
+    int lastAddress = -1;
+    std::map<int, std::string>::iterator it;
+
+    for (it = ramContent.begin(); it != ramContent.end(); it++)
+    {
+        if (it->first - 1 == lastAddress) {
+            result += it->second + "\n";
+        } else {
+            result += generate_n_lines_of_zeroes(it->first - lastAddress - 1);
+            result += it->second + "\n";
+        }
+        lastAddress = it->first;
+    }
+
+    return result;
+}
+
 int main() {
     std::string line;
-    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    std::vector<std::string> lines;
+
     while (getline(std::cin, line)) {
-        std::cout << convert_instruction_to_hex(line, configs) << std::endl;
+        lines.push_back(line);
     }
+
+    std::map<int, std::string> ramContent = convert_lines_to_ram_content(lines);
+    std::cout << convert_ram_content_to_string(ramContent);
 }
