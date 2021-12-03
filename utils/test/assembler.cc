@@ -340,7 +340,7 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     configs.insert(std::pair<std::string, InstructionParseConfig>("SH", SH_CONFIG));
 
     std::regex sllRegex("SLL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
-    std::vector<int> sllShifts{11, 16, 6};
+    std::vector<int> sllShifts{11, 16, -6};
     InstructionParseConfig SLL_CONFIG(sllRegex, Opcodes::SLL, 0, sllShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SLL", SLL_CONFIG));
 
@@ -427,8 +427,13 @@ std::string convert_instruction_to_hex(const std::string &command,
         if (std::regex_search(command, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
-                if (bitShift == -1) {
-                    code += convert_immediate_const_to_int(matches[i]);
+                if (bitShift < 0) {
+                    int number = convert_immediate_const_to_int(matches[i]);
+                    if (bitShift == -1) {
+                        code += number;
+                    } else {
+                        code += number << (-1 * bitShift);
+                    }
                 } else {
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
@@ -697,9 +702,9 @@ TEST(Assembler, SHToHexAssembly) {
 
 TEST(Assembler, SLLToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
-    EXPECT_EQ("0012ad00", convert_instruction_to_hex("SLL $s5,   $s2, $s4", configs));
-    EXPECT_EQ("00148d80", convert_instruction_to_hex("SLL $s1,  $s4,    $s6", configs));
-    EXPECT_EQ("0015bcc0", convert_instruction_to_hex("SLL $s7,  $s5,     $s3", configs));
+    EXPECT_EQ("0012a900", convert_instruction_to_hex("SLL $s5,   $s2, 0x4", configs));
+    EXPECT_EQ("00148980", convert_instruction_to_hex("SLL $s1,  $s4,    6", configs));
+    EXPECT_EQ("0015b8c0", convert_instruction_to_hex("SLL $s7,  $s5,     0x3", configs));
 }
 
 TEST(Assembler, SLLVToHexAssembly) {

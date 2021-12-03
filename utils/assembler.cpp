@@ -327,8 +327,13 @@ std::string convert_instruction_to_hex(const std::string &command,
         if (std::regex_search(command, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
-                if (bitShift == -1) {
-                    code += convert_immediate_const_to_int(matches[i]);
+                if (bitShift < 0) {
+                    int number = convert_immediate_const_to_int(matches[i]);
+                    if (bitShift == -1) {
+                        code += number;
+                    } else {
+                        code += number << (-1 * bitShift);
+                    }
                 } else {
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
