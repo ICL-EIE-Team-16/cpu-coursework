@@ -1,9 +1,9 @@
 module ALU(
     input logic[31:0] a, b,
-    input logic[5:0] sa,
-    input logic[5:0] op,
-    input logic[5:0] op_immediate,
-    output logic zero, positive, negative,
+    /*input logic[5:0] sa,*/
+    input logic[5:0] op, //fn code, bits [5:0] of instruction word
+    input logic[5:0] op_immediate, //bits [31:26] of instruction word
+    /*output logic zero, positive, negative,*/
     output logic[31:0] r
 );
 
@@ -38,13 +38,13 @@ always @(*) begin
             r = a - b;
         end
         
-        if(op == SRA) begin
+        /*if(op == SRA) begin
             r = a>>>(sa);
         end
 
         if(op == SRAV) begin
             r = a>>>(b[4:0]);
-        end
+        end*/
 
         if(op == SLTU) begin
             if(a<b)begin
@@ -63,21 +63,21 @@ always @(*) begin
             r = a|b;
         end
 
-        if(op == SLL) begin
+        /*if(op == SLL) begin
             r = a<<sa;
         end
 
         if(op == SLLV) begin
             r = a<<b[4:0];
-        end
+        end*/
 
-        if(op == SRL) begin
+        /*if(op == SRL) begin
             r = a>>sa;
         end
 
         if(op == SRLV) begin
             r = a>>b[4:0];
-        end
+        end*/
 
         if(op == XOR) begin
             r = a^b;
@@ -88,7 +88,7 @@ always @(*) begin
             r = a + b;
     end
 
-    if(r[31] == 1) begin
+    /*if(r[31] == 1) begin
         positive = 0;
         zero = 0;
         negative = 1;
@@ -106,7 +106,7 @@ always @(*) begin
         positive = 0;
         zero = 1;
         negative = 0;
-    end
+    end*/
 
 
 end
