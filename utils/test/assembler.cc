@@ -147,12 +147,13 @@ int register_name_to_index(const std::string &registerName) {
 unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     immediateConst = trim(immediateConst);
 
+    std::cout << "immediateConst: " << immediateConst << std::endl;
     if (immediateConst.substr(0, 2) == "0x") {
-        return std::stoi(immediateConst, nullptr, 16);
+        return std::stoul(immediateConst, nullptr, 16);
     } else if (immediateConst.substr(0, 2) == "0b") {
-        return std::stoi(immediateConst.substr(2), nullptr, 2);
+        return std::stoul(immediateConst.substr(2), nullptr, 2);
     } else {
-        return std::stoi(immediateConst);
+        return std::stoul(immediateConst);
     }
 }
 
@@ -340,7 +341,7 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     configs.insert(std::pair<std::string, InstructionParseConfig>("SH", SH_CONFIG));
 
     std::regex sllRegex("SLL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
-    std::vector<int> sllShifts{11, 16, 6};
+    std::vector<int> sllShifts{11, 16, -6};
     InstructionParseConfig SLL_CONFIG(sllRegex, Opcodes::SLL, 0, sllShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SLL", SLL_CONFIG));
 
@@ -427,8 +428,13 @@ std::string convert_instruction_to_hex(const std::string &command,
         if (std::regex_search(command, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
-                if (bitShift == -1) {
-                    code += convert_immediate_const_to_int(matches[i]);
+                if (bitShift < 0) {
+                    int number = convert_immediate_const_to_int(matches[i]);
+                    if (bitShift == -1) {
+                        code += number;
+                    } else {
+                        code += number << (-1 * bitShift);
+                    }
                 } else {
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
@@ -454,12 +460,14 @@ TEST(Assembler, DecimalTo8CharHex) {
     EXPECT_EQ("0000000f", decimal_to_8_char_hex(15));
     EXPECT_EQ("ffffffff", decimal_to_8_char_hex(4294967295));
     EXPECT_EQ("0000ffff", decimal_to_8_char_hex(convert_immediate_const_to_int("0b1111111111111111")));
+    EXPECT_EQ("ffffffff", decimal_to_8_char_hex(convert_immediate_const_to_int("0xFFFFFFFF")));
 }
 
 TEST(Assembler, ADDUToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("02328021", convert_instruction_to_hex("ADDU $s0, $s1, $s2", configs));
     EXPECT_EQ("00641021", convert_instruction_to_hex("ADDU $v0, $v1, $a0", configs));
+    EXPECT_EQ("02321021", convert_instruction_to_hex("ADDU $v0, $s1, $s2", configs));
 }
 
 TEST(Assembler, ADDUIToHexAssembly) {
@@ -697,9 +705,9 @@ TEST(Assembler, SHToHexAssembly) {
 
 TEST(Assembler, SLLToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
-    EXPECT_EQ("0012ad00", convert_instruction_to_hex("SLL $s5,   $s2, $s4", configs));
-    EXPECT_EQ("00148d80", convert_instruction_to_hex("SLL $s1,  $s4,    $s6", configs));
-    EXPECT_EQ("0015bcc0", convert_instruction_to_hex("SLL $s7,  $s5,     $s3", configs));
+    EXPECT_EQ("0012a900", convert_instruction_to_hex("SLL $s5,   $s2, 0x4", configs));
+    EXPECT_EQ("00148980", convert_instruction_to_hex("SLL $s1,  $s4,    6", configs));
+    EXPECT_EQ("0015b8c0", convert_instruction_to_hex("SLL $s7,  $s5,     0x3", configs));
 }
 
 TEST(Assembler, SLLVToHexAssembly) {

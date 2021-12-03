@@ -42,11 +42,11 @@ unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     immediateConst = trim(immediateConst);
 
     if (immediateConst.substr(0, 2) == "0x") {
-        return std::stoi(immediateConst, nullptr, 16);
+        return std::stoul(immediateConst, nullptr, 16);
     } else if (immediateConst.substr(0, 2) == "0b") {
-        return std::stoi(immediateConst.substr(2), nullptr, 2);
+        return std::stoul(immediateConst.substr(2), nullptr, 2);
     } else {
-        return std::stoi(immediateConst);
+        return std::stoul(immediateConst);
     }
 }
 
@@ -327,8 +327,13 @@ std::string convert_instruction_to_hex(const std::string &command,
         if (std::regex_search(command, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
-                if (bitShift == -1) {
-                    code += convert_immediate_const_to_int(matches[i]);
+                if (bitShift < 0) {
+                    int number = convert_immediate_const_to_int(matches[i]);
+                    if (bitShift == -1) {
+                        code += number;
+                    } else {
+                        code += number << (-1 * bitShift);
+                    }
                 } else {
                     code += register_name_to_index(matches[i]) << bitShift;
                 }

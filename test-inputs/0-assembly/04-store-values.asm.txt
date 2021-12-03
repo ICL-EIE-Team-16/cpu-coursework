@@ -1,0 +1,13 @@
+ADDIU $s0, $zero, 0x20
+ADDIU $s1, $zero, 0x12
+ADDIU $s2, $zero, 0x32
+ADDIU $s3, $zero, 0x42
+ADDIU $s4, $zero, 0x52
+ADDIU $s5, $zero, 0x62
+ADDIU $v0, $zero, 0x72
+SW $s1, 0($s0)
+SW $s2, 4($s0)
+SW $s3, 8($s0)
+SW $s4, 0xC($s0)
+SW $s5, 0x10($s0)
+SW $v0, 0x14($s0)
