@@ -1,4 +1,4 @@
-module mips_cpu_bus_tb ();
+module mips_cpu_bus_integration_tb ();
  /* Standard signals */
 logic clk;
 logic reset;
