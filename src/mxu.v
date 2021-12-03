@@ -5,12 +5,14 @@
 // Created : 03. Dec 2021 12:14
 //-------------------------------------------------------------------
 module mxu (
-input logic[31:0] din,
+input logic[31:0] datain,
+input logic[31:0] memin,
 input logic fetch,
 input logic ex1,
 input logic ex2,
 input logic[6:0] in_instcode,
-output logic[31:0] dout,
+output logic[31:0] dataout,
+output logic [31:0] memout,
 output logic read,
 output logic write,
 output logic[3:0] byteenable
@@ -31,7 +33,9 @@ typedef enum logic[6:0] {
     } instcode;
 
 assign byteenable = 15;
-assign dout = din;
+assign dataout = memin;
+assign memout = datain;
+
 
 //Read  signal
 always_comb begin
