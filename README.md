@@ -16,6 +16,10 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 
+## Before submission check
+src/mipsregisterfile.v:30: warning: System task ($display) cannot be synthesized in an always_ff process. - remove all $display statements before the submission progress
+
+
 ## Authors
 - Michal Palic
 - Vaclav Pavlicek

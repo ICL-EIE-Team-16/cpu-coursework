@@ -16,14 +16,14 @@ logic[31:0] readdata;
 
 initial begin
     $dumpfile("waves.vcd");
-    $dumpvars(1, mips_cpu_bus_tb);
+    $dumpvars(2, mips_cpu_bus_tb);
 end
 
 initial begin
     clk = 0;
     repeat (1000)
         #1 clk = ~clk;
-    $fatal;
+    $finish;
 end
 
 initial begin
@@ -37,8 +37,10 @@ initial begin
 
     reset = 1;
     @(posedge clk)
+    #1;
     reset = 0;
-    readdata = 31'hff;
+
+    readdata = 32'h2042000f;
 
 end
 

@@ -166,3 +166,5 @@ fabric.properties
 
 ./bin/*
 ./modules_tb/logs/*
+
+*.vcd
