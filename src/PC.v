@@ -71,33 +71,36 @@ module PC (
         if (address == 0) begin
             halt = 1;
         end
+        else
+            halt = 0;
 
-    end
-
-    always_ff @(posedge clk) begin
-        if (reset) begin
-            address <= 32'hBFC00000;
-        end
     end
     
-    always_ff @(posedge fetch) begin
-            if (halt) begin
-                address <= 0;
-            end
-            else if (jump_flag) begin
-                address <= jump_address_reg;
+    always_ff @(posedge clk) begin
+            if (reset) begin
+                address <= 32'hBFC00000;
             end
             else begin
-                address <= next_address;
-            end
+                if (fetch) begin
+                    if (halt) begin
+                        address <= 0;
+                    end
+                    else if (jump_flag) begin
+                        address <= jump_address_reg;
+                    end
+                    else begin
+                        address <= next_address;
+                    end
 
-            if (jump) begin
-                jump_flag <= 1;
-                jump_address_reg <= jump_address;
-            end
-            else begin
-                jump_flag <= 0;
-                jump_address_reg <= 0;
+                    if (jump) begin
+                        jump_flag <= 1;
+                        jump_address_reg <= jump_address;
+                    end
+                    else begin
+                        jump_flag <= 0;
+                        jump_address_reg <= 0;
+                    end
+                end
             end
     end
     

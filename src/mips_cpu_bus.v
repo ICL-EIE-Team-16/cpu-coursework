@@ -18,7 +18,7 @@ module mips_cpu_bus(
 
 
 logic fetch, exec1, exec2, reg_write_en, halt, zero;
-logic[31:0] databus, alu_a, alu_b, reg_a_out, reg_b_out, pc_val, immediate, reg_in, alu_r, pc_address, reg_mux_mem;
+logic[31:0] databus, alu_a, alu_b, reg_a_out, reg_b_out, pc_address, immediate, reg_in, alu_r, reg_mux_mem;
 logic[4:0] reg_a_idx, reg_b_idx, reg_in_idx;
 logic[25:0] jump_const;
 logic[6:0] instruction_code;
@@ -99,9 +99,9 @@ end
 
 //MUX @ ALU A input
 always_comb begin
-    //Supplies ALU with pc_val for for AL type instructions to calculate PC+8
+    //Supplies ALU with pc_address for for AL type instructions to calculate PC+8
     if(exec2 && instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
-        alu_a = pc_val;
+        alu_a = pc_address;
     //Split into multiple statements for readability- handles immediate instrucitons
     else if (instruction_code == ADDI || instruction_code == ADDIU || instruction_code == ANDI || instruction_code == ORI)
         alu_a = immediate;
