@@ -7,7 +7,6 @@ module PC (
     input logic[31:0] register_data,
     input logic zero, positive, negative,
     output logic[31:0] address,
-    output logic link,
     output logic halt
 );
     logic[31:0] next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
@@ -67,13 +66,6 @@ module PC (
         end
         else begin
             jump = 0;
-        end
-
-        if ((internal_code == BGEZAL) || (internal_code == BLTZAL) || (internal_code == JALR) || (internal_code == JAL)) begin
-            link = 1;
-        end
-        else begin
-            link = 0;
         end
 
         if (address == 0) begin

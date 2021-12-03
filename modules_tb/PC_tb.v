@@ -8,7 +8,6 @@ module PC_tb ();
     logic[31:0] register_data;
     logic zero, positive, negative;
     logic[31:0] address;
-    logic link;
     logic halt;
     
     //set a clock
@@ -275,7 +274,6 @@ module PC_tb ();
         .register_data(register_data),
         .zero(zero), .positive(positive), .negative(negative),
         .address(address),
-        .link(link),
         .halt(halt)
     );
     
