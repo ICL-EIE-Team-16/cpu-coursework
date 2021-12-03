@@ -1,5 +1,5 @@
 
-module mipsregisterfile2(
+module mipsregisterfile(
     input logic clk,
     input logic reset,
     input logic write_enable,
