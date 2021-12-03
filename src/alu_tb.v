@@ -1,14 +1,14 @@
 module alu_tb();
 
 logic[31:0] a, b, r;
-logic zero, positive, negative;
-logic[5:0] sa;
-logic[5:0] op;
-logic[5:0] op_immediate;
+/*logic zero, positive, negative;
+logic[5:0] sa;*/
+logic[6:0] op;
+/*logic[5:0] op_immediate;
 logic[31:0] r_expected;
-logic[31:0] r_expected2;
+logic[31:0] r_expected2;*/
 
-typedef enum logic[5:0]{
+/*typedef enum logic[5:0]{
     ADDU = 6'b100001,
     SUBU = 6'b100011,
     SRA = 6'b000011,
@@ -21,13 +21,33 @@ typedef enum logic[5:0]{
     SRL = 6'b000010,
     SRLV = 6'b000110,
     XOR = 6'b100110
-} opcode_decode;
+} opcode_decode;*/
+
+typedef enum logic[6:0]{
+    ADDIU = 7'd3,
+    ADDU = 7'd4
+} opcode_internal;
 
 initial begin
     
     assign a = 32'h0008;
     assign b = 32'h000f;
-    assign sa = 6'b000001;
+
+    $display("test start");
+
+    assign op = ADDIU;
+    #1
+    assert(r ==  a+b) else $display("addiu error");
+
+    assign op = ADDU;
+    #1
+    assert(r == a+b) else $display("add error");
+
+    $finish;
+
+end 
+
+    /*assign sa = 6'b000001;
     assign op_immediate = 6'b000000;
 
     $display("Test round 1 start");
@@ -343,17 +363,17 @@ initial begin
 end
 
 
-
+*/
 ALU dut(
     .a(a),
     .b(b),
     .r(r),
-    .zero(zero),
+    /*.zero(zero),
     .negative(negative),
     .positive(positive),
-    .sa(sa),
-    .op(op),
-    .op_immediate(op_immediate)
+    .sa(sa),*/
+    .op(op)
+    /*.op_immediate(op_immediate)*/
 );
 
 endmodule
