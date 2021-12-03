@@ -17,9 +17,10 @@ module mips_cpu_bus(
 
 
 
-logic fetch, exec1, exec2, reg_write_en;
-logic[31:0] databus, alu_a, alu_b, reg_a_out, reg_b_out, pc_val, immediate, reg_in, alu_r;
+logic fetch, exec1, exec2, reg_write_en, halt;
+logic[31:0] databus, alu_a, alu_b, reg_a_out, reg_b_out, pc_val, immediate, reg_in, alu_r, pc_address;
 logic[4:0] reg_a_idx, reg_b_idx, reg_in_idx;
+logic[25:0] jump_const;
 
 
 typedef enum logic [6:0] {
@@ -80,6 +81,12 @@ typedef enum logic [6:0] {
 
 } instruction_code;
 
+//Halt flip
+always_comb
+    active = ~halt;
+
+
+
 //MUX @ ALU B input
 always_comb begin
     if(exec2 && instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
@@ -104,24 +111,24 @@ end
 
 //MUX @REG_IN
 always_comb begin
-    //Supplies ALU with pc_val for for AL type instructions to calculate PC+8
-    if(exec2 && instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
-        alu_a = pc_val;
-    //Split into multiple statements for readability- handles immediate instrucitons
-    else if (instruction_code == ADDI || instruction_code == ADDIU || instruction_code == ANDI || instruction_code == ORI)
-        alu_a = immediate;
-    else if (instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
-        alu_a = immediate;
+    if(instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
+        reg_in = reg_mux_mem;
+    else if(instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
+        reg_in = reg_mux_mem;
+    else if(instruction_code == ADDI || instruction_code == ADDIU || instruction_code == ANDI || instruction_code == ORI)
+        reg_in = immediate;
+    else if(instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
+        reg_in = immediate;
     else
-        alu_a = reg_a_out;
+        reg_in = alu_r;
 end
 
 
-    statemachine sm(.reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2));
-    mxu mainmxu(.din(databus), .memin(readdata), .fetch(fetch), .ex1(exec1), .ex2(exec2), .in_instcode(instcode), .dataout(), .memout(writedata), .read(read), .write(write), .byteenable(byteenable));
-    alu mainalu(.a(alu_a), .b(alu_b), .op(), .r(alu_r));
+    statemachine sm(.reset(reset), .halt(halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
+    mxu mainmxu(.din(databus), .memin(readdata), .fetch(fetch), .ex1(exec1), .ex2(exec2), .in_instcode(instcode), .pc_address(pc_address), .dataout(reg_mux_mem), .memout(writedata), .read(read), .write(write), .byteenable(byteenable));
+    alu mainalu(.a(alu_a), .b(alu_b), .op(instruction_code), .r(alu_r));
     mipsregisterfile regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en), .register_a_index(reg_a_idx), .register_b_index(reg_b_idx), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0)) ;
-    IR_decode ir(.fetch(fetch), .exec_one(exec1), .exec_two(exec2), /*.shift(),*/ .destination_reg(reg_in_idx), .register_one(reg_b_idx), .register_two(reg_a_idx), .immediate(immediate), .memory(), .write_en(reg_write_en), .instruction_code(instruction_code));
-    PC
+    IR_decode ir(.fetch(fetch), .exec_one(exec1), .exec_two(exec2), /*.shift(),*/ .destination_reg(reg_in_idx), .register_one(reg_b_idx), .register_two(reg_a_idx), .immediate(immediate), .memory(jump_const), .write_en(reg_write_en), .instruction_code(instruction_code));
+    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .internal_code(instruction_code), .offset(immediate), .instr_index(jump_const), .register_data(reg_b_out), /*.zero(), .positive(), .negative(),*/ .address(pc_address), .halt(halt));
 
 endmodule

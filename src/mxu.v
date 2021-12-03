@@ -11,6 +11,7 @@ input logic fetch,
 input logic ex1,
 input logic ex2,
 input logic[6:0] in_instcode,
+input logic[31:0] pc_address,
 output logic[31:0] dataout,
 output logic [31:0] memout,
 output logic read,
@@ -35,6 +36,13 @@ typedef enum logic[6:0] {
 assign byteenable = 15;
 assign dataout = memin;
 assign memout = datain;
+
+always_comb begin
+    if (fetch)
+        memout = pc_address;
+    else
+        memout = datain;
+end
 
 
 //Read  signal
