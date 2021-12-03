@@ -1,11 +1,9 @@
-module PCv2 (
+module PC (
     input logic clk, reset,
     input logic fetch, exec1, exec2,
-    //input logic[31:0] instruction,
     input logic [6:0] internal_code,
     input logic[15:0] offset,
     input logic[25:0] instr_index,
-    //input logic[4:0] branch_param,
     input logic[31:0] register_data,
     input logic zero, positive, negative,
     output logic[31:0] address,
