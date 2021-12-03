@@ -86,7 +86,7 @@ typedef enum logic [6:0] {
 always@(*) begin 
     if (exec_one==1)begin 
         instruction = current_instruction;
-        saved_instruction = current_instruction;
+        saved_instruction <= current_instruction;
     end 
     else if (exec_two == 1) begin 
         instruction = saved_instruction;
@@ -127,13 +127,18 @@ always@(*) begin
             //assign groups of bits of instruction word to each field. 
             register_one = instruction[25:21];
             register_two = instruction[20:16];
-            destination_reg = instruction[15:11];
             shift = instruction[10:6];
             function_code = instruction[5:0];
             immediate = 32'd0;
             memory = 26'd0;
-        
-        end 
+
+            if ((r_type==1)&&(function_code==6'b001001))begin 
+                destination_reg = 5'd31;
+            end 
+            else if((r_type==1)&&(function_code!=6'b001001)) begin 
+                destination_reg = instruction[15:11];
+            end 
+         end 
         else if (j_type == 1) begin
             //assign groups of bits of instruction word to each field. 
             register_one = 5'd0;
@@ -143,16 +148,31 @@ always@(*) begin
             function_code = 6'd0;
             immediate = 32'd0;
             memory = instruction[25:0];
+
+            //write to register 31 is we have AL instructions 
+            if ((j_type ==1)&&(opcode==6'b000011)) begin 
+                destination_reg = 5'd31;
+            end
+            else if ((j_type==1)&&(opcode!=6'b000011)) begin 
+                destination_reg = 5'd0;
+            end
         end 
         else if (i_type == 1) begin
             //assign groups of bits of instruction word to each field.
             register_one = instruction[25:21];
             register_two = 5'd0;
-            destination_reg = instruction[20:16];
             shift = 0;
             function_code = 6'd0;
             memory = 26'd0;
-            
+
+            //write to register 31 is we have AL instructions 
+            if ((i_type == 1)&&(((opcode==6'b000001)&&(instruction[20:16]==5'b10001))||((opcode==6'b000001)&&(instruction[20:16]==5'b10000)))) begin 
+                destination_reg = 5'd31;
+            end 
+            else if ((i_type == 1)&&(((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001))||((opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)))) begin 
+                 destination_reg = instruction[20:16];
+            end 
+
             //sign extend the immediate to 32 bits. - however do we need sign extended instructions for branch instructions 
             if (instruction[15] == 0) begin 
                 immediate = {16'd0,instruction[15:0]};
@@ -160,6 +180,7 @@ always@(*) begin
             else if (instruction [15] == 1) begin
                 immediate = {16'd65535,instruction[15:0]};
             end       
+        
         end
     end 
 end 
