@@ -165,3 +165,6 @@ fabric.properties
 /src/memory/*.sh
 
 ./bin/*
+./modules_tb/logs/*
+
+*.vcd

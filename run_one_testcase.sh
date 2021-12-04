@@ -11,11 +11,12 @@ bin/assembler <test-inputs/0-assembly/${TESTCASE}.asm.txt >test-inputs/1-binary/
 >&2 echo "  2 - Compiling test-bench"
 # Compile a specific test bench for this specific test case.
 # The -P command is used to modify the RAM_INIT_FILE parameter on the test-bench at compile-time
+# TODO: add -Wall  to see all the warnings
 iverilog -g 2012 \
-   -s MIPS_tb \
-   -PMIPS_tb.RAM_INIT_FILE=\"test-inputs/1-binary/${TESTCASE}.hex.txt\" \
+   -s mips_cpu_bus_tb \
+   -Pmips_cpu_bus_tb.RAM_INIT_FILE=\"test-inputs/1-binary/${TESTCASE}.hex.txt\" \
    -o test-inputs/2-testcases/MIPS_tb_${TESTCASE} \
-   src/*.v testbenches/*.v
+   src/*.v src/*/*.v testbenches/*.v
 
 >&2 echo "  3 - Running test-bench"
 # Run the simulator, and capture all output to a file

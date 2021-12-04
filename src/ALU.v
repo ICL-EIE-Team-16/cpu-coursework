@@ -10,7 +10,8 @@ module ALU(
 
 typedef enum logic[6:0]{
     ADDIU = 7'd3,
-    ADDU = 7'd4
+    ADDU = 7'd4,
+    LW = 7'd47
 } opcode_internal;
 
 
@@ -120,6 +121,9 @@ always @(*) begin
         r = a+b;
     end
 
+    if(op == LW) begin
+        r = a+b;
+    end
 
 end
 /*logic[31:0] addsub_out;

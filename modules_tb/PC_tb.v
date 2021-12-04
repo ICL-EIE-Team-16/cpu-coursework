@@ -12,9 +12,8 @@ module PC_tb ();
     
     //set a clock
     initial begin
-
-        $dumpfile("PCv2_tb.vcd");
-        $dumpvars(0, PCv2_tb);
+        $dumpfile("PC_tb.vcd");
+        $dumpvars(0, PC_tb);
 
         clk = 0;
         repeat (1000) begin
@@ -265,7 +264,7 @@ module PC_tb ();
         end
     end
 
-    PCv2 dut(
+    PC dut(
         .clk(clk), .reset(reset),
         .fetch(fetch), .exec1(exec1), .exec2(exec2),
         .internal_code(internal_code),
