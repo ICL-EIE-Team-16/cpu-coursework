@@ -83,161 +83,6 @@ typedef enum logic [6:0] {
 
 } code_def;
 
-always@(*) begin 
-    if (exec_one==1)begin 
-        instruction = current_instruction;
-        saved_instruction <= current_instruction;
-    end 
-    else if (exec_two == 1) begin 
-        instruction = saved_instruction;
-    end 
-end
- 
-always@(*) begin 
-    if ((exec_one == 1)||(exec_two==1)) begin
-        opcode = instruction[31:26];
-
-        if (opcode == 6'b000000) begin 
-            r_type = 1; 
-            j_type = 0;
-            i_type = 0; 
-
-        end 
-        else if (opcode == 6'b000010 || opcode == 6'b000011) begin 
-            r_type = 0;
-            j_type = 1;
-            i_type = 0; 
-        end 
-        else begin
-            r_type = 0;
-            j_type = 0;
-            i_type = 1; 
-        end 
-    end 
-    else if (fetch==1)begin 
-         r_type = 0;
-         j_type = 0;
-         i_type = 0; 
-    end 
-end 
-
-always@(*) begin 
-    if ((exec_one == 1)||(exec_two ==1)) begin
-        if (r_type == 1) begin
-            //assign groups of bits of instruction word to each field. 
-            register_one = instruction[25:21];
-            register_two = instruction[20:16];
-            shift = instruction[10:6];
-            function_code = instruction[5:0];
-            immediate = 32'd0;
-            memory = 26'd0;
-
-            if ((r_type==1)&&(function_code==6'b001001))begin 
-                destination_reg = 5'd31;
-            end 
-            else if((r_type==1)&&(function_code!=6'b001001)) begin 
-                destination_reg = instruction[15:11];
-            end 
-         end 
-        else if (j_type == 1) begin
-            //assign groups of bits of instruction word to each field. 
-            register_one = 5'd0;
-            register_two = 5'd0;
-            destination_reg = 5'd0;
-            shift = 0;
-            function_code = 6'd0;
-            immediate = 32'd0;
-            memory = instruction[25:0];
-
-            //write to register 31 is we have AL instructions 
-            if ((j_type ==1)&&(opcode==6'b000011)) begin 
-                destination_reg = 5'd31;
-            end
-            else if ((j_type==1)&&(opcode!=6'b000011)) begin 
-                destination_reg = 5'd0;
-            end
-        end 
-        else if (i_type == 1) begin
-            //assign groups of bits of instruction word to each field.
-            register_one = instruction[25:21];
-            register_two = 5'd0;
-            shift = 0;
-            function_code = 6'd0;
-            memory = 26'd0;
-
-            //write to register 31 is we have AL instructions 
-            if ((i_type == 1)&&(((opcode==6'b000001)&&(instruction[20:16]==5'b10001))||((opcode==6'b000001)&&(instruction[20:16]==5'b10000)))) begin 
-                destination_reg = 5'd31;
-            end 
-            else if ((i_type == 1)&&(((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001))||((opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)))) begin 
-                 destination_reg = instruction[20:16];
-            end 
-
-            //sign extend the immediate to 32 bits. - however do we need sign extended instructions for branch instructions 
-            if (instruction[15] == 0) begin 
-                immediate = {16'd0,instruction[15:0]};
-            end 
-            else if (instruction [15] == 1) begin
-                immediate = {16'd65535,instruction[15:0]};
-            end       
-        
-        end
-    end 
-end 
-
-always@(*) begin //make sure enables go high in the right cycle 
-    if (fetch == 0) begin 
-        // determining write enables - R Type
-        if ((exec_one == 1)&&(exec_two == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
-            if ((r_type==1)&&(function_code!=6'b001000)) begin  
-                write_en = 1;     
-            end
-        
-            else if ((r_type==1)&&(function_code==6'b001000)) begin 
-                write_en = 0; 
-            end
-        end 
-
-        else if ((exec_one == 0)&&(exec_two == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
-            if ((r_type==1)&&(function_code==6'b001001)) begin 
-                write_en =1;
-            end 
-            else if ((r_type==1)&&(function_code!=6'b001001))begin 
-                write_en=0;
-            end 
-        end
-
-        //determining write enables - I Type 
-                                        //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-        if ((exec_one==1)&&(i_type==1)&&((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011))) begin
-            write_en = 1;
-        end
-        else if ((exec_one==1)&&(i_type==1)&&((opcode!=6'b001000)||(opcode!=6'b001001)||(opcode!=6'b001100)||(opcode!=6'b001101)||(opcode!=6'b001110)||(opcode!=6'b001010)||(opcode!=6'b001011))) begin
-            write_en = 0;
-        end                             //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
-        if ((exec_two==1)&&(i_type==1)&&((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110))) begin
-            write_en = 1;
-        end
-        else if ((exec_two==1)&&(i_type==1)&&((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001)||(opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)||(opcode != 6'b100000)||(opcode != 6'b100100)||(opcode != 6'b100001)||(opcode != 6'b100101)||(opcode != 6'b001111)||(opcode != 6'b100011)||(opcode != 6'b100010)||(opcode != 6'b100110))) begin
-            write_en = 0;
-        end
-
-
-        // determining write enables - J Type
-            if((exec_two==1)&&(j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
-                write_en = 0;
-            end 
-            else if ((exec_two==1)&&(j_type==1)&&(opcode==6'b000011))begin 
-                write_en = 1;        
-            end 
-    end 
-
-    else if (fetch == 1) begin 
-        write_en = 0;
-    end 
-
-end
-
 //decoding the instruction code which will replace opcode, rtype, itype and jtype outputs 
 always@(*) begin 
     if ((opcode==6'd0)&&(function_code==6'b100000)) instruction_code <= ADD;
@@ -297,4 +142,165 @@ always@(*) begin
 
 end 
 
+always@(*) begin 
+    if (exec_one==1)begin 
+        instruction = current_instruction;
+        saved_instruction <= current_instruction;
+    end 
+    else if (exec_two == 1) begin 
+        instruction = saved_instruction;
+    end 
+end
+ 
+always@(*) begin 
+    if ((exec_one == 1)||(exec_two==1)) begin
+        opcode = instruction[31:26];
+
+        if (opcode == 6'b000000) begin 
+            r_type = 1; 
+            j_type = 0;
+            i_type = 0; 
+
+        end 
+        else if (opcode == 6'b000010 || opcode == 6'b000011) begin 
+            r_type = 0;
+            j_type = 1;
+            i_type = 0; 
+        end 
+        else begin
+            r_type = 0;
+            j_type = 0;
+            i_type = 1; 
+        end 
+
+    end 
+    
+    else if (fetch==1)begin 
+         r_type = 0;
+         j_type = 0;
+         i_type = 0; 
+    end 
+end 
+
+always@(*) begin 
+    if ((exec_one == 1)||(exec_two ==1)) begin
+        if (r_type == 1) begin
+            //assign groups of bits of instruction word to each field. 
+            register_one = instruction[25:21];
+            register_two = instruction[20:16];
+            shift = instruction[10:6];
+            function_code = instruction[5:0];
+            immediate = 32'd0;
+            memory = 26'd0;
+
+            if ((r_type==1)&&(instruction_code==JALR))begin 
+                destination_reg = 5'd31;
+            end 
+            else if((r_type==1)&&(instruction_code!=JALR)) begin 
+                destination_reg = instruction[15:11];
+            end 
+
+        end 
+
+        else if (j_type == 1) begin
+            //assign groups of bits of instruction word to each field. 
+            register_one = 5'd0;
+            register_two = 5'd0;
+            destination_reg = 5'd0;
+            shift = 0;
+            function_code = 6'd0;
+            immediate = 32'd0;
+            memory = instruction[25:0];
+
+            //write to register 31 is we have AL instructions 
+            if ((j_type ==1)&&(instruction_code==JAL)) begin 
+                destination_reg = 5'd31;
+            end
+            else if ((j_type==1)&&(instruction_code!=JAL)) begin 
+                destination_reg = 5'd0;
+            end
+
+        end 
+
+        else if (i_type == 1) begin
+            //assign groups of bits of instruction word to each field.
+            register_one = instruction[25:21];
+            register_two = 5'd0;
+            shift = 0;
+            function_code = 6'd0;
+            memory = 26'd0;
+
+            //write to register 31 is we have AL instructions 
+            if ((i_type == 1)&&((instruction_code==BLTZAL)||(instruction_code==BGEZAL))) begin 
+               destination_reg = 5'd31;
+            end 
+            else if ((i_type == 1)&&((instruction_code!=BLTZAL)||(instruction_code!=BGEZAL)))  begin 
+                 destination_reg = instruction[20:16];
+            end 
+
+            //sign extend the immediate to 32 bits. - however do we need sign extended instructions for branch instructions 
+            if (instruction[15] == 0) begin 
+                immediate = {16'd0,instruction[15:0]};
+            end 
+            else if (instruction [15] == 1) begin
+                immediate = {16'd65535,instruction[15:0]};
+            end       
+        
+        end
+    end 
+end 
+
+always@(*) begin //make sure enables go high in the right cycle 
+    if (fetch == 0) begin 
+        // determining write enables - R Type
+        if ((exec_one == 1)&&(exec_two == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
+            if ((r_type==1)&&(instruction_code!=JR)) begin  
+                write_en = 1;     
+            end
+        
+            else if ((r_type==1)&&(instruction_code==JR)) begin 
+                write_en = 0; 
+            end
+        end 
+
+        else if ((exec_one == 0)&&(exec_two == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
+            if ((r_type==1)&&(instruction_code==JALR)) begin 
+                write_en =1;
+            end 
+            else if ((r_type==1)&&(instruction_code!=JALR))begin 
+                write_en=0;
+            end 
+        end
+
+        //determining write enables - I Type 
+
+        if ((exec_one==1)&&(i_type==1)&&((instruction_code==ADDI)||(instruction_code==ADDIU)||(instruction_code==ANDI)||(instruction_code==ORI)||(instruction_code==XORI)||(instruction_code==SLTI)||(instruction_code==SLTIU))) begin
+            write_en = 1;
+        end
+        else if ((exec_one==1)&&(i_type==1)&&((instruction_code!=ADDI)||(instruction_code!=ADDIU)||(instruction_code!=ANDI)||(instruction_code!=ORI)||(instruction_code!=XORI)||(instruction_code!=SLTI)||(instruction_code!=SLTIU))) begin
+            write_en = 0;
+        end                             
+        if ((exec_two==1)&&(i_type==1)&&((instruction_code==BGEZAL)||(instruction_code==BLTZAL)||(instruction_code==LB)||(instruction_code==LBU)||(instruction_code==LH)||(instruction_code==LHU)||(instruction_code==LUI)||(instruction_code==LW)||(instruction_code==LWL)||(instruction_code==LWR))) begin
+            write_en = 1;
+        end
+        else if ((exec_two==1)&&(i_type==1)&&((instruction_code!=BGEZAL)||(instruction_code!=BLTZAL)||(instruction_code!=LB)||(instruction_code!=LBU)||(instruction_code!=LH)||(instruction_code!=LHU)||(instruction_code!=LUI)||(instruction_code!=LW)||(instruction_code!=LWL)||(instruction_code!=LWR))) begin
+            write_en = 0;
+        end
+
+
+        // determining write enables - J Type
+        if((exec_two==1)&&(j_type==1)&&(instruction_code!=JAL)) begin // low for all j_type instructions but high for JAL only in EXEC2
+            write_en = 0;
+        end 
+        else if ((exec_two==1)&&(j_type==1)&&(instruction_code==JAL))begin 
+            write_en = 1;        
+        end 
+
+    end 
+
+    else if (fetch == 1) begin 
+        write_en = 0;
+    end 
+
+end
 endmodule

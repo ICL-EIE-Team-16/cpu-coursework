@@ -264,7 +264,7 @@ initial begin
     $display("TESTCASE 25: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 25 - SUCCESS");
 
-     //Test Case 26 
+    //Test Case 26 
     instruction = 32'b00000000000000000000000000000110; 
     fetch = 0;
     exec_one = 1;
@@ -274,7 +274,7 @@ initial begin
     $display("TESTCASE 26: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 26 - SUCCESS");
 
-     //Test Case 27
+    //Test Case 27
     instruction = 32'b00000000000000000000000000100011; 
     fetch = 0;
     exec_one = 1;
@@ -284,7 +284,7 @@ initial begin
     $display("TESTCASE 27: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 27 - SUCCESS");
 
-     //Test Case 28
+    //Test Case 28
     instruction = 32'b00000000000000000000000000100110; 
     fetch = 0;
     exec_one = 1;
@@ -294,8 +294,8 @@ initial begin
     $display("TESTCASE 28: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 28 - SUCCESS");
 
-     //Test Case 29
-    instruction = 32'b00000000000000000000000000001110; 
+    //Test Case 29
+    instruction = 32'b00111000000000000000000000000000; 
     fetch = 0;
     exec_one = 1;
     exec_two = 0;
@@ -304,7 +304,7 @@ initial begin
     $display("TESTCASE 29: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 29 - SUCCESS");
 
-     //Test Case 30
+    //Test Case 30
     instruction = 32'b00010000000000000000000000000000; 
     fetch = 0;
     exec_one = 1;
@@ -314,7 +314,227 @@ initial begin
     $display("TESTCASE 30: ", "instruction_code:", instruction_code);
     $display ("TESTCASE 30 - SUCCESS");
 
+    //Test Case 31 **************************************
+    instruction = 32'b00000100000000010000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd31)
+    $display("TESTCASE 31: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 31 - SUCCESS");
 
+    //Test Case 32
+    instruction = 32'b00000100000100010000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd32)
+    $display("TESTCASE 32: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 32 - SUCCESS");
+
+    //Test Case 33
+    instruction = 32'b00011100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd33)
+    $display("TESTCASE 33: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 33 - SUCCESS");
+
+    //Test Case 34
+    instruction = 32'b00011000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd34)
+    $display("TESTCASE 34: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 34 - SUCCESS");
+
+    //Test Case 35
+    instruction = 32'b00000100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd35)
+    $display("TESTCASE 35: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 35 - SUCCESS");
+
+    //Test Case 36
+    instruction = 32'b00000100000100000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd36)
+    $display("TESTCASE 36: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 36 - SUCCESS");
+
+    //Test Case 37
+    instruction = 32'b00010100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd37)
+    $display("TESTCASE 37: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 37 - SUCCESS");
+
+    //Test Case 38
+    instruction = 32'b00001000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd38)
+    $display("TESTCASE 38: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 38 - SUCCESS");
+
+    //Test Case 39
+    instruction = 32'b00001100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd39)
+    $display("TESTCASE 39: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 39 - SUCCESS");
+
+    //Test Case 40
+    instruction = 32'b00000000000000000000000000001001; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd40)
+    $display("TESTCASE 40: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 40 - SUCCESS");
+
+    //Test Case 41
+    instruction = 32'b00000000000000000000000000001000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd41)
+    $display("TESTCASE 41: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 41 - SUCCESS");
+
+    //Test Case 42
+    instruction = 32'b10000000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd42)
+    $display("TESTCASE 42: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 42 - SUCCESS");
+
+    //Test Case 43
+    instruction = 32'b10010000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd43)
+    $display("TESTCASE 43: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 43 - SUCCESS");
+
+    //Test Case 44
+    instruction = 32'b10000100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd44)
+    $display("TESTCASE 44: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 44 - SUCCESS");
+
+    //Test Case 45
+    instruction = 32'b10010100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd45)
+    $display("TESTCASE 45: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 45 - SUCCESS");
+
+    //Test Case 46
+    instruction = 32'b00111100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd46)
+    $display("TESTCASE 46: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 46 - SUCCESS");
+
+
+    //Test Case 47
+    instruction = 32'b10001100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd47)
+    $display("TESTCASE 47: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 47 - SUCCESS");
+
+
+    //Test Case 48
+    instruction = 32'b10001000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd48)
+    $display("TESTCASE 48: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 48 - SUCCESS");
+
+    //Test Case 49
+    instruction = 32'b10011000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd49)
+    $display("TESTCASE 49: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 49 - SUCCESS");
+
+    //Test Case 50
+    instruction = 32'b10100000000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd50)
+    $display("TESTCASE 50: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 50 - SUCCESS");
+
+    //Test Case 51
+    instruction = 32'b10100100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd51)
+    $display("TESTCASE 51: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 51 - SUCCESS");
+
+    //Test Case 52
+    instruction = 32'b10101100000000000000000000000000; 
+    fetch = 0;
+    exec_one = 1;
+    exec_two = 0;
+    #1
+    assert (instruction_code == 7'd52)
+    $display("TESTCASE 52: ", "instruction_code:", instruction_code);
+    $display ("TESTCASE 52 - SUCCESS");
 end
 
 IR_decode dut(

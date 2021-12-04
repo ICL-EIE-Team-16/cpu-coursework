@@ -203,14 +203,14 @@ initial begin
     $display("TESTCASE 2.1.0: ","instruction_code:", instruction_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
     $display ("TESTCASE 2.1.0 - SUCCESS");
 
-    //test case 2.1.2 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
-    instruction = 32'b000001 00001 00001 1000000000000000; //i_type
+    //test case 2.1.2 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 -FAILED
+    instruction = 32'b00000100001000011000000000000000; //i_type
     fetch = 0;
     exec_one = 1;
     exec_two = 0;
     #1
     assert (shift == 5'd0)
-    //assert (destination_reg == 5'b00001)
+    assert (destination_reg == 5'b00001)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
@@ -221,14 +221,14 @@ initial begin
     $display("TESTCASE 2.1.2: ", "instruction_code:", instruction_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
     $display ("TESTCASE 2.1.2 - SUCCESS");
 
-    //test case 2.1.3 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
+    //test case 2.1.3 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 - FAILED
     instruction = 32'b00000100001000011000000000000000; //i_type
     fetch = 0;
     exec_one = 0;
     exec_two = 1;
     #1
     assert (shift == 5'd0)
-   // assert (destination_reg == 5'b00001)
+    assert (destination_reg == 5'b00001)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
