@@ -274,6 +274,6 @@ always@(*) begin
     else if (opcode==6'b101001) instruction_code <= SH;
     else if (opcode==6'b101011) instruction_code <= SW;
 
-end 
+end
 
 endmodule

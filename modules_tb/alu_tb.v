@@ -36,12 +36,12 @@ module alu_tb();
         $display("test start");
 
         assign op = ADDIU;
-        #1
-            assert (r == a+b) else $display("addiu error");
+        #1;
+        assert (r == a+b) else $display("addiu error");
 
         assign op = ADDU;
-        #1
-            assert (r == a+b) else $display("add error");
+        #1;
+        assert (r == a+b) else $display("add error");
 
         $finish;
 

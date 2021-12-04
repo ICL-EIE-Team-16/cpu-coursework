@@ -89,6 +89,8 @@ module mips_cpu_bus(
     always_comb begin
         if (exec2 && ((instruction_code == BGEZAL) || (instruction_code == BLTZAL) || (instruction_code == JAL) || (instruction_code == JALR)))
             alu_b = 8;
+        else if (exec1 && instruction_code == LW)
+            alu_b = immediate;
         else
             alu_b = reg_b_out;
     end
@@ -121,12 +123,22 @@ module mips_cpu_bus(
             reg_in = alu_r;
     end
 
+//MUX @RAM_ADDR
+    always_comb begin
+        if (instruction_code == LW && exec1) begin
+            address = alu_r;
+            $display("address set to ALU output: %h", address);
+            $display("a: %h, b: %h, result: %h", reg_a_out, immediate, alu_r);
+        end else
+            address = pc_address;
+    end
+
 
     statemachine sm(.clk(clk), .reset(reset), .halt(halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
     mxu mainmxu(.datain(databus), .memin(readdata), .fetch(fetch), .ex1(exec1), .ex2(exec2), .instcode(instruction_code), .pc_address(pc_address), .dataout(reg_mux_mem), .memout(writedata), .read(read), .write(write), .byteenable(byteenable));
     ALU mainalu(.a(alu_a), .b(alu_b), .op(instruction_code), .r(alu_r));
     mipsregisterfile regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en), .register_a_index(reg_a_idx), .register_b_index(reg_b_idx), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0));
-    IR_decode ir(.current_instruction(reg_mux_mem), .fetch(fetch), .exec_one(exec1), .exec_two(exec2), /*.shift(),*/ .destination_reg(reg_in_idx), .register_one(reg_b_idx), .register_two(reg_a_idx), .immediate(immediate), .memory(jump_const), .write_en(reg_write_en) /*, .instruction_code(instruction_code)*/);
+    IR_decode ir(.current_instruction(reg_mux_mem), .fetch(fetch), .exec_one(exec1), .exec_two(exec2), /*.shift(),*/ .destination_reg(reg_in_idx), .register_one(reg_b_idx), .register_two(reg_a_idx), .immediate(immediate), .memory(jump_const), .write_en(reg_write_en), .instruction_code(instruction_code));
     PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .internal_code(instruction_code), .offset(immediate[15:0]), .instr_index(jump_const), .register_data(reg_b_out), .zero(zero), .positive(zero), .negative(zero), .address(pc_address), .halt(halt));
 
 endmodule
