@@ -54,7 +54,7 @@ always_comb begin
         read = 1;
     else if (ex1) begin
         if (instcode == LB || instcode == LBU || instcode == LH || instcode == LHU || instcode == LUI || instcode == LW || instcode == LWL || instcode == LWR)
-            read = 0; //This should be one but it's off for debugging
+            read = 1; //This should be one but it's off for debugging
         else
             read = 0;
     end
@@ -66,7 +66,7 @@ end
 //Write signal
 always_comb begin
     if (ex1) begin
-        if (instcode == SB || instcode == SW)
+        if (instcode == SB || instcode == SW || instcode == SH)
             write = 1;
     end
     else

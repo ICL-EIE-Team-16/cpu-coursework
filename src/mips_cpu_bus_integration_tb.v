@@ -13,10 +13,10 @@ logic waitrequest;
 logic[31:0] writedata;
 logic[3:0] byteenable;
 logic[31:0] readdata;
-
+logic exec1;
 initial begin
     $dumpfile("waves.vcd");
-    $dumpvars(2, mips_cpu_bus_integration_tb);
+    $dumpvars(3, mips_cpu_bus_integration_tb);
 end
 
 initial begin
@@ -33,39 +33,66 @@ end
 
 initial begin
     //Initialize
-    waitrequest = 0;
+        waitrequest = 0;
 
-    reset = 1;
-    @(posedge clk)
-    #1;
-    reset = 0;
+        reset = 1;
+        @(posedge clk)
+        #1;
+        reset = 0;
 
-    readdata = 32'h2442000f;
-    #6;
-    assert (register_v0 == 32'h0000000f) else $fatal(2, "problem with ADDIU instruction");
+        //LW
+        @(posedge clk)
+        readdata = 32'h8c02000c;
+        @(posedge clk)
+        readdata = 32'hBFC00000;
+        @(posedge clk)
+        #1;
+
+        //ADDIU
+        @(posedge clk)
+        readdata = 32'h2443000f;
+        @(posedge clk)
+        #1;
+        @(posedge clk)
+        #1;
+
+        //SW
+        @(posedge clk)
+            readdata = 32'hAC430008;
+        @(posedge clk)
+        #1;
+        @(posedge clk)
+        #1;
+
+
+    //@(posedge exec1)
+    //readdata = 32'h2442000f;
+
+    /*
+    //assert (register_v0 == 32'h0000000f) else $fatal(2, "problem with ADDIU instruction");
     readdata = 32'h241000fc;
     #6;
     readdata = 32'h241100ff;
     #6;
     readdata = 32'h02111021;
     #6;
-    assert (register_v0 == 32'h000001FB) else $fatal(2, "problem with ADDU instruction");
+    //assert (register_v0 == 32'h000001FB) else $fatal(2, "problem with ADDU instruction");
     readdata = 32'h8e120004;
     #2;
-    assert (address == 32'h00000100) else $fatal(2, "problem with LW instruction - wrong address calculated");
+    //assert (address == 32'h00000100) else $fatal(2, "problem with LW instruction - wrong address calculated");
     #1;
     readdata = 32'h0000ffff;
     #3;
     readdata = 32'h8e130008;
     #2;
-    assert (address == 32'h00000104) else $fatal(2, "problem with LW instruction - wrong address calculated");
+    //assert (address == 32'h00000104) else $fatal(2, "problem with LW instruction - wrong address calculated");
     #1;
     readdata = 32'h00000001;
     #3;
     readdata = 32'h02721021;
     #6;
-    assert (register_v0 == 32'h00010000) else $fatal(2, "problem with ADDU instruction");
-
+    //assert (register_v0 == 32'h00010000) else $fatal(2, "problem with ADDU instruction");
+    */
 end
 
 

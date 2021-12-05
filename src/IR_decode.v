@@ -1,5 +1,6 @@
 //add in 7 bit instruction code
-module IR_decode( 
+module IR_decode(
+input logic clk,
 input logic [31:0] current_instruction, 
 input logic fetch,
 input logic exec_one,
@@ -83,48 +84,57 @@ typedef enum logic [6:0] {
 
 } code_def;
 
-always@(*) begin 
-    if (exec_one==1)begin 
-        instruction = current_instruction;
+//Debug vars
+logic a,b,c;
+//Instruction register saving behaviour
+always_ff @(posedge clk) begin
+    if (exec_one)
         saved_instruction <= current_instruction;
-    end 
-    else if (exec_two == 1) begin 
-        instruction = saved_instruction;
-    end 
+
+    else
+        saved_instruction <= saved_instruction;
 end
- 
-always@(*) begin 
+
+ always @(*) begin
+    if (exec_one)
+         instruction = current_instruction;
+    else if (exec_two)
+         instruction = saved_instruction;
+end
+
+//Type decode
+always@(*) begin
     if ((exec_one == 1)||(exec_two==1)) begin
         opcode = instruction[31:26];
 
-        if (opcode == 6'b000000) begin 
-            r_type = 1; 
+        if (opcode == 6'b000000) begin
+            r_type = 1;
             j_type = 0;
-            i_type = 0; 
+            i_type = 0;
 
-        end 
-        else if (opcode == 6'b000010 || opcode == 6'b000011) begin 
+        end
+        else if (opcode == 6'b000010 || opcode == 6'b000011) begin
             r_type = 0;
             j_type = 1;
-            i_type = 0; 
-        end 
+            i_type = 0;
+        end
         else begin
             r_type = 0;
             j_type = 0;
-            i_type = 1; 
-        end 
-    end 
-    else if (fetch==1)begin 
+            i_type = 1;
+        end
+    end
+    else if (fetch==1)begin
          r_type = 0;
          j_type = 0;
-         i_type = 0; 
-    end 
-end 
+         i_type = 0;
+    end
+end
 
-always@(*) begin 
+always@(*) begin
     if ((exec_one == 1)||(exec_two ==1)) begin
         if (r_type == 1) begin
-            //assign groups of bits of instruction word to each field. 
+            //assign groups of bits of instruction word to each field.
             register_one = instruction[25:21];
             register_two = instruction[20:16];
             destination_reg = instruction[15:11];
@@ -132,10 +142,10 @@ always@(*) begin
             function_code = instruction[5:0];
             immediate = 32'd0;
             memory = 26'd0;
-        
-        end 
+
+        end
         else if (j_type == 1) begin
-            //assign groups of bits of instruction word to each field. 
+            //assign groups of bits of instruction word to each field.
             register_one = 5'd0;
             register_two = 5'd0;
             destination_reg = 5'd0;
@@ -143,7 +153,7 @@ always@(*) begin
             function_code = 6'd0;
             immediate = 32'd0;
             memory = instruction[25:0];
-        end 
+        end
         else if (i_type == 1) begin
             //assign groups of bits of instruction word to each field.
             register_one = instruction[25:21];
@@ -152,41 +162,41 @@ always@(*) begin
             shift = 0;
             function_code = 6'd0;
             memory = 26'd0;
-            
-            //sign extend the immediate to 32 bits. - however do we need sign extended instructions for branch instructions 
-            if (instruction[15] == 0) begin 
+
+            //sign extend the immediate to 32 bits. - however do we need sign extended instructions for branch instructions
+            if (instruction[15] == 0) begin
                 immediate = {16'd0,instruction[15:0]};
-            end 
+            end
             else if (instruction [15] == 1) begin
                 immediate = {16'd65535,instruction[15:0]};
-            end       
+            end
         end
-    end 
-end 
+    end
+end
 
-always@(*) begin //make sure enables go high in the right cycle 
-    if (fetch == 0) begin 
+always@(*) begin //make sure enables go high in the right cycle
+    if (fetch == 0) begin
         // determining write enables - R Type
         if ((exec_one == 1)&&(exec_two == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
-            if ((r_type==1)&&(function_code!=6'b001000)) begin  
-                write_en = 1;     
+            if ((r_type==1)&&(function_code!=6'b001000)) begin
+                write_en = 1;
             end
-        
-            else if ((r_type==1)&&(function_code==6'b001000)) begin 
-                write_en = 0; 
-            end
-        end 
 
-        else if ((exec_one == 0)&&(exec_two == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
-            if ((r_type==1)&&(function_code==6'b001001)) begin 
-                write_en =1;
-            end 
-            else if ((r_type==1)&&(function_code!=6'b001001))begin 
-                write_en=0;
-            end 
+            else if ((r_type==1)&&(function_code==6'b001000)) begin
+                write_en = 0;
+            end
         end
 
-        //determining write enables - I Type 
+        else if ((exec_one == 0)&&(exec_two == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
+            if ((r_type==1)&&(function_code==6'b001001)) begin
+                write_en =1;
+            end
+            else if ((r_type==1)&&(function_code!=6'b001001))begin
+                write_en=0;
+            end
+        end
+
+        //determining write enables - I Type
                                         //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
         if ((exec_one==1)&&(i_type==1)&&((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011))) begin
             write_en = 1;
@@ -205,20 +215,20 @@ always@(*) begin //make sure enables go high in the right cycle
         // determining write enables - J Type
             if((exec_two==1)&&(j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
                 write_en = 0;
-            end 
-            else if ((exec_two==1)&&(j_type==1)&&(opcode==6'b000011))begin 
-                write_en = 1;        
-            end 
-    end 
+            end
+            else if ((exec_two==1)&&(j_type==1)&&(opcode==6'b000011))begin
+                write_en = 1;
+            end
+    end
 
-    else if (fetch == 1) begin 
+    else if (fetch == 1) begin
         write_en = 0;
-    end 
+    end
 
 end
 
-//decoding the instruction code which will replace opcode, rtype, itype and jtype outputs 
-always@(*) begin 
+//decoding the instruction code which will replace opcode, rtype, itype and jtype outputs
+always@(*) begin
     if ((opcode==6'd0)&&(function_code==6'b100000)) instruction_code = ADD;
     else if (opcode==6'b001000) instruction_code = ADDI;
     else if (opcode==6'b001001) instruction_code = ADDIU;
@@ -248,7 +258,7 @@ always@(*) begin
     else if ((opcode==6'd0)&&(function_code==6'b100011)) instruction_code = SUBU;
     else if ((opcode==6'd0)&&(function_code==6'b100110)) instruction_code = XOR;
     else if (opcode==6'b001110) instruction_code = XORI;
-    
+
     else if (opcode==6'b000100) instruction_code = BEQ;
     else if ((opcode==6'b000001)&&(instruction[20:16]==5'b00001)) instruction_code = BGEZ;
     else if ((opcode==6'b000001)&&(instruction[20:16]==5'b10001))  instruction_code = BGEZAL;
@@ -261,7 +271,7 @@ always@(*) begin
     else if (opcode==6'b000011) instruction_code = JAL;
     else if ((opcode==6'd0)&&(function_code==6'b001001)) instruction_code = JALR;
     else if ((opcode==6'd0)&&(function_code==6'b001000)) instruction_code = JR;
-    
+
     else if (opcode==6'b100000) instruction_code = LB;
     else if (opcode==6'b100100) instruction_code = LBU;
     else if (opcode==6'b100001)  instruction_code = LH;
@@ -274,6 +284,6 @@ always@(*) begin
     else if (opcode==6'b101001) instruction_code = SH;
     else if (opcode==6'b101011) instruction_code = SW;
 
-end 
+end
 
 endmodule
