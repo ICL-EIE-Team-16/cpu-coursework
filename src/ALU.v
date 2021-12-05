@@ -141,25 +141,62 @@ always @(*) begin
         hi_next = a%b;
     end
 
-    if(r[31] == 1) begin
+    /*if(r[31] == 1) begin
         positive = 0;
         zero = 0;
         negative = 1;
     end
         //this will fail in cases where r is positive and larger than 16^3; will have to better distinguish positive from negative results
-        //can't use r < 0 as condition as it will never be true
+        //can't use r < 0 as condition as it will never be true*/
 
-    else if(r > 0) begin
+    if(r > 0) begin
         positive = 1;
         zero = 0;
         negative = 0;
     end
 
-    else if(r == 32'h0000) begin
+    if(r == 32'h0000) begin
         positive = 0;
         zero = 1;
         negative = 0;
     end
+
+    if(a < b && op == SUBU) begin
+        positive = 0;
+        negative = 1;
+        zero = 0;
+    end
+
+
+    /*if(a == b && op == SUBU) begin
+        positive = 0;
+        negative = 0;
+        zero = 1;
+    end*/
+
+    /*if(a < b && op == SUBU) begin
+        positive = 0;
+        negative = 1;
+        zero = 0;
+    end*/
+
+   /*if(a > b && op == SUBU) begin
+        positive = 1;
+        negative = 0;
+        zero = 0;
+    end
+
+    if(a|b != 0 && (op == ADDU || op == ADDIU)) begin
+        positive = 1;
+        negative = 0;
+        zero = 0;
+    end
+
+    else if(a|b == 0 && (op == ADDU || op == ADDIU)) begin
+        positive = 0;
+        negative = 0;
+        zero = 1;
+    end*/
 end
 
 always_ff @(posedge clk) begin

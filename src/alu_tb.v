@@ -167,7 +167,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -176,7 +176,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -185,7 +185,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     
 
     $display("Success!");
@@ -290,7 +290,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -299,7 +299,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -308,7 +308,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     
 
     $display("Success!");
@@ -415,7 +415,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -424,7 +424,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -433,7 +433,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     
 
     $display("Success!");
@@ -540,7 +540,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -549,7 +549,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -558,7 +558,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     
     $display("Success!");
 
@@ -605,7 +605,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -614,7 +614,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -623,7 +623,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
 
     $display("Success!");
 
