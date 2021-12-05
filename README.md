@@ -2,6 +2,9 @@
 
 This repository contains code for the CPU coursework for the second-year EIE module Instruction Architectures and Compilers.
 
+## Assembler
+Addresses of all instructions assembled by the assembler are automatically increased bt offset of 0xBFC00000.
+
 ## Instructions
 
 ### ADDU - Add Unsigned Word

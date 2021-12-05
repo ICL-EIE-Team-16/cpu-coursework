@@ -1,0 +1,3 @@
+ADDIU $s0, $zero, 0x10
+ADDIU $s1, $zero, 0x11
+ADDU $v0, $s0, $s1

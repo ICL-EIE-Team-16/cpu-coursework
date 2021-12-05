@@ -30,6 +30,7 @@ module mips_cpu_bus_tb;
             clk = !clk;
             #10;
             clk = !clk;
+            $display("address: %h", address);
         end
 
         $fatal(2, "Simulation did not finish within %d cycles.", TIMEOUT_CYCLES);
@@ -41,6 +42,8 @@ module mips_cpu_bus_tb;
         reset = 1;
         #20;
         reset = 0;
+        #1000;
+        $finish;
     end
 
     always @(negedge active) begin
