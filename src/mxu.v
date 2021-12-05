@@ -5,14 +5,14 @@
 // Created : 03. Dec 2021 12:14
 //-------------------------------------------------------------------
 module mxu (
-input logic[31:0] datain,
+input logic[31:0] regdatain,
 input logic[31:0] memin,
 input logic fetch,
 input logic ex1,
 input logic ex2,
 input logic[6:0] instcode,
 input logic[31:0] pc_address,
-input logic[31:0] alu_address,
+input logic[31:0] alu_r,
 output logic[31:0] mem_address,
 output logic[31:0] dataout,
 output logic [31:0] memout,
@@ -38,13 +38,13 @@ typedef enum logic[6:0] {
 always_comb begin
     byteenable = 15;
     dataout = memin;
-    memout = datain;
+    memout = regdatain;
 
 
     if (fetch)
         mem_address = pc_address;
     else
-        mem_address = datain;
+        mem_address = alu_r;
 end
 
 

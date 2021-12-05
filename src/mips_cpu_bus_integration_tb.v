@@ -40,7 +40,7 @@ initial begin
         #1;
         reset = 0;
 
-        //LW
+        //LW $2, c($0)
         @(posedge clk)
         readdata = 32'h8c02000c;
         @(posedge clk)
@@ -48,7 +48,7 @@ initial begin
         @(posedge clk)
         #1;
 
-        //ADDIU
+        //ADDIU $3, $2, f
         @(posedge clk)
         readdata = 32'h2443000f;
         @(posedge clk)
@@ -56,7 +56,7 @@ initial begin
         @(posedge clk)
         #1;
 
-        //SW
+        //SW $2, 0($3)
         @(posedge clk)
             readdata = 32'hAC430008;
         @(posedge clk)
