@@ -1,14 +1,17 @@
 module ALU(
+    input logic clk,
     input logic[31:0] a, b,
     input logic[6:0] op,
-    input logic[5:0] sa,
-    input logic fetch, exec1, exec2, clk,
+    input logic[4:0] sa,
+    //input logic fetch, exec1, exec2, clk,
     output logic zero, positive, negative,
-    output logic[31:0] r, hi, lo
+    output logic[31:0] r
 );
 
 logic[63:0] mult_intermediate;
 logic[31:0] hi_next, lo_next;
+logic[31:0] hi, lo;
+
 
 typedef enum logic[6:0]{
     ADD = 7'd1,
@@ -63,14 +66,15 @@ typedef enum logic[6:0]{
     SB = 7'd50,
     SH = 7'd51,
     SW = 7'd52
-} opcode_decode;
+} opcode_t;
 
 
 
 
 
 always @(*) begin
-    
+    if(op == SW || op == LW)
+        r = a+b;
 
     if(op == ADDU) begin
         r = a+b;
@@ -140,19 +144,26 @@ always @(*) begin
         hi_next = a%b;
     end
 
+
     if(r > 0) begin
         positive = 1;
         zero = 0;
         negative = 0;
     end
 
-    if(r == 32'h0000) begin
+    else if(r == 32'h0000) begin
         positive = 0;
         zero = 1;
         negative = 0;
     end
 
-    if(a < b && op == SUBU) begin
+    else if(a < b && op == SUBU) begin
+        positive = 0;
+        negative = 1;
+        zero = 0;
+    end
+
+    else begin
         positive = 0;
         negative = 1;
         zero = 0;
@@ -161,11 +172,7 @@ end
 
 always_ff @(posedge clk) begin
 
-    if(op == MULTU)begin
-        lo <= lo_next;
-        hi <= hi_next;
-    end
-    if(op == DIVU)begin
+    if(op == MULTU || op == DIVU)begin
         lo <= lo_next;
         hi <= hi_next;
     end
