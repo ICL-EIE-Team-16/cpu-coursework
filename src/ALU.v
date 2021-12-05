@@ -9,6 +9,10 @@ module ALU(
 
 logic[63:0] mult_intermediate;
 logic[31:0] hi_next, lo_next;
+logic signed[31:0] a_signed, b_signed;
+
+assign a_signed = a;
+assign b_signed = b;
 
 typedef enum logic[6:0]{
     ADD = 7'd1,
@@ -72,11 +76,7 @@ typedef enum logic[6:0]{
 always @(*) begin
     
 
-    if(op == ADDU) begin
-        r = a+b;
-    end
-
-    if(op == ADDIU) begin
+    if(op == ADDU || op == ADDIU) begin
         r = a+b;
     end
 
@@ -92,7 +92,7 @@ always @(*) begin
         r = a>>>(b[4:0]);
     end
 
-    if(op == SLTU) begin
+    if(op == SLTU || op == SLTIU) begin
         if(a<b)begin
             r = 32'h0001;
         end
@@ -101,11 +101,20 @@ always @(*) begin
         end
     end
 
-    if(op == AND) begin
+    if(op == SLT || op == SLTI) begin
+        if(a_signed<b_signed)begin
+            r = 32'h0001;
+        end
+        else begin
+            r = 32'h0000;
+        end
+    end
+
+    if(op == AND || op == ANDI) begin
         r = a&b;
     end
 
-    if(op == OR) begin
+    if(op == OR || op == ORI) begin
         r = a|b;
     end
 
@@ -125,7 +134,7 @@ always @(*) begin
         r = a>>b[4:0];
     end
 
-    if(op == XOR) begin
+    if(op == XOR || op == XORI) begin
         r = a^b;
     end
 
@@ -144,6 +153,17 @@ always @(*) begin
         positive = 1;
         zero = 0;
         negative = 0;
+    end
+
+    if(op == MULT) begin
+        mult_intermediate = a_signed*b_signed;
+        lo_next = mult_intermediate[31:0];
+        hi_next = mult_intermediate[63:32];
+    end 
+
+    if(op == DIV) begin
+        lo_next = a_signed/b_signed;
+        hi_next = a_signed%b_signed;
     end
 
     if(r == 32'h0000) begin
@@ -169,6 +189,15 @@ always_ff @(posedge clk) begin
         lo <= lo_next;
         hi <= hi_next;
     end
+    if(op == MULT)begin
+        lo <= lo_next;
+        hi <= hi_next;
+    end
+    if(op == DIV)begin
+        lo <= lo_next;
+        hi <= hi_next;
+    end
+
 end
 
 

@@ -6,7 +6,8 @@ logic[5:0] sa;
 logic[6:0] op;
 logic[31:0] r_expected;
 logic[31:0] r_expected2;
-logic[63:0] mult_intermediate;
+logic[63:0] mult_intermediate, mult_intermediate_signed;
+logic signed[31:0] a_signed, b_signed, hi_signed, lo_signed;
 
 
 typedef enum logic[6:0]{
@@ -70,6 +71,9 @@ initial begin
     assign b = 32'h000f;
     assign sa = 6'b000001;
     assign mult_intermediate = a*b;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
 
 
     $display("Test round 1 start");
@@ -194,6 +198,9 @@ initial begin
     assign b = 32'h0001;
     assign sa = 6'b001111;
     assign mult_intermediate = a*b;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
 
     $display("Test round 2 start");
 
@@ -317,6 +324,9 @@ initial begin
     assign b = 32'h00000001;
     assign sa = 6'b001111;
     assign mult_intermediate = a*b;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
     
     $display("Test round 3 start");
 
@@ -442,6 +452,9 @@ initial begin
     assign b = 32'h0001;
     assign sa = 6'b001111;
     assign mult_intermediate = a*b;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
     
     $display("Test round 4 start");
 
@@ -564,6 +577,9 @@ initial begin
     assign a = 32'd6000003;
     assign b = 32'd2000000;
     assign mult_intermediate = a*b;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
 
     $display("Test round 5 start");
 
@@ -623,6 +639,93 @@ initial begin
     assign clk = 1;
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
+
+    $display("Success!");
+
+    assign a = -32'd45;
+    assign b = -32'd5;
+    assign a_signed = a;
+    assign b_signed = b;
+    assign mult_intermediate_signed = a_signed * b_signed;
+
+    $display("Test round 6 start");
+
+    assign op = MULT;
+
+    assign fetch = 1;
+    assign exec1 = 0;
+    assign exec2 = 0;
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign fetch = 0;
+    assign exec1 = 1;
+    assign exec2 = 0;
+    #1
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    $display("hi = %d, lo = %d, a_signed = %d, b_signed = %d", hi, lo, a_signed, b_signed);
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
+    assign fetch = 0;
+    assign exec1 = 0;
+    assign exec2 = 1;
+    #1
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
+    
+    assign op = DIV;
+
+    assign fetch = 1;
+    assign exec1 = 0;
+    assign exec2 = 0;
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
+    assign fetch = 0;
+    assign exec1 = 1;
+    assign exec2 = 0;
+    #1
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
+    assign fetch = 0;
+    assign exec1 = 0;
+    assign exec2 = 1;
+    #1
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
 
     $display("Success!");
 
