@@ -37,7 +37,7 @@ fi
 >&2 echo "      Extracting result of OUT instructions"
 # This is the prefix for simulation output lines containing result of OUT instruction
 RAM_PATTERN="Memory OUT: "
-REG_PATTERN="REG : INFO : "
+REG_PATTERN="REGFile : OUT: "
 REG_V0_PATTERN="REG v0: OUT: "
 NOTHING=""
 # Use "grep" to look only for lines containing RAM_PATTERN
@@ -52,7 +52,7 @@ set +e
 grep "${REG_PATTERN}" test-inputs/3-output/MIPS_tb_${TESTCASE}.stdout > test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines
 set -e
 # Use "sed" to replace "Memory OUT: " with nothing
-sed -e "s/${REG_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg
+sed -e "s/${REG_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv
 
 # Use "grep" to look only for lines containing REG_PATTERN
 set +e
@@ -62,17 +62,17 @@ set -e
 sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.v0-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-v0
 
 >&2 echo "  4 - Comparing output"
-# Note the -w to ignore whitespace
-set +e
-diff -w test-inputs/4-reference/${TESTCASE}.ref test-inputs/3-output/MIPS_tb_${TESTCASE}.out-ram
-RESULT_RAM=$?
-set -e
+# Note the -w to ignore whitespace - RAM outputs comparison
+# set +e
+# diff -w test-inputs/4-reference/${TESTCASE}.ref test-inputs/3-output/MIPS_tb_${TESTCASE}.out-ram
+# RESULT_RAM=$?
+# set -e
 
 # Note the -w to ignore whitespace
-set +e
-diff -w test-inputs/4-reference/${TESTCASE}-reg.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg
-RESULT_REG=$?
-set -e
+# set +e
+# diff -w test-inputs/4-reference/${TESTCASE}-reg.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv
+# RESULT_REG=$?
+#set -e
 
 # Note the -w to ignore whitespace
 set +e
@@ -80,19 +80,19 @@ diff -w test-inputs/4-reference/${TESTCASE}-v0.ref test-inputs/3-output/MIPS_tb_
 RESULT_V0=$?
 set -e
 
-# Based on whether differences were found, either pass or fail
-if [[ "${RESULT_RAM}" -ne 0 ]] ; then
-   echo "      ${TESTCASE}, FAIL - RAM"
-else
-   echo "      ${TESTCASE}, PASS - RAM"
-fi
+# Based on whether differences were found, either pass or fail - RAM comparison
+# if [[ "${RESULT_RAM}" -ne 0 ]] ; then
+#   echo "      ${TESTCASE}, FAIL - RAM"
+# else
+#   echo "      ${TESTCASE}, PASS - RAM"
+# fi
 
 # Based on whether differences were found, either pass or fail
-if [[ "${RESULT_REG}" -ne 0 ]] ; then
-   echo "      ${TESTCASE}, FAIL - REG"
-else
-   echo "      ${TESTCASE}, PASS - REG"
-fi
+# if [[ "${RESULT_REG}" -ne 0 ]] ; then
+#    echo "      ${TESTCASE}, FAIL - REG"
+# else
+#    echo "      ${TESTCASE}, PASS - REG"
+# fi
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
