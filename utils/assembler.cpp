@@ -240,7 +240,7 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     configs.insert(std::pair<std::string, InstructionParseConfig>("SH", SH_CONFIG));
 
     std::regex sllRegex("SLL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
-    std::vector<int> sllShifts{11, 16, 6};
+    std::vector<int> sllShifts{11, 16, -6};
     InstructionParseConfig SLL_CONFIG(sllRegex, Opcodes::SLL, 0, sllShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SLL", SLL_CONFIG));
 
@@ -270,7 +270,7 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     configs.insert(std::pair<std::string, InstructionParseConfig>("SLTU", SLTU_CONFIG));
 
     std::regex sraRegex("SRA[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
-    std::vector<int> sraShifts{11, 16, 6};
+    std::vector<int> sraShifts{11, 16, -6};
     InstructionParseConfig SRA_CONFIG(sraRegex, Opcodes::SRA, 0b000011, sraShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SRA", SRA_CONFIG));
 
@@ -280,7 +280,7 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
     configs.insert(std::pair<std::string, InstructionParseConfig>("SRAV", SRAV_CONFIG));
 
     std::regex srlRegex("SRL[\\s?]+(\\S+),[\\s?]+(\\S+),[\\s?]+(\\S+)");
-    std::vector<int> srlShifts{11, 16, 6};
+    std::vector<int> srlShifts{11, 16, -6};
     InstructionParseConfig SRL_CONFIG(srlRegex, Opcodes::SRL, 0b000010, srlShifts);
     configs.insert(std::pair<std::string, InstructionParseConfig>("SRL", SRL_CONFIG));
 

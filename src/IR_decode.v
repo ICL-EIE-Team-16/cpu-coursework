@@ -139,6 +139,7 @@ always@(*) begin
             register_two = instruction[20:16];
             destination_reg = instruction[15:11];
             shift = instruction[10:6];
+            $display("shift decode: %h", shift);
             function_code = instruction[5:0];
             immediate = 32'd0;
             memory = 26'd0;
