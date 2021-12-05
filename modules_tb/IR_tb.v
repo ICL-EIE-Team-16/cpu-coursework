@@ -1,17 +1,11 @@
 module IR_tb (); 
 logic [31:0] instruction;
-logic r_type; //control signals that go high depending on the type of instruction  
-                     // mux control signals 
-logic j_type; // "
-logic i_type; // ” 
 logic [4:0] shift; // only relevant to r_type instructions  
-logic [5:0] function_code; // “ - goes to the alu  
 logic [4:0] destination_reg; //register addresses 5 
 logic [4:0] register_one; // ” 
 logic [4:0] register_two; // “  
 logic [31:0] immediate; // only relevant to I_type instructions – immediate value (sign extended for ALU) 
 logic [25:0] memory; // only relevant to j_type instructions – memory address 
-logic [5:0] opcode;
 logic fetch;
 logic exec_one;
 logic exec_two;
@@ -86,7 +80,7 @@ initial begin
     exec_two = 0;
     #1
     assert (shift == 5'b01010)
-    assert (destination_reg == 5'b10100)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b10101)
     assert (register_two == 5'b01110)
     assert (memory == 0)
@@ -104,7 +98,7 @@ initial begin
     exec_two = 1;
     #1
     assert (shift == 5'b01010)
-    assert (destination_reg == 5'b10100)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b10101)
     assert (register_two == 5'b01110)
     assert (memory == 0)
@@ -122,7 +116,7 @@ initial begin
     exec_two = 0;
     #1
     assert (shift == 5'b01010)
-    assert (destination_reg == 5'b10100)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b10101)
     assert (register_two == 5'b01110)
     assert (memory == 0)
@@ -209,7 +203,7 @@ initial begin
     $display("TESTCASE 2.1.0: ","instruction_code:", instruction_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
     $display ("TESTCASE 2.1.0 - SUCCESS");
 
-    //test case 2.1.2 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
+    //test case 2.1.2 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 -FAILED
     instruction = 32'b00000100001000011000000000000000; //i_type
     fetch = 0;
     exec_one = 1;
@@ -227,7 +221,7 @@ initial begin
     $display("TESTCASE 2.1.2: ", "instruction_code:", instruction_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
     $display ("TESTCASE 2.1.2 - SUCCESS");
 
-    //test case 2.1.3 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 
+    //test case 2.1.3 - Testing an I-type instruction and write enables is low for BGEZ in EXEC 1 and 2 - FAILED
     instruction = 32'b00000100001000011000000000000000; //i_type
     fetch = 0;
     exec_one = 0;
@@ -239,7 +233,6 @@ initial begin
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
-    assert (opcode == 6'b000001) //BGEZ
     assert (write_en == 0)
     assert (instruction_code == 7'd31)
 
@@ -419,7 +412,7 @@ initial begin
     exec_two = 1;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'b10001)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
@@ -437,7 +430,7 @@ initial begin
     exec_two = 0;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'b10001)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
@@ -461,7 +454,7 @@ initial begin
     exec_two = 1;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'b10000)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
@@ -479,12 +472,11 @@ initial begin
     exec_two = 0;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'b10000)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'b00001)
     assert (register_two == 5'd0)
     assert (memory == 26'd0)
     assert (immediate == 32'b11111111111111111000000000000000) // sign extend by 1 
-    assert (opcode == 6'b000001) //BLTZAL
     assert (write_en == 0)
     assert (instruction_code == 7'd36)
 
@@ -670,7 +662,7 @@ initial begin
     exec_two = 1;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'd0)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'd0)
     assert (register_two == 5'd0)
     assert (memory == 26'b10101110111110011000001100)
@@ -713,7 +705,7 @@ initial begin
     exec_two = 0;
     #1
     assert (shift == 5'd0)
-    assert (destination_reg == 5'd0)
+    assert (destination_reg == 5'd31)
     assert (register_one == 5'd0)
     assert (register_two == 5'd0)
     assert (memory == 26'b10101110111110011000001100)
@@ -802,7 +794,7 @@ initial begin
     $display("TESTCASE exec1.2: ","instruction_code:", instruction_code, ", shift = ", shift, ", destination_reg = ", destination_reg, ", register_two = ", register_two, ", register_one = ", register_one, ", memory = ", memory, ", immediate = ", immediate, " write_en = ", write_en);
     
     //exec2
-    instruction = 32'b00000000001000000000000000001000; //r_type
+    instruction = 32'b00000000001000001111000000001000; //r_type
     fetch = 0;
     exec_one = 0;
     exec_two = 1;
