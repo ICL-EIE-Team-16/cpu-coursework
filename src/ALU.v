@@ -4,12 +4,11 @@ module ALU(
     input logic[5:0] sa,
     input logic fetch, exec1, exec2, clk,
     output logic zero, positive, negative,
-    output logic[31:0] r, hi, lo, hi_next, lo_next
+    output logic[31:0] r, hi, lo
 );
 
 logic[63:0] mult_intermediate;
-/*logic[31:0] hi_next;
-logic[31:0] lo_next;*/
+logic[31:0] hi_next, lo_next;
 
 typedef enum logic[6:0]{
     ADD = 7'd1,
@@ -141,14 +140,6 @@ always @(*) begin
         hi_next = a%b;
     end
 
-    /*if(r[31] == 1) begin
-        positive = 0;
-        zero = 0;
-        negative = 1;
-    end
-        //this will fail in cases where r is positive and larger than 16^3; will have to better distinguish positive from negative results
-        //can't use r < 0 as condition as it will never be true*/
-
     if(r > 0) begin
         positive = 1;
         zero = 0;
@@ -166,37 +157,6 @@ always @(*) begin
         negative = 1;
         zero = 0;
     end
-
-
-    /*if(a == b && op == SUBU) begin
-        positive = 0;
-        negative = 0;
-        zero = 1;
-    end*/
-
-    /*if(a < b && op == SUBU) begin
-        positive = 0;
-        negative = 1;
-        zero = 0;
-    end*/
-
-   /*if(a > b && op == SUBU) begin
-        positive = 1;
-        negative = 0;
-        zero = 0;
-    end
-
-    if(a|b != 0 && (op == ADDU || op == ADDIU)) begin
-        positive = 1;
-        negative = 0;
-        zero = 0;
-    end
-
-    else if(a|b == 0 && (op == ADDU || op == ADDIU)) begin
-        positive = 0;
-        negative = 0;
-        zero = 1;
-    end*/
 end
 
 always_ff @(posedge clk) begin

@@ -1,12 +1,11 @@
 module alu_tb();
 
-logic[31:0] a, b, r;
+logic[31:0] a, b, r, hi, lo;
 logic zero, positive, negative, fetch, exec1, exec2, clk;
 logic[5:0] sa;
 logic[6:0] op;
 logic[31:0] r_expected;
 logic[31:0] r_expected2;
-logic[31:0] hi, lo, hi_next, lo_next;
 logic[63:0] mult_intermediate;
 
 
@@ -147,7 +146,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -156,7 +155,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     
     assign op = DIVU;
     
@@ -167,7 +166,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -176,7 +175,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -185,7 +184,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     
 
     $display("Success!");
@@ -270,7 +269,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -279,7 +278,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     
     assign op = DIVU;
 
@@ -290,7 +289,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -299,7 +298,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -308,7 +307,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     
 
     $display("Success!");
@@ -395,7 +394,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -404,7 +403,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     
     assign op = DIVU;
 
@@ -415,7 +414,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -424,7 +423,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -433,7 +432,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     
 
     $display("Success!");
@@ -520,7 +519,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -529,7 +528,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     
     assign op = DIVU;
 
@@ -540,7 +539,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -549,7 +548,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -558,7 +557,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     
     $display("Success!");
 
@@ -585,7 +584,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -594,7 +593,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
     
     assign op = DIVU;
 
@@ -605,7 +604,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 1;
     assign exec2 = 0;
@@ -614,7 +613,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
     assign fetch = 0;
     assign exec1 = 0;
     assign exec2 = 1;
@@ -623,7 +622,7 @@ initial begin
     #1
     assign clk = 1;
     #1
-    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d, hi_next = %d, lo_next = %d", hi, lo, hi_next, lo_next);
+    assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
 
     $display("Success!");
 
@@ -649,9 +648,7 @@ ALU dut(
     .exec2(exec2),
     .clk(clk),
     .hi(hi),
-    .lo(lo),
-    .hi_next(hi_next),
-    .lo_next(lo_next)
+    .lo(lo)
 );
 
 endmodule
