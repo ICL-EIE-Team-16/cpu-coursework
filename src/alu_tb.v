@@ -6,6 +6,7 @@ logic[5:0] sa;
 logic[6:0] op;
 logic[31:0] r_expected;
 logic[31:0] r_expected2;
+logic[31:0] lo_expected, hi_expected;
 logic[63:0] mult_intermediate, mult_intermediate_signed;
 logic signed[31:0] a_signed, b_signed, hi_signed, lo_signed;
 
@@ -103,7 +104,10 @@ initial begin
 
     assign op = SLTU;
     #1
-    assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    if(a<b)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
 
     assign op = AND;
     #1
@@ -189,6 +193,36 @@ initial begin
     assign clk = 1;
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
+
+    assign op = MULT;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
+    
+    assign op = DIV;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
+    #1
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
+    #1
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
     
 
     $display("Success!");
@@ -229,7 +263,10 @@ initial begin
 
     assign op = SLTU;
     #1
-    assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    if(a<b)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
 
     assign op = AND;
     #1
@@ -315,6 +352,36 @@ initial begin
     assign clk = 1;
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
+
+    assign op = MULT;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
+    
+    assign op = DIV;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
+    #1
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
+    #1
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
     
 
     $display("Success!");
@@ -355,7 +422,10 @@ initial begin
 
     assign op = SLTU;
     #1
-    assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    if(a<b)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
 
     assign op = AND;
     assign r_expected = a&b;
@@ -443,6 +513,36 @@ initial begin
     assign clk = 1;
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
+
+    assign op = MULT;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
+    
+    assign op = DIV;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
+    #1
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
+    #1
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
     
 
     $display("Success!");
@@ -483,7 +583,11 @@ initial begin
 
     assign op = SLTU;
     #1
-    assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    if(a<b)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+        
 
     assign op = AND;
     assign r_expected2 = a&&b;
@@ -571,8 +675,39 @@ initial begin
     assign clk = 1;
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
+
+    assign op = MULT;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
+    
+    assign op = DIV;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
+    #1
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
+    #1
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
     
     $display("Success!");
+
 
     assign a = 32'd6000003;
     assign b = 32'd2000000;
@@ -640,10 +775,41 @@ initial begin
     #1
     assert(hi == a%b && lo == a/b) else $display("divu error, hi = %d, lo = %d", hi, lo);
 
+    assign op = MULT;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign lo_signed = lo;
+    assign hi_signed = hi;
+    #1
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
+    
+    assign op = DIV;
+
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
+    #1
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
+    #1
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+
+
     $display("Success!");
 
     assign a = -32'd45;
-    assign b = -32'd5;
+    assign b = 32'd5;
     assign a_signed = a;
     assign b_signed = b;
     assign mult_intermediate_signed = a_signed * b_signed;
@@ -652,17 +818,6 @@ initial begin
 
     assign op = MULT;
 
-    assign fetch = 1;
-    assign exec1 = 0;
-    assign exec2 = 0;
-    assign clk = 0;
-    #1
-    assign clk = 1;
-    #1
-    assign fetch = 0;
-    assign exec1 = 1;
-    assign exec2 = 0;
-    #1
     assign clk = 0;
     #1
     assign clk = 1;
@@ -670,62 +825,27 @@ initial begin
     assign lo_signed = lo;
     assign hi_signed = hi;
     #1
-    $display("hi = %d, lo = %d, a_signed = %d, b_signed = %d", hi, lo, a_signed, b_signed);
-    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
-    assign fetch = 0;
-    assign exec1 = 0;
-    assign exec2 = 1;
-    #1
-    assign clk = 0;
-    #1
-    assign clk = 1;
-    #1
-    assign lo_signed = lo;
-    assign hi_signed = hi;
-    #1
-    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
-    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
+    assert(hi == mult_intermediate_signed[63:32] && lo == mult_intermediate_signed[31:0]) else $display("mult error, hi = %d, lo = %d", hi, lo);
+
     
     assign op = DIV;
 
-    assign fetch = 1;
-    assign exec1 = 0;
-    assign exec2 = 0;
     assign clk = 0;
     #1
     assign clk = 1;
     #1
-    assign lo_signed = lo;
-    assign hi_signed = hi;
+    assign hi_expected = a_signed % b_signed;
+    assign lo_expected = a_signed / b_signed;
     #1
-    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
-    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
-    assign fetch = 0;
-    assign exec1 = 1;
-    assign exec2 = 0;
+    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("div error, hi = %d, lo = %d, hi_expected=%d, lo_expected = %d", hi, lo, hi_expected, lo_expected);
+
+    assign op = SLT;
     #1
-    assign clk = 0;
-    #1
-    assign clk = 1;
-    #1
-    assign lo_signed = lo;
-    assign hi_signed = hi;
-    #1
-    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
-    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
-    assign fetch = 0;
-    assign exec1 = 0;
-    assign exec2 = 1;
-    #1
-    assign clk = 0;
-    #1
-    assign clk = 1;
-    #1
-    assign lo_signed = lo;
-    assign hi_signed = hi;
-    #1
-    $display("hi = %d, lo = %d, hi_signed = %d, lo_signed = %d",hi, lo, hi_signed, lo_signed);
-    assert(hi == a_signed%b_signed && lo == a_signed/b_signed) else $display("divu error, hi = %d, lo = %d", hi, lo);
+    if(a_signed<b_signed)
+        assert(r==32'h0001) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+    else
+        assert(r==32'h0000) else $fatal(1, "Slt error, values: a=%d, b=%d, r=%d", a, b, r);
+
 
     $display("Success!");
 
