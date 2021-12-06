@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 #ifndef CPU_CW_INSTRUCTION_PARSE_CONFIG_H
 #define CPU_CW_INSTRUCTION_PARSE_CONFIG_H
 class InstructionParseConfig {

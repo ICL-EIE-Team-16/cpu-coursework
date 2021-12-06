@@ -1,16 +1,11 @@
 #include <iostream>
 #include <regex>
 #include <string>
+#include <vector>
 #include "opcodes.h"
 #include "registers.h"
+#include "utils.h"
 #include "instruction-parse-config.h"
-
-
-std::string trim(std::string str) {
-    str.erase(0, str.find_first_not_of(' '));
-    str.erase(str.find_last_not_of(' ') + 1);
-    return str;
-}
 
 std::string decimal_to_8_char_hex(unsigned int num) {
     std::string result;
