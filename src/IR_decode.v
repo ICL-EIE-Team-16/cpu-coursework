@@ -3,13 +3,13 @@ module IR_decode(
 input logic clk,
 input logic [31:0] current_instruction, 
 input logic fetch,
-input logic exec_one,
-input logic exec_two,
+input logic exec1,
+input logic exec2,
 
 output logic [4:0] shift, // only relevant to r_type instructions  
 output logic [4:0] destination_reg, //register addresses 5 
-output logic [4:0] register_one, // ” 
-output logic [4:0] register_two, // “  
+output logic [4:0] reg_a_idx, // “  
+output logic [4:0] reg_b_idx, // ” 
 output logic [31:0] immediate, // only relevant to I_type instructions – immediate value (sign extended for ALU so 32 bits long) 
 output logic [25:0] memory, // only relevant to j_type instructions – memory address 
 output logic write_en, // for register files 
@@ -88,7 +88,7 @@ typedef enum logic [6:0] {
 logic a,b,c;
 //Instruction register saving behaviour
 always_ff @(posedge clk) begin
-    if (exec_one)
+    if (exec1)
         saved_instruction <= current_instruction;
 
     else
@@ -96,15 +96,15 @@ always_ff @(posedge clk) begin
 end
 
  always @(*) begin
-    if (exec_one)
+    if (exec1)
          instruction = current_instruction;
-    else if (exec_two)
+    else if (exec2)
          instruction = saved_instruction;
 end
 
 //Type decode
 always@(*) begin
-    if ((exec_one == 1)||(exec_two==1)) begin
+    if ((exec1 == 1)||(exec2==1)) begin
         opcode = instruction[31:26];
 
         if (opcode == 6'b000000) begin
@@ -132,11 +132,11 @@ always@(*) begin
 end
 
 always@(*) begin
-    if ((exec_one == 1)||(exec_two ==1)) begin
+    if ((exec1 == 1)||(exec2 ==1)) begin
         if (r_type == 1) begin
             //assign groups of bits of instruction word to each field.
-            register_one = instruction[25:21];
-            register_two = instruction[20:16];
+            reg_b_idx = instruction[25:21];
+            reg_a_idx = instruction[20:16];
             destination_reg = instruction[15:11];
             shift = instruction[10:6];
             function_code = instruction[5:0];
@@ -146,8 +146,8 @@ always@(*) begin
         end
         else if (j_type == 1) begin
             //assign groups of bits of instruction word to each field.
-            register_one = 5'd0;
-            register_two = 5'd0;
+            reg_b_idx = 5'd0;
+            reg_a_idx = 5'd0;
             destination_reg = 5'd0;
             shift = 0;
             function_code = 6'd0;
@@ -156,8 +156,8 @@ always@(*) begin
         end
         else if (i_type == 1) begin
             //assign groups of bits of instruction word to each field.
-            register_one = instruction[25:21];
-            register_two = 5'd0;
+            reg_b_idx = instruction[25:21];
+            reg_a_idx = 5'd0;
             destination_reg = instruction[20:16];
             shift = 0;
             function_code = 6'd0;
@@ -177,7 +177,7 @@ end
 always@(*) begin //make sure enables go high in the right cycle
     if (fetch == 0) begin
         // determining write enables - R Type
-        if ((exec_one == 1)&&(exec_two == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
+        if ((exec1 == 1)&&(exec2 == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
             if ((r_type==1)&&(function_code!=6'b001000)) begin
                 write_en = 1;
             end
@@ -187,7 +187,7 @@ always@(*) begin //make sure enables go high in the right cycle
             end
         end
 
-        else if ((exec_one == 0)&&(exec_two == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
+        else if ((exec1 == 0)&&(exec2 == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
             if ((r_type==1)&&(function_code==6'b001001)) begin
                 write_en =1;
             end
@@ -198,25 +198,25 @@ always@(*) begin //make sure enables go high in the right cycle
 
         //determining write enables - I Type
                                         //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-        if ((exec_one==1)&&(i_type==1)&&((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011))) begin
+        if ((exec1)&&(i_type==1)&&((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011))) begin
             write_en = 1;
         end
-        else if ((exec_one==1)&&(i_type==1)&&((opcode!=6'b001000)||(opcode!=6'b001001)||(opcode!=6'b001100)||(opcode!=6'b001101)||(opcode!=6'b001110)||(opcode!=6'b001010)||(opcode!=6'b001011))) begin
+        else if ((exec1)&&(i_type==1)&&((opcode!=6'b001000)||(opcode!=6'b001001)||(opcode!=6'b001100)||(opcode!=6'b001101)||(opcode!=6'b001110)||(opcode!=6'b001010)||(opcode!=6'b001011))) begin
             write_en = 0;
         end                             //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
-        if ((exec_two==1)&&(i_type==1)&&((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110))) begin
+        if ((exec2)&&(i_type==1)&&((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110))) begin
             write_en = 1;
         end
-        else if ((exec_two==1)&&(i_type==1)&&((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001)||(opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)||(opcode != 6'b100000)||(opcode != 6'b100100)||(opcode != 6'b100001)||(opcode != 6'b100101)||(opcode != 6'b001111)||(opcode != 6'b100011)||(opcode != 6'b100010)||(opcode != 6'b100110))) begin
+        else if ((exec2==1)&&(i_type==1)&&((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001)||(opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)||(opcode != 6'b100000)||(opcode != 6'b100100)||(opcode != 6'b100001)||(opcode != 6'b100101)||(opcode != 6'b001111)||(opcode != 6'b100011)||(opcode != 6'b100010)||(opcode != 6'b100110))) begin
             write_en = 0;
         end
 
 
         // determining write enables - J Type
-            if((exec_two==1)&&(j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
+            if((exec2==1)&&(j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
                 write_en = 0;
             end
-            else if ((exec_two==1)&&(j_type==1)&&(opcode==6'b000011))begin
+            else if ((exec2==1)&&(j_type==1)&&(opcode==6'b000011))begin
                 write_en = 1;
             end
     end
