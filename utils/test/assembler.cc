@@ -708,6 +708,7 @@ TEST(Assembler, SLLToHexAssembly) {
     EXPECT_EQ("0012a900", convert_instruction_to_hex("SLL $s5,   $s2, 0x4", configs));
     EXPECT_EQ("00148980", convert_instruction_to_hex("SLL $s1,  $s4,    6", configs));
     EXPECT_EQ("0015b8c0", convert_instruction_to_hex("SLL $s7,  $s5,     0x3", configs));
+    EXPECT_EQ("00109500", convert_instruction_to_hex("SLL $s2, $s0, 0x14", configs));
 }
 
 TEST(Assembler, SLLVToHexAssembly) {

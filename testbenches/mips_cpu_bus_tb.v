@@ -17,6 +17,8 @@ module mips_cpu_bus_tb;
     logic[31:0] readdata;
     logic[31:0] register_v0;
     logic[3:0] byteenable;
+    logic[31:0] num;
+    logic[4:0] sa;
 
     simple_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
@@ -24,6 +26,10 @@ module mips_cpu_bus_tb;
     // Generate clock
     initial begin
         clk = 0;
+        num = 32'h80000000;
+        sa = 5'b10100;
+        $display("num: %b: ", num);
+        $display("shifted num: %b: ", num >>> (sa));
 
         repeat (TIMEOUT_CYCLES) begin
             #10;
