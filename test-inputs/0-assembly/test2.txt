@@ -1,0 +1,10 @@
+LW $v1, 24($zero)
+LW $a0, 28($zero)
+AND $a1, $a0, $v1
+OR $a2,$a0,$v1
+J 0x00
+#Data
+0x14: 0x0A
+0x1C: 0x0B
+
+
