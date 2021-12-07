@@ -1,7 +1,7 @@
 module ALU(
     input logic[31:0] a, b,
     input logic[6:0] op,
-    input logic[5:0] sa,
+    input logic[4:0] sa,
     input logic fetch, exec1, exec2, clk,
     output logic zero, positive, negative,
     output logic[31:0] r
