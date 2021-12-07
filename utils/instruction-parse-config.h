@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <regex>
 
 #ifndef CPU_CW_INSTRUCTION_PARSE_CONFIG_H
 #define CPU_CW_INSTRUCTION_PARSE_CONFIG_H

@@ -4,6 +4,11 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 
 ## Assembler
 Addresses of all instructions assembled by the assembler are automatically increased bt offset of 0xBFC00000.
+- implement no op in the assembler
+- less verbose output
+
+## Possible problems
+- problematic output from simple memory and problems with timing of components
 
 ## Instructions
 

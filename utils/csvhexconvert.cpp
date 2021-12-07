@@ -2,7 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <regex>
-#include "../utils.h"
+#include "utils.h"
 
 std::string convertHexTo8CharHex(std::string hexNumber) {
     std::string result = trim(hexNumber);
