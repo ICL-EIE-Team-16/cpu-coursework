@@ -2,7 +2,7 @@ LW $3, 20($zero)
 ADDI $a0, $zero, 0x14
 SW $a0, 20($zero)
 SRA $a1,$a0, 0x02
-J 0x00
+JR $zero
 
 #Data
 
