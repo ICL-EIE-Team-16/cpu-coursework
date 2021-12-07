@@ -89,11 +89,7 @@ module mips_cpu_bus#(
 
 //MUX @ ALU B input
     always_comb begin
-        if (exec1 && (instruction_code == LW || instruction_code == SW)) begin
-            $display("alu B set to immediate: %h", immediate);
-            alu_b = immediate;
-        end
-        else if (exec2 && ((instruction_code == BGEZAL) || (instruction_code == BLTZAL) || (instruction_code == JAL) || (instruction_code == JALR)))
+        if (exec2 && ((instruction_code == BGEZAL) || (instruction_code == BLTZAL) || (instruction_code == JAL) || (instruction_code == JALR)))
             alu_b = 8;
         else
             alu_b = reg_b_out;
@@ -109,6 +105,9 @@ module mips_cpu_bus#(
             alu_a = immediate;
         else if (instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
             alu_a = immediate;
+        //LW SW bodge
+        else if (instruction_code == SW || instruction_code == LW )
+                    alu_a = immediate;
         else
             alu_a = reg_a_out;
     end
