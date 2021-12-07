@@ -1,14 +1,14 @@
 module ALU(
     input logic[31:0] a, b,
     input logic[6:0] op,
-    input logic[5:0] sa,
+    input logic[4:0] sa,
     input logic fetch, exec1, exec2, clk,
     output logic zero, positive, negative,
-    output logic[31:0] r, hi, lo
+    output logic[31:0] r
 );
 
 logic[63:0] mult_intermediate;
-logic[31:0] hi_next, lo_next;
+logic[31:0] hi_next, lo_next, hi, lo;
 logic signed[31:0] a_signed, b_signed;
 
 assign a_signed = a;
@@ -176,6 +176,12 @@ always @(*) begin
         r = lo;
     end
 
+
+    //Memory fix
+    if(op == LW || op == SW) begin
+            r = a+b;
+    end
+
     if (op == BGEZ || BGEZAL || BGTZ || BLEZ || BLTZ || BLTZAL) begin
         if(a_signed < 0) begin
             zero = 0;
@@ -211,6 +217,7 @@ always @(*) begin
             negative = 1;
         end 
     end
+
 end
 
 always_ff @(posedge clk) begin
@@ -231,13 +238,15 @@ always_ff @(posedge clk) begin
         lo <= lo_next;
         hi <= hi_next;
     end
-    if(op == MTHI)begin
-        hi <= hi_next;
-    end
-    if(op == MTLO)begin
-        lo <= lo_next;
-    end
 
+    if(exec1) begin
+        if(op == MTHI)begin
+            hi <= a;
+        end
+        if(op == MTLO)begin
+            lo <= a;
+        end
+    end
 end
 
 

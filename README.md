@@ -2,6 +2,14 @@
 
 This repository contains code for the CPU coursework for the second-year EIE module Instruction Architectures and Compilers.
 
+## Assembler
+Addresses of all instructions assembled by the assembler are automatically increased bt offset of 0xBFC00000.
+- implement no op in the assembler
+- less verbose output
+
+## Possible problems
+- problematic output from simple memory and problems with timing of components
+
 ## Instructions
 
 ### ADDU - Add Unsigned Word
@@ -15,6 +23,10 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 ### SW - Store Word
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
+
+## Before submission check
+- src/mipsregisterfile.v:30: warning: System task ($display) cannot be synthesized in an always_ff process. - remove all $display statements before the submission progress
+- can the MIPS address offset be negative?
 
 ## Authors
 - Michal Palic
