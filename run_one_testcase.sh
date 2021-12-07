@@ -16,7 +16,7 @@ iverilog -g 2012 \
    -s mips_cpu_bus_tb \
    -Pmips_cpu_bus_tb.RAM_INIT_FILE=\"test-inputs/1-binary/${TESTCASE}.hex.txt\" \
    -o test-inputs/2-testcases/MIPS_tb_${TESTCASE} \
-   src/*.v src/*/*.v testbenches/*.v
+   src/*.v testbenches/*.v
 
 >&2 echo "  3 - Running test-bench"
 # Run the simulator, and capture all output to a file
