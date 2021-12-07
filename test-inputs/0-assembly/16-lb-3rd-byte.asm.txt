@@ -1,6 +1,6 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
-LW $v0, 0x12($s1)
+LB $v0, 0x12($s1)
 JR $zero
 # Data
 0x10: 0x00FFEEFF

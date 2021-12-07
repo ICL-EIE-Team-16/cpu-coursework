@@ -106,7 +106,7 @@ module mips_cpu_bus#(
         else if (instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
             alu_a = immediate;
         //LW SW bodge
-        else if (instruction_code == SW || instruction_code == LW )
+        else if (instruction_code == SW || instruction_code == LW  || instruction_code == LB)
                     alu_a = immediate;
         else
             alu_a = reg_a_out;
