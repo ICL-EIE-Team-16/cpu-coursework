@@ -73,6 +73,7 @@ module ALU(
 
     always @(*) begin
         if (op == SW || op == LW)
+            $display("executing the memory instruction r=%h, a=%h, b=%h", r, a, b);
             r = a+b;
 
         if (op == ADDU) begin

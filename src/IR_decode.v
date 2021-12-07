@@ -276,7 +276,10 @@ always@(*) begin
     else if (opcode==6'b100001)  instruction_code = LH;
     else if (opcode==6'b100101) instruction_code = LHU;
     else if (opcode==6'b001111) instruction_code = LUI;
-    else if (opcode==6'b100011) instruction_code = LW;
+    else if (opcode==6'b100011) begin
+        instruction_code = LW;
+        $display("current instruction is LW with immediate: %h", immediate);
+    end
     else if (opcode==6'b100010) instruction_code = LWL;
     else if (opcode==6'b100110) instruction_code = LWR;
     else if (opcode==6'b101000) instruction_code = SB;

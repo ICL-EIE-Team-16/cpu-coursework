@@ -23,6 +23,11 @@ module mips_cpu_bus_tb;
     simple_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
 
+    initial begin
+        $dumpfile("waves.vcd");
+        $dumpvars(3, mips_cpu_bus_tb);
+    end
+
     // Generate clock
     initial begin
         clk = 0;
@@ -49,8 +54,6 @@ module mips_cpu_bus_tb;
         reset = 1;
         #20;
         reset = 0;
-        #1000;
-        $finish;
     end
 
     always @(negedge active) begin

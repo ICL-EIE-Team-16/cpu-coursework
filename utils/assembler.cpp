@@ -358,6 +358,7 @@ std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string>
 
     std::regex dataLineRegex("0[xX]([\\da-fA-F]+):\\s*(\\S*)");
 
+    int instrAddress = 0;
     for (int i = 0; i < linesWithoutComments.size(); i++) {
         std::string line = linesWithoutComments[i];
         std::smatch dataMatches;
@@ -368,7 +369,8 @@ std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string>
             std::string data = decimal_to_8_char_hex(convert_immediate_const_to_int(dataMatches[2]));
             result.insert(std::pair<int, std::string>(address, data));
         } else {
-            result.insert(std::pair<int, std::string>(i, convert_instruction_to_hex(line, configs)));
+            result.insert(std::pair<int, std::string>(instrAddress, convert_instruction_to_hex(line, configs)));
+            instrAddress += 4;
         }
     }
 
@@ -390,10 +392,10 @@ std::string convert_ram_content_to_string(std::map<int, std::string>& ramContent
 
     for (it = ramContent.begin(); it != ramContent.end(); it++)
     {
-        if (it->first - 1 == lastAddress) {
+        if (it->first - 4 == lastAddress) {
             result += it->second + "\n";
         } else {
-            result += generate_n_lines_of_zeroes(it->first - lastAddress - 1);
+            result += generate_n_lines_of_zeroes((it->first - lastAddress - 1) / 4);
             result += it->second + "\n";
         }
         lastAddress = it->first;
