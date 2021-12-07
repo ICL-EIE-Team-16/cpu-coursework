@@ -85,11 +85,11 @@ always @(*) begin
     end
         
     if(op == SRA) begin
-        r = a>>>(sa);
+        r = a_signed>>>(sa);
     end
 
     if(op == SRAV) begin
-        r = a>>>(b[4:0]);
+        r = a_signed>>>(b[4:0]);
     end
 
     if(op == SLTU || op == SLTIU) begin
@@ -149,12 +149,6 @@ always @(*) begin
         hi_next = a%b;
     end
 
-    if(r > 0) begin
-        positive = 1;
-        zero = 0;
-        negative = 0;
-    end
-
     if(op == MULT) begin
         mult_intermediate = a_signed*b_signed;
         lo_next = mult_intermediate[31:0];
@@ -166,16 +160,56 @@ always @(*) begin
         hi_next = a_signed%b_signed;
     end
 
-    if(r == 32'h0000) begin
-        positive = 0;
-        zero = 1;
-        negative = 0;
+    if(op == MTHI) begin
+        hi_next = a;
     end
 
-    if(a < b && op == SUBU) begin
-        positive = 0;
-        negative = 1;
-        zero = 0;
+    if(op == MTLO) begin
+        lo_next = a;
+    end
+
+    if(op == MFHI) begin
+        r = hi;
+    end
+
+    if(op == MFLO) begin
+        r = lo;
+    end
+
+    if (op == BGEZ || BGEZAL || BGTZ || BLEZ || BLTZ || BLTZAL) begin
+        if(a_signed < 0) begin
+            zero = 0;
+            positive = 0;
+            negative = 1;
+        end
+        else if(a_signed == 0)begin
+            zero = 1;
+            positive = 0;
+            negative = 0;
+        end
+        else if(a_signed > 0)begin
+            zero = 0;
+            positive = 1;
+            negative = 0;
+        end
+    end
+
+    if(op == BEQ || op == BNE)begin
+        if(a_signed == b_signed)begin
+            zero = 1;
+            positive = 0;
+            negative = 0;
+        end
+        else if(a_signed > b_signed)begin
+            zero = 0;
+            positive = 1;
+            negative = 0;
+        end
+        else if(a_signed < b_signed)begin
+            zero = 0;
+            positive = 0;
+            negative = 1;
+        end 
     end
 end
 
@@ -196,6 +230,12 @@ always_ff @(posedge clk) begin
     if(op == DIV)begin
         lo <= lo_next;
         hi <= hi_next;
+    end
+    if(op == MTHI)begin
+        hi <= hi_next;
+    end
+    if(op == MTLO)begin
+        lo <= lo_next;
     end
 
 end
