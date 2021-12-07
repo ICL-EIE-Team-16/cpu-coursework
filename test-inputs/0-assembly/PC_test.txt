@@ -1,0 +1,120 @@
+J 4
+
+4: LW $4, 1000($zero)
+# Load contents of address 1000 (10) into register 4
+
+8:LW $5, 1004($zero)
+# Load contents of address 1004 (5) into register 5
+
+12: LW $6, 1000($zero)
+# Load contents of address 1000 (10) into register 6
+
+16: BNE $4, $6, 5
+#Branch if not equal register 4 and register 6
+#Shouldn't branch as $4 = $6
+
+20: ADDI $2, $zero, 0
+#No-op
+
+24: BNE $4, $5, 5
+#Should branch to PC = 44 as $4 =/= $5
+
+28: ADDI $2, $zero, 1
+#instruction executed in the branch delay slot
+
+32: 0
+36: 0
+40: 0
+
+44: BEQ $4, $5, 5
+#Branch if equal register 4 and register 5
+#Shouldn't branch as $4 =/= $5
+
+48: ADDI $2, $zero, 0
+#No-op
+
+52: BEQ $4, $6, 5
+#Should branch to PC = 72 as $4 = $5
+
+56: ADDI $2, $2, 1
+#instruction executed in the branch delay slot
+
+60:
+64:
+68:
+
+72: BLEZ $4, 5
+#Branch if register 4 is less than or equal to 0
+#shouldn't branch as $r4 = 10
+
+76: ADDI $2, $zero, 0
+#No-op
+
+80: SUB $3, $5, $4
+#register 3 = register 5 - register 4 = 5 - 10 = -5
+
+84: BLEZ $3, 5
+#Should branch to PC = 104 as $3 <= 0
+
+88: ADDI $2, $2, 1
+#instruction executed in the branch delay slot
+
+92:
+96:
+100:
+
+104: BGEZAL $3, 5
+#Branch if register 4 is greater than or equal to 0
+#shouldn't branch as $r3 = -5
+
+108: ADDI $2, $zero, 0
+#No-op
+
+112: BGEZAL $4, 10
+#Should branch to PC = 152 as $4 >= 0
+#Should store address 120 in $ra
+
+116: ADDI $2, $2, 1
+#instruction executed in the branch delay slot
+
+120: JAL, 140
+#Should store address 128 in $ra
+
+124: ADDI $2, $2, 1
+
+128: J, 0
+#Halt the CPU
+
+132: 140: ADDI $2, $2, 1
+
+136:
+
+140: ADDI $2, $2, 1
+
+144: JR $31
+#jump to return address. This should be 128 from previous branch instruction executed
+
+148: ADDI $2, $2, 1
+
+152: ADDI $2, $2, 1
+
+156: JR $31
+#jump to return address. This should be 120 from previous branch instruction executed
+
+160: ADDI $2, $2, 1
+
+#Data
+
+0x3E8: 0xA
+
+0x3EC: 0x5
+
+#test jump 
+#test bne
+#test beq
+#test blez
+#test bgezal
+#test jr (with link addresses)
+#test jal
+#check branch delay slot instruction are executed
+
