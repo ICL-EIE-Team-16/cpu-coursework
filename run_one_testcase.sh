@@ -69,10 +69,13 @@ sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCAS
 # set -e
 
 # Note the -w to ignore whitespace
-# set +e
-# diff -w test-inputs/4-reference/${TESTCASE}-reg.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv
-# RESULT_REG=$?
-#set -e
+set +e
+tail -n +1 test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg-content.csv
+tail -n +1 test-inputs/4-reference/${TESTCASE}-reg.ref.csv > test-inputs/4-reference/${TESTCASE}-reg-content.ref.csv
+bin/csvhexconvert <test-inputs/4-reference/${TESTCASE}-reg-content.ref.csv >test-inputs/4-reference/${TESTCASE}-reg-content-converted.ref.csv
+diff -w test-inputs/4-reference/${TESTCASE}-reg-content-converted.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg-content.csv
+RESULT_REG=$?
+set -e
 
 # Note the -w to ignore whitespace
 set +e
@@ -88,11 +91,11 @@ set -e
 # fi
 
 # Based on whether differences were found, either pass or fail
-# if [[ "${RESULT_REG}" -ne 0 ]] ; then
-#    echo "      ${TESTCASE}, FAIL - REG"
-# else
-#    echo "      ${TESTCASE}, PASS - REG"
-# fi
+if [[ "${RESULT_REG}" -ne 0 ]] ; then
+    echo "      ${TESTCASE}, FAIL - REG"
+else
+   echo "      ${TESTCASE}, PASS - REG"
+fi
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
