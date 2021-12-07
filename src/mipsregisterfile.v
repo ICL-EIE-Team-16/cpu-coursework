@@ -29,6 +29,7 @@ module mipsregisterfile#(
     end
 
     always_ff @(posedge clk) begin
+
         if (DISP_VALS_TO_OUT == 1)
             $display("REGFile : OUT: %h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h",
                 regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7], regs[8], regs[9], regs[10], regs[11], regs[12],

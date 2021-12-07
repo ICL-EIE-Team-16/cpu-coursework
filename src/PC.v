@@ -7,7 +7,7 @@ module PC(
     input logic[31:0] register_data,
     input logic zero, positive, negative,
     output logic[31:0] address,
-    output logic halt
+    output logic pc_halt
 );
     logic[31:0] next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
     logic[31:0] jump_address, jump_address_reg;
@@ -69,10 +69,10 @@ module PC(
         end
 
         if (address == 0) begin
-            halt = 1;
+            pc_halt = 1;
         end
         else
-            halt = 0;
+            pc_halt = 0;
 
     end
 
@@ -82,7 +82,7 @@ module PC(
         end
         else begin
             if (fetch) begin
-                if (halt) begin
+                if (pc_halt) begin
                     address <= 0;
                 end
                 else if (jump_flag) begin

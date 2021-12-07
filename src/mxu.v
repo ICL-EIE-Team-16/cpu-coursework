@@ -5,6 +5,7 @@
 // Created : 03. Dec 2021 12:14
 //-------------------------------------------------------------------
 module mxu (
+input logic waitrequest,
 input logic[31:0] regdatain,
 input logic[31:0] memin,
 input logic fetch,
@@ -18,7 +19,8 @@ output logic[31:0] dataout,
 output logic [31:0] memout,
 output logic read,
 output logic write,
-output logic[3:0] byteenable
+output logic[3:0] byteenable,
+output logic mem_halt
 );
 
 typedef enum logic[6:0] {
@@ -71,6 +73,15 @@ always_comb begin
     end
     else
         write = 0;
+end
+
+
+//Memhalt signal
+always_comb begin
+    if ((read || write)&& waitrequest)
+        mem_halt = 1;
+    else
+        mem_halt = 0;
 end
 
 endmodule

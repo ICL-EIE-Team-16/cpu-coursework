@@ -71,7 +71,7 @@
 *.x86_64
 *.hex
 
-# Debug files
+# debug files
 *.dSYM/
 *.su
 *.idb
@@ -161,10 +161,8 @@ fabric.properties
 
 #SystemVerilog debugging
 *.vcd
-/src/memory/build
-/src/memory/*.sh
-
 ./bin/*
 ./modules_tb/logs/*
 
-*.vcd
+#Michal debug directory
+/src/debug/*

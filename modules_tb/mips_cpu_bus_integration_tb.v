@@ -40,6 +40,7 @@ initial begin
         #1;
         reset = 0;
 
+
         //LW $2, c($0)
         @(posedge clk)
         readdata = 32'h8c02000c;

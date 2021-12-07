@@ -12,7 +12,7 @@ output logic [4:0] reg_a_idx, // “
 output logic [4:0] reg_b_idx, // ” 
 output logic [31:0] immediate, // only relevant to I_type instructions – immediate value (sign extended for ALU so 32 bits long) 
 output logic [25:0] memory, // only relevant to j_type instructions – memory address 
-output logic write_en, // for register files 
+output logic reg_write_en, // for register files 
 output logic [6:0] instruction_code
 
 );  
@@ -82,10 +82,8 @@ typedef enum logic [6:0] {
     SH = 7'd51,
     SW = 7'd52
 
-} code_def;
+} instcode_t;
 
-//Debug vars
-logic a,b,c;
 //Instruction register saving behaviour
 always_ff @(posedge clk) begin
     if (exec1)
@@ -180,50 +178,50 @@ always@(*) begin //make sure enables go high in the right cycle
         // determining write enables - R Type
         if ((exec1 == 1)&&(exec2 == 0)&&(fetch==0)) begin // high for all r_type instrcutions but low for JR in EXEC1
             if ((r_type==1)&&(function_code!=6'b001000)) begin
-                write_en = 1;
+                reg_write_en = 1;
             end
 
             else if ((r_type==1)&&(function_code==6'b001000)) begin
-                write_en = 0;
+                reg_write_en = 0;
             end
         end
 
         else if ((exec1 == 0)&&(exec2 == 1)&&(fetch==0)) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
             if ((r_type==1)&&(function_code==6'b001001)) begin
-                write_en =1;
+                reg_write_en =1;
             end
             else if ((r_type==1)&&(function_code!=6'b001001))begin
-                write_en=0;
+                reg_write_en=0;
             end
         end
 
         //determining write enables - I Type
                                         //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
         if ((exec1)&&(i_type==1)&&((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011))) begin
-            write_en = 1;
+            reg_write_en = 1;
         end
         else if ((exec1)&&(i_type==1)&&((opcode!=6'b001000)||(opcode!=6'b001001)||(opcode!=6'b001100)||(opcode!=6'b001101)||(opcode!=6'b001110)||(opcode!=6'b001010)||(opcode!=6'b001011))) begin
-            write_en = 0;
+            reg_write_en = 0;
         end                             //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
         if ((exec2)&&(i_type==1)&&((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110))) begin
-            write_en = 1;
+            reg_write_en = 1;
         end
         else if ((exec2==1)&&(i_type==1)&&((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001)||(opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)||(opcode != 6'b100000)||(opcode != 6'b100100)||(opcode != 6'b100001)||(opcode != 6'b100101)||(opcode != 6'b001111)||(opcode != 6'b100011)||(opcode != 6'b100010)||(opcode != 6'b100110))) begin
-            write_en = 0;
+            reg_write_en = 0;
         end
 
 
         // determining write enables - J Type
             if((exec2==1)&&(j_type==1)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
-                write_en = 0;
+                reg_write_en = 0;
             end
             else if ((exec2==1)&&(j_type==1)&&(opcode==6'b000011))begin
-                write_en = 1;
+                reg_write_en = 1;
             end
     end
 
     else if (fetch == 1) begin
-        write_en = 0;
+        reg_write_en = 0;
     end
 
 end
