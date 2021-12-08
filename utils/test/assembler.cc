@@ -797,3 +797,8 @@ TEST(Assembler, XORIToHexAssembly) {
     EXPECT_EQ("3ab1003d", convert_instruction_to_hex("XORI $s1, $s5, 0b111101", configs));
     EXPECT_EQ("3a9504e6", convert_instruction_to_hex("XORI $s5, $s4, 1254", configs));
 }
+
+TEST(Assembler, MFHIToHexAssembly) {
+    std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
+    EXPECT_EQ("00001010", convert_instruction_to_hex("MFHI $v0", configs));
+}
