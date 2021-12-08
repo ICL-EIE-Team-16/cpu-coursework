@@ -31,10 +31,10 @@ module mipsregisterfile#(
     always_ff @(posedge clk) begin
 
         if (DISP_VALS_TO_OUT == 1)
-             /*$display("REGFile : OUT: %h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h",
+             $display("REGFile : OUT: %h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h,%h",
                 regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7], regs[8], regs[9], regs[10], regs[11], regs[12],
                 regs[13], regs[14], regs[15], regs[16], regs[17], regs[18], regs[19], regs[20], regs[21], regs[22], regs[23], regs[24],
-                regs[25], regs[26], regs[27], regs[28], regs[29], regs[30], regs[31]); */
+                regs[25], regs[26], regs[27], regs[28], regs[29], regs[30], regs[31]);
 
         if (reset == 1) begin
             for (int i = 0; i < 32;i = i+1) begin
