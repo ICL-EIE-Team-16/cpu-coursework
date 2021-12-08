@@ -185,24 +185,8 @@ always@(*) begin
 end
 
 always@(*) begin //make sure reg file enables go high in the right cycle
-    if (fetch) begin
-        reg_write_en = 0;
-    end
-    else if (exec1) begin
-        if (r_type && instruction_code != JR) begin
-            reg_write_en = 1;
-        end
-        else if (i_type) begin
-                //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-            if ((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011)) begin
-                reg_write_en = 1;
-            end
-        end
-        else
-            reg_write_en = 0;
-    end
-    else if (exec2) begin
-        if (r_type && instruction_code == JALR) begin
+    if (exec2) begin
+        if (r_type && (instruction_code != MTHI || instruction_code == MTLO)) begin
             reg_write_en =1;
         end
         else if (i_type) begin
@@ -210,12 +194,22 @@ always@(*) begin //make sure reg file enables go high in the right cycle
             if ((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110)) begin
                 reg_write_en = 1;
             end
+                //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
+            if ((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011)) begin
+                reg_write_en = 1;
+            end
+            else
+                reg_write_en = 0;
+
         end
-        else if (j_type && JAL)
+        else if (j_type && instruction_code == JAL)
             reg_write_en = 1;
         else
             reg_write_en = 0;
     end
+    else
+        reg_write_en = 0;
+
 end
 
 //decoding the instruction code which will replace opcode, rtype, itype and jtype outputs

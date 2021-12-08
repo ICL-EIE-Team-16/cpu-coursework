@@ -245,24 +245,24 @@ always_ff @(posedge clk) begin
     end
 
     else begin
-        if(op == MULTU)begin
-            lo <= lo_next;
-            hi <= hi_next;
-        end
-        if(op == DIVU)begin
-            lo <= lo_next;
-            hi <= hi_next;
-        end
-        if(op == MULT)begin
-            lo <= lo_next;
-            hi <= hi_next;
-        end
-        if(op == DIV)begin
-            lo <= lo_next;
-            hi <= hi_next;
-        end
 
-        if(exec1) begin
+        if(exec2) begin
+            if(op == MULTU)begin
+                lo <= lo_next;
+                hi <= hi_next;
+            end
+            if(op == DIVU)begin
+                lo <= lo_next;
+                hi <= hi_next;
+            end
+            if(op == MULT)begin
+                lo <= lo_next;
+                hi <= hi_next;
+            end
+            if(op == DIV)begin
+                lo <= lo_next;
+                hi <= hi_next;
+            end
             if(op == MTHI)begin
                 hi <= a;
             end
