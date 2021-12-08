@@ -9,9 +9,9 @@ input logic waitrequest,
 input logic[31:0] regdatain,
 input logic[31:0] memin,
 input logic fetch,
-input logic ex1,
-input logic ex2,
-input logic[6:0] instcode,
+input logic exec1,
+input logic exec2,
+input logic[6:0] instruction_code,
 input logic[31:0] pc_address,
 input logic[31:0] alu_r,
 output logic[31:0] mem_address,
@@ -35,7 +35,7 @@ typedef enum logic[6:0] {
         SB = 7'd50,
         SH = 7'd51,
         SW = 7'd52
-    } instcode_t;
+    } instruction_code_t;
 
 always_comb begin
     byteenable = 15;
@@ -54,8 +54,10 @@ end
 always_comb begin
     if (fetch)
         read = 1;
-    else if (ex1) begin
-        if (instcode == LB || instcode == LBU || instcode == LH || instcode == LHU || instcode == LUI || instcode == LW || instcode == LWL || instcode == LWR)
+    else if (exec1) begin
+        if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
+            read = 1; //This should be one but it's off for debugging
+        else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
             read = 1; //This should be one but it's off for debugging
         else
             read = 0;
@@ -67,8 +69,8 @@ end
 
 //Write signal
 always_comb begin
-    if (ex1) begin
-        if (instcode == SB || instcode == SW || instcode == SH)
+    if (exec1) begin
+        if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
             write = 1;
     end
     else
