@@ -18,7 +18,7 @@ module mips_cpu_bus#(
 );
 
     logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative;
-    logic[31:0] databus, alu_a, alu_b, /*reg_a_out, */ reg_b_out, pc_address, immediate, reg_in, alu_r, mxu_dout;
+    logic[31:0] databus, alu_b, reg_a_out, reg_b_out, pc_address, immediate, reg_in, alu_r, mxu_dout;
     logic[4:0] reg_a_idx, reg_b_idx, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
     logic[6:0] instruction_code;
