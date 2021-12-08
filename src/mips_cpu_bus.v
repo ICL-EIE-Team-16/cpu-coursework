@@ -18,7 +18,7 @@ module mips_cpu_bus#(
 );
 
     logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative;
-    logic[31:0] databus, alu_a, alu_b, reg_a_out, reg_b_out, pc_address, immediate, reg_in, alu_r, mxu_dout;
+    logic[31:0] databus, alu_b, reg_a_out, reg_b_out, pc_address, immediate, reg_in, alu_r, mxu_dout;
     logic[4:0] reg_a_idx, reg_b_idx, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
     logic[6:0] instruction_code;
@@ -89,28 +89,33 @@ module mips_cpu_bus#(
 
 //MUX @ ALU B input
     always_comb begin
-        if (exec2 && ((instruction_code == BGEZAL) || (instruction_code == BLTZAL) || (instruction_code == JAL) || (instruction_code == JALR)))
-            alu_b = 8;
+        //Split into multiple statements for readability- Immediate instrucitons
+        if (instruction_code == ADDI || instruction_code == ADDIU || instruction_code == ANDI || instruction_code == ORI)
+            alu_b = immediate;
+        else if (instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
+            alu_b = immediate;
+
+        // Memory control
+        else if (instruction_code == SB || instruction_code == SH || instruction_code == SW )
+            alu_b = immediate;
+        else if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
+            alu_b = immediate;
+        else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
+            alu_b = immediate;
         else
             alu_b = reg_b_out;
     end
 
 //MUX @ ALU A input
+    /*
     always_comb begin
         //Supplies ALU with pc_address for for AL type instructions to calculate PC+8
-        if (exec2 && instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
+        if (exec2 && (instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR))
             alu_a = pc_address;
-            //Split into multiple statements for readability- handles immediate instrucitons
-        else if (instruction_code == ADDI || instruction_code == ADDIU || instruction_code == ANDI || instruction_code == ORI)
-            alu_a = immediate;
-        else if (instruction_code == SLTI || instruction_code == SLTIU || instruction_code == XORI)
-            alu_a = immediate;
-        //LW SW bodge
-        else if (instruction_code == SW || instruction_code == LW )
-                    alu_a = immediate;
         else
             alu_a = reg_a_out;
     end
+    */
 
 //MUX @REG_IN
     always_comb begin
@@ -118,24 +123,17 @@ module mips_cpu_bus#(
             reg_in = mxu_dout;
         else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
             reg_in = mxu_dout;
+        else if (instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
+            reg_in = pc_address + 31'd8;
         else
             reg_in = alu_r;
     end
 
-//MUX @RAM_ADDR
-    /*always_comb begin
-        if (instruction_code == LW && exec1) begin
-            address = alu_r;
-        end else
-            address = pc_address;
-    end*/
-
-
     statemachine sm(.clk(clk), .reset(reset), .halt(pc_halt||mem_halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
-    mxu mainmxu(.waitrequest(waitrequest), .regdatain(reg_b_out), .memin(readdata), .fetch(fetch), .ex1(exec1), .ex2(exec2), .instcode(instruction_code), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
-    ALU mainalu(.clk(clk), .fetch(fetch), .exec1(exec1), .exec2(exec2), .a(alu_a), .b(alu_b), .op(instruction_code), .sa(shift_amount), .zero(zero), .positive(positive), .negative(negative), .r(alu_r));
+    mxu mainmxu(.waitrequest(waitrequest), .regdatain(reg_b_out), .memin(readdata), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
+    ALU mainalu(.reset(reset), .clk(clk), .fetch(fetch), .exec1(exec1), .exec2(exec2), .a(reg_a_out), .b(alu_b), .op(instruction_code), .sa(shift_amount), .zero(zero), .positive(positive), .negative(negative), .r(alu_r));
     mipsregisterfile#(DISP_REG_VALS_TO_OUT) regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en && ~(pc_halt || mem_halt)), .register_a_index(reg_a_idx), .register_b_index(reg_b_idx), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0));
-    IR_decode ir(.clk(clk), .current_instruction(mxu_dout), .fetch(fetch), .exec1(exec1), .exec2(exec2), .shift(shift_amount), .destination_reg(reg_in_idx), .reg_b_idx(reg_b_idx), .reg_a_idx(reg_a_idx), .immediate(immediate), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code(instruction_code));
-    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .internal_code(instruction_code), .offset(immediate[15:0]), .instr_index(jump_const), .register_data(reg_b_out), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt));
+    IR_decode ir(.clk(clk), .current_instruction(mxu_dout), .fetch(fetch), .exec1(exec1), .exec2(exec2), .shift_amount(shift_amount), .destination_reg(reg_in_idx), .reg_b_idx(reg_b_idx), .reg_a_idx(reg_a_idx), .immediate(immediate), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code(instruction_code));
+    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .offset(immediate[15:0]), .instr_index(jump_const), .register_data(reg_b_out), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt));
 
 endmodule
