@@ -1,0 +1,11 @@
+ADDIU $s0, $zero, 0xBFC2
+SLL $s0, $s0, 0x10
+ADDIU $s0, $s0, 0x1234
+ADDIU $s1, $zero, 0x2345
+SLL $s1, $s1, 0x10
+ADDIU $s1, $s1, 0x1234
+# Expected multiplication - 0xBFC21234 * 0x23451234 = 0x1A6B456E9CB75A90
+MULTU $s0, $s1
+MFHI $v0
+JR $zero
+JR $zero
