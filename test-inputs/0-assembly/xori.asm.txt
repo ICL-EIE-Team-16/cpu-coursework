@@ -1,2 +1,0 @@
-ADDIU $s0, $zero, 0x1111
-XORI $v0, $s0, 0xff56
