@@ -1,7 +1,7 @@
 module PC(
     input logic clk, reset,
     input logic fetch, exec1, exec2,
-    input logic[6:0] internal_code,
+    input logic[6:0] instruction_code,
     input logic[15:0] offset,
     input logic[25:0] instr_index,
     input logic[31:0] register_data,
@@ -26,41 +26,41 @@ module PC(
         JAL = 39,
         JALR = 40,
         JR = 41
-    } code_def;
+    } instruction_code_t;
 
     assign next_address = address+4;
 
     always @(*) begin
 
-        if ((internal_code == BEQ) && zero) begin
+        if ((instruction_code == BEQ) && zero) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if ((internal_code == BGTZ) && positive) begin
+        else if ((instruction_code == BGTZ) && positive) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if ((internal_code == BLEZ) && (zero || negative)) begin
+        else if ((instruction_code == BLEZ) && (zero || negative)) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if ((internal_code == BNE) && (negative || positive)) begin
+        else if ((instruction_code == BNE) && (negative || positive)) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if (((internal_code == BGEZ) || (internal_code == BGEZAL)) && (positive || zero)) begin
+        else if (((instruction_code == BGEZ) || (instruction_code == BGEZAL)) && (positive || zero)) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if (((internal_code == BLTZ) || (internal_code == BLTZAL)) && negative) begin
+        else if (((instruction_code == BLTZ) || (instruction_code == BLTZAL)) && negative) begin
             jump_address = address+{{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
-        else if ((internal_code == JR) || (internal_code == JALR)) begin
+        else if ((instruction_code == JR) || (instruction_code == JALR)) begin
             jump_address = register_data;
             jump = 1;
         end
-        else if ((internal_code == J) || (internal_code == JAL)) begin
+        else if ((instruction_code == J) || (instruction_code == JAL)) begin
             jump_address = {address[31:28], instr_index, 2'b00};
             jump = 1;
         end

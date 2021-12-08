@@ -2,7 +2,7 @@ module ALU(
     input logic[31:0] a, b,
     input logic[6:0] op,
     input logic[4:0] sa,
-    input logic fetch, exec1, exec2, clk,
+    input logic fetch, exec1, exec2, clk, reset,
     output logic zero, positive, negative,
     output logic[31:0] r
 );
@@ -85,11 +85,11 @@ always @(*) begin
     end
         
     if(op == SRA) begin
-        r = a_signed>>>(sa);
+        r = b_signed>>>(sa);
     end
 
     if(op == SRAV) begin
-        r = a_signed>>>(b[4:0]);
+        r = b_signed>>>(a[4:0]);
     end
 
     if(op == SLTU || op == SLTIU) begin
@@ -119,19 +119,19 @@ always @(*) begin
     end
 
     if(op == SLL) begin
-        r = a<<sa;
+        r = b<<sa;
     end
 
     if(op == SLLV) begin
-        r = a<<b[4:0];
+        r = b<<a[4:0];
     end
 
     if(op == SRL) begin
-        r = a>>sa;
+        r = b>>sa;
     end
 
     if(op == SRLV) begin
-        r = a>>b[4:0];
+        r = b>>a[4:0];
     end
 
     if(op == XOR || op == XORI) begin
@@ -177,10 +177,27 @@ always @(*) begin
     end
 
 
-    //Memory fix
-    if(op == LW || op == SW) begin
+    // Non ALU instructions
+    if(op == LB || op == LBU || op == LH || op == LHU || op == LUI || op == LW ) begin
             r = a+b;
     end
+
+    //Store instructions
+    if(op == SB || op == SH || op == SW) begin
+            r = a+b;
+    end
+
+
+    //Not implemented
+    if( op == LWL || LWR) begin
+    //To be fixed
+    end
+end
+
+
+
+
+always @(*) begin
 
     if (op == BGEZ || BGEZAL || BGTZ || BLEZ || BLTZ || BLTZAL) begin
         if(a_signed < 0) begin
@@ -223,29 +240,36 @@ end
 
 always_ff @(posedge clk) begin
 
-    if(op == MULTU)begin
-        lo <= lo_next;
-        hi <= hi_next;
-    end
-    if(op == DIVU)begin
-        lo <= lo_next;
-        hi <= hi_next;
-    end
-    if(op == MULT)begin
-        lo <= lo_next;
-        hi <= hi_next;
-    end
-    if(op == DIV)begin
-        lo <= lo_next;
-        hi <= hi_next;
+    if (reset) begin
+        lo <= 0;
+        hi <= 0;
     end
 
-    if(exec1) begin
-        if(op == MTHI)begin
-            hi <= a;
+    else begin
+        if(op == MULTU)begin
+            lo <= lo_next;
+            hi <= hi_next;
         end
-        if(op == MTLO)begin
-            lo <= a;
+        if(op == DIVU)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == MULT)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == DIV)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+
+        if(exec1) begin
+            if(op == MTHI)begin
+                hi <= a;
+            end
+            if(op == MTLO)begin
+                lo <= a;
+            end
         end
     end
 end
