@@ -1,5 +1,5 @@
 ADDIU $s0, $zero, 0x6456
-MTLO $s0
-MFLO $v0
+MTHI $s0
+MFHI $v0
 JR $zero
 JR $zero

@@ -1,4 +1,4 @@
-ADDIU $s0, $zero, 0x1111
-ORI $v0, $s0, 0xff56
+ADDIU $s0, $zero, 0x0111
+ORI $v0, $s0, 0x1f56
 JR $zero
 JR $zero

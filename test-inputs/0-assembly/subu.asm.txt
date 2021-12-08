@@ -2,3 +2,4 @@ ADDIU $s0, $zero, 0x4873
 ADDIU $s1, $zero, 0x2378
 SUBU $v0, $s0, $s1
 JR $zero
+JR $zero
