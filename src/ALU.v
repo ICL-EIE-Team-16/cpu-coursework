@@ -217,6 +217,7 @@ always @(*) begin
             negative = 1;
         end 
     end
+    $display("r=%h", r);
 
 end
 
@@ -248,8 +249,5 @@ always_ff @(posedge clk) begin
         end
     end
 end
-
-
-
 
 endmodule
