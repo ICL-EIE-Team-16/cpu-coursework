@@ -1,0 +1,10 @@
+<<<<<<< HEAD:test-inputs/0-assembly/ori.asm.txt
+ADDIU $s0, $zero, 0x0111
+ORI $v0, $s0, 0x1f56
+JR $zero
+=======
+ADDIU $s0, $zero, 0x1111
+ORI $v0, $s0, 0xff56
+JR $zero
+>>>>>>> 582beba788663e465a95a16c25c6e2320611827f:test-inputs/0-assembly/35-ori.asm.txt
+JR $zero
