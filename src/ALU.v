@@ -187,14 +187,6 @@ always @(*) begin
             r = a+b;
     end
 
-    //Jumps
-    if(op == BGEZAL || op == BLTZAL || op == JAL || op == JALR) begin
-        if (exec1)
-            r = a+b;
-        else
-            r = a+8;
-    end
-
 
     //Not implemented
     if( op == LWL || LWR) begin

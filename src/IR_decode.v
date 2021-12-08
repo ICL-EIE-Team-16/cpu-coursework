@@ -178,18 +178,13 @@ always@(*) begin
             //Sign extension logic for immediate - Multiple formats
                 if (instruction_code == ANDI || instruction_code == ORI || instruction_code == XORI)
                     immediate = {16'd0,instruction[15:0]};
-                // Split for readability:  jump instructions are shifted and then sign extended (See spec)
-                else if (instruction_code == BEQ || instruction_code == BGEZ || instruction_code == BGEZ || instruction_code == BGEZAL || instruction_code == BGTZ)
-                    immediate = {{14{instruction[15]}}, instruction[15:0], 2'b00};
-                else if (instruction_code == BLEZ || instruction_code == BLTZ || instruction_code == BLTZAL || instruction_code == BNE)
-                    immediate = {{14{instruction[15]}},instruction[15:0], 2'b0};
                 else
                     immediate = {{16{instruction[15]}},instruction[15:0]};
         end
     end
 end
 
-always@(*) begin //make sure enables go high in the right cycle
+always@(*) begin //make sure reg file enables go high in the right cycle
     if (fetch) begin
         reg_write_en = 0;
     end
@@ -216,75 +211,11 @@ always@(*) begin //make sure enables go high in the right cycle
                 reg_write_en = 1;
             end
         end
-        else if (j_type && JALR)
+        else if (j_type && JAL)
             reg_write_en = 1;
         else
             reg_write_en = 0;
     end
-
-
-
-
-    /*
-    if (fetch) begin
-        reg_write_en = 0;
-    end
-
-    else begin
-
-        if (r_type) begin
-            // determining write enables - R Type
-            if (exec1) begin // high for all r_type instrcutions but low for JR in EXEC1
-                if (instruction_code != JR) begin
-                    reg_write_en = 1;
-                end
-                else begin
-                    reg_write_en = 0;
-                end
-            end
-            else if (exec2) begin // LOW for all r_type instrcutions but HIGH for JALR in EXEC2
-                if (instruction_code == JALR) begin
-                    reg_write_en =1;
-                end
-                else begin
-                    reg_write_en=0;
-                end
-            end
-        end
-
-        //determining write enables - I Type
-        else if (i_type) begin
-
-            if (exec1) begin                            //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-                if ((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011)) begin
-                    reg_write_en = 1;
-                end
-                else if ((opcode!=6'b001000)||(opcode!=6'b001001)||(opcode!=6'b001100)||(opcode!=6'b001101)||(opcode!=6'b001110)||(opcode!=6'b001010)||(opcode!=6'b001011)) begin
-                    reg_write_en = 0;
-                end
-            end
-
-            else if (exec2) begin
-                //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
-                if ((opcode==6'b000001)&&(instruction[20:16]==5'b10001)||(opcode==6'b000001)&&(instruction[20:16]==5'b10000)||(opcode==6'b100000)||(opcode==6'b100100)||(opcode==6'b100001)||(opcode==6'b100101)||(opcode==6'b001111)||(opcode==6'b100011)||(opcode==6'b100010)||(opcode==6'b100110)) begin
-                    reg_write_en = 1;
-                end
-                else if ((opcode!=6'b000001)&&(instruction[20:16]!=5'b10001)||(opcode!=6'b000001)&&(instruction[20:16]!=5'b10000)||(opcode != 6'b100000)||(opcode != 6'b100100)||(opcode != 6'b100001)||(opcode != 6'b100101)||(opcode != 6'b001111)||(opcode != 6'b100011)||(opcode != 6'b100010)||(opcode != 6'b100110)) begin
-                    reg_write_en = 0;
-                end
-            end
-
-        end
-        else if (j_type) begin
-        // determining write enables - J Type
-            if((exec2)&&(opcode!=6'b000011)) begin // low for all j_type instructions but high for JAL only in EXEC2
-                reg_write_en = 0;
-            end
-            else if ((exec2==1)&&(opcode==6'b000011))begin
-                reg_write_en = 1;
-            end
-    end
-    */
 end
 
 //decoding the instruction code which will replace opcode, rtype, itype and jtype outputs

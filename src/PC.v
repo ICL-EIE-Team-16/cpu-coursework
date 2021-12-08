@@ -26,7 +26,7 @@ module PC(
         JAL = 39,
         JALR = 40,
         JR = 41
-    } code_def;
+    } instruction_code_t;
 
     assign next_address = address+4;
 
