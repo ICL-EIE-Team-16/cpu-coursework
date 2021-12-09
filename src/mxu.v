@@ -38,8 +38,6 @@ typedef enum logic[6:0] {
     } instruction_code_t;
 
 always_comb begin
-    byteenable = 15;
-    dataout = memin;
     memout = regdatain;
 
 
@@ -84,6 +82,38 @@ always_comb begin
         mem_halt = 1;
     else
         mem_halt = 0;
+end
+
+//byteenable signal
+always_comb begin
+    if (instruction_code == SW || instruction_code == LW)
+        byteenable = 4'b1111;
+    else if (instruction_code == LB || instruction_code == LBU || instruction_code == SB) begin
+            if(mem_address[1:0] == 0)
+                byteenable = 4'b0001;
+            else if(mem_address[1:0] == 1)
+                byteenable = 4'b0010;
+            else if(mem_address[1:0] == 2)
+                byteenable = 4'b0100;
+            else if(mem_address[1:0] == 3)
+                byteenable = 4'b1000;
+    end
+end
+
+//Decode memory output
+always_comb begin
+    if (instruction_code == LW)
+            dataout = memin;
+    else if (instruction_code == LB || instruction_code == LBU) begin
+            if(mem_address[1:0] == 0)
+                dataout = {24'b0, memin[7:0]};
+            else if(mem_address[1:0] == 1)
+                dataout = {16'b0, memin[15:8], 8'b0};
+            else if(mem_address[1:0] == 2)
+                dataout = {8'b0, memin[23:16], 16'b0};
+            else if(mem_address[1:0] == 3)
+                dataout = {memin[31:24], 24'b0};
+    end
 end
 
 endmodule
