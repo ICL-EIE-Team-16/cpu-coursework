@@ -4,24 +4,27 @@ VCD info: dumpfile waves.vcd opened for output.
 num: 10000000000000000000000000000000: 
 shifted num: 00000000000000000000100000000000: 
 REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra
-r=xxxxxxxx
-r=xxxxxxxx
 address: bfc00000
-r=xxxxxxxx
+beq entered, a = 00000000, b = 00000000
+eq entered, zero = 1
 address: xxxxxxxx
 address: xxxxxxxx
 address: bfc00004
-r=00001111
+addiu begins, a=00000000, b=00001111
 address: 00001111
 address: 00001111
 address: bfc00008
-r=00002222
+addiu begins, a=00001111, b=00001111
 address: 00002222
 address: 00002222
-r=00003333
+addiu begins, a=00002222, b=00001111
 address: bfc0000c
-r=00003333
 address: 00003333
 address: 00003333
 address: bfc00010
+address: 00003333
+address: 00003333
+address: bfc00014
 REG v0: OUT: 00002222
+testbenches/mips_cpu_bus_tb.v:61: $finish called at 33000 (10ps)
+addiu begins, a=00002222, b=00005555

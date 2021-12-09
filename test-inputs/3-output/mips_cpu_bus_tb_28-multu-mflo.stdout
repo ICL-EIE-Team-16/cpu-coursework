@@ -4,50 +4,53 @@ VCD info: dumpfile waves.vcd opened for output.
 num: 10000000000000000000000000000000: 
 shifted num: 00000000000000000000100000000000: 
 REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra
-r=xxxxxxxx
-r=xxxxxxxx
 address: bfc00000
-r=00000000
-r=ffffbfc2
+addiu begins, a=00000000, b=00000000
+addiu begins, a=00000000, b=ffffbfc2
 address: ffffbfc2
 address: ffffbfc2
 address: bfc00004
-r=ffbfc200
-address: ffbfc200
-address: ffbfc200
-r=bfc20000
+sll begins, b=ffffbfc2, sa = 10
+address: bfc20000
+address: bfc20000
+sll begins, b=bfc20000, sa = 10
 address: bfc00008
-r=ffbfd434
-address: ffbfd434
-address: ffbfd434
-r=ffbfe668
+addiu begins, a=bfc20000, b=bfc20000
+addiu begins, a=bfc20000, b=00001234
+address: bfc21234
+address: bfc21234
+addiu begins, a=bfc21234, b=00001234
 address: bfc0000c
-r=00002345
+addiu begins, a=00000000, b=00002345
 address: 00002345
 address: 00002345
 address: bfc00010
-r=00234500
-address: 00234500
-address: 00234500
-r=23450000
+sll begins, b=00002345, sa = 10
+address: 23450000
+address: 23450000
+sll begins, b=23450000, sa = 10
 address: bfc00014
-r=00468a00
-r=00235734
-address: 00235734
-address: 00235734
-r=00236968
+addiu begins, a=23450000, b=23450000
+addiu begins, a=23450000, b=00001234
+address: 23451234
+address: 23451234
+addiu begins, a=23451234, b=00001234
 address: bfc00018
-r=00235734
-r=00235734
-address: 00235734
-address: 00235734
+sll begins, b=23451234, sa = 00
+multu begins, a=bfc21234, b=23451234
+address: 23451234
+address: 23451234
+multu begins, a=bfc21234, b=23451234
 address: bfc0001c
-r=2730c690
-address: 2730c690
-address: 2730c690
+address: 9cb75a90
+address: 9cb75a90
 address: bfc00020
-r=2730c690
-address: 2730c690
-address: 2730c690
+address: 9cb75a90
+address: 9cb75a90
 address: bfc00024
-REG v0: OUT: 2730c690
+address: 9cb75a90
+address: 9cb75a90
+address: bfc00028
+REG v0: OUT: 9cb75a90
+testbenches/mips_cpu_bus_tb.v:61: $finish called at 63000 (10ps)
+sll begins, b=00000000, sa = 00

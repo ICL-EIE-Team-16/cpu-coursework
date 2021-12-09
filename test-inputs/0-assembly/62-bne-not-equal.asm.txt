@@ -1,4 +1,5 @@
 ADDIU $s0, $zero, 0x4000
+ADDIU $s1, $zero, 0x5000
 BNE $s0, $s1, 0x0006
 ADDIU $v0, $zero, 0x1111
 ADDIU $v0, $v0, 0x1111

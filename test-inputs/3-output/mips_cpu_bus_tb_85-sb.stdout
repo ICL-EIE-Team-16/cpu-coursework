@@ -4,62 +4,56 @@ VCD info: dumpfile waves.vcd opened for output.
 num: 10000000000000000000000000000000: 
 shifted num: 00000000000000000000100000000000: 
 REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra
-r=xxxxxxxx
-r=xxxxxxxx
 address: bfc00000
-r=00000000
-r=00000bfc
+addiu begins, a=00000000, b=00000000
+addiu begins, a=00000000, b=00000bfc
 address: 00000bfc
 address: 00000bfc
 address: bfc00004
-r=bfc00000
+sll begins, b=00000bfc, sa = 14
 address: bfc00000
-r=00000bfc
-r=00000000
-r=bfc00000
+sll begins, b=00000bfc, sa = 00
+sll begins, b=00000000, sa = 14
+sll begins, b=00000bfc, sa = 14
 address: bfc00000
 address: bfc00008
-r=00000bfc
-r=00000012
+addiu begins, a=00000000, b=00000bfc
+addiu begins, a=00000000, b=00000012
 address: 00000012
 address: 00000012
 address: bfc0000c
-r=00000034
+addiu begins, a=00000000, b=00000034
 address: 00000034
 address: 00000034
 address: bfc00010
-r=00000056
+addiu begins, a=00000000, b=00000056
 address: 00000056
 address: 00000056
 address: bfc00014
-r=00000078
+addiu begins, a=00000000, b=00000078
 address: 00000078
 address: 00000078
 address: bfc00018
-r=bfc00034
 address: bfc00034
 address: bfc00034
 address: bfc0001c
-r=bfc00035
 address: bfc00035
 address: bfc00035
 address: bfc00020
-r=bfc00036
 address: bfc00036
 address: bfc00036
 address: bfc00024
-r=bfc00037
 address: bfc00037
 address: bfc00037
 address: bfc00028
-r=bfc00034
 address: bfc00034
-r=00000000
-r=bfc00034
 address: bfc00034
 address: bfc0002c
-r=bfc00034
 address: bfc00034
 address: bfc00034
 address: bfc00030
+address: bfc00034
+address: bfc00034
+address: bfc00034
 REG v0: OUT: 00000034
+testbenches/mips_cpu_bus_tb.v:61: $finish called at 81000 (10ps)

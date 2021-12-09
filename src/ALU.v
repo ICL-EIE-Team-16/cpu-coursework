@@ -157,6 +157,7 @@ always @(*) begin
         mult_intermediate = a_signed*b_signed;
         lo_next = mult_intermediate[31:0];
         hi_next = mult_intermediate[63:32];
+        $display("mult begins, a=%h, b=%h", a_signed, b_signed);
     end 
 
     if(op == DIV) begin
