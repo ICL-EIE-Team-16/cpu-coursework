@@ -6,7 +6,7 @@
 //-------------------------------------------------------------------
 module mxu (
 input logic waitrequest,
-input logic[31:0] regdatain,
+input logic[31:0] mxu_reg_b_in,
 input logic[31:0] memin,
 input logic fetch,
 input logic exec1,
@@ -37,10 +37,8 @@ typedef enum logic[6:0] {
         SW = 7'd52
     } instruction_code_t;
 
+// Address processing
 always_comb begin
-    memout = regdatain;
-
-
     if (fetch)
         mem_address = pc_address;
     else
@@ -70,6 +68,8 @@ always_comb begin
     if (exec1) begin
         if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
             write = 1;
+        else
+            write = 0;
     end
     else
         write = 0;
@@ -117,6 +117,11 @@ always @(*) begin
                 dataout = {memin[31:24], 24'b0};
     end
     else dataout = 0; // Can be removed, undefined is fine
+end
+
+//Encode memory input
+always @(*) begin
+    memout = mxu_reg_b_in;
 end
 
 endmodule

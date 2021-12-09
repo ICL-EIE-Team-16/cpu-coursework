@@ -163,7 +163,7 @@ always@(*) begin
         else if (i_type == 1) begin
             //assign groups of bits of instruction word to each field.
             reg_a_idx = instruction[25:21];
-            reg_b_idx = 5'd0;
+            reg_b_idx = instruction[20:16];
             shift_amount = 0;
             function_code = 6'd0;
             memory = 26'd0;
@@ -186,7 +186,7 @@ end
 
 always@(*) begin //make sure reg file enables go high in the right cycle
     if (exec2) begin
-        if (r_type && (instruction_code != MTHI && instruction_code != MTLO)) begin
+        if (r_type && (instruction_code != MTHI && instruction_code != MTLO && instruction_code != JR)) begin
             reg_write_en =1;
         end
         else if (i_type) begin
