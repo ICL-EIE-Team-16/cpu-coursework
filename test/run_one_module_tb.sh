@@ -1,11 +1,11 @@
 #!/bin/bash
 
-MODULENAME="mips_cpu_bus_integration_tb"
+MODULENAME="$1"
 
-iverilog -g 2012 -s ${MODULENAME} -o bin/${MODULENAME}  ../src/*.v ../src/*/*.v ../modules_tb/*.v
+iverilog -g 2012 -s ${MODULENAME} -o bin/${MODULENAME}  ../rtl/*.v ../rtl/*/*.v ../modules_tb/*.v
 
 set +e
-bin/${MODULENAME} > logs/${MODULENAME}.stdout
+./bin/${MODULENAME} > ./logs/${MODULENAME}.stdout
 RESULT=$?
 set -e
 

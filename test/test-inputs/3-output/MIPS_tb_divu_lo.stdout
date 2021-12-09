@@ -1,0 +1,55 @@
+Loading from test-inputs/1-binary/divu_lo.hex.txt
+WARNING: src/simple_memory.v:33: $readmemh(test-inputs/1-binary/divu_lo.hex.txt): Not enough words in the file for the requested range [0:1023].
+VCD info: dumpfile waves.vcd opened for output.
+num: 10000000000000000000000000000000: 
+shifted num: 00000000000000000000100000000000: 
+REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra
+r=xxxxxxxx
+r=xxxxxxxx
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  xxxxxxxx
+address: bfc00000
+r=00000000
+r=00000008
+address: 00000008
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000008
+address: 00000008
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000008
+address: bfc00004
+r=00000005
+Memory error: unaligned address: 00000005
+address: 00000005
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000005
+address: 00000005
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000005
+address: bfc00008
+Memory error: unaligned address: 00000005
+r=00000005
+address: 00000005
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000005
+address: 00000005
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000005
+address: bfc0000c
+Memory error: unaligned address: 00000005
+r=00000001
+Memory error: unaligned address: 00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: bfc00010
+Memory error: unaligned address: 00000001
+r=00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: bfc00014
+Memory error: unaligned address: 00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: 00000001
+Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000001
+address: bfc00018
+Memory error: unaligned address: 00000001
+REG v0: OUT: 00000001
+r=00000000
