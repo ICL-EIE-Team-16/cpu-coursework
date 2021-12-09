@@ -9,5 +9,6 @@ VERBOSE="DISABLE"
 for i in ${TESTCASES} ; do
     TESTNAME=$(basename ${i} .asm.txt)
     # Dispatch to the main test-case script
-    ./run_one_testcase.sh ${TESTNAME} ${VERBOSE}
+    ./run_one_testcase.sh ${TESTNAME} ${VERBOSE} "mips_cpu_bus_tb"
+    # ./run_one_testcase.sh ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
 done
