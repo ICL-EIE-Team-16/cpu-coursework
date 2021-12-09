@@ -1,4 +1,11 @@
+<<<<<<< HEAD:test-inputs/0-assembly/or.asm.txt
 ADDIU $s0, $zero, 0x4873
 ADDIU $s1, $zero, 0x2378
 OR $v0, $s0, $s1
+JR $zero
+=======
+ADDIU $s0, $zero, 0x4873
+ADDIU $s1, $zero, 0x2378
+OR $v0, $s0, $s1
+>>>>>>> 582beba788663e465a95a16c25c6e2320611827f:test-inputs/0-assembly/34-or.asm.txt
 JR $zero

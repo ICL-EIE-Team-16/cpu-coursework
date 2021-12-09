@@ -1,0 +1,6 @@
+ADDIU $s0, $zero, 0xf000
+ADDIU $s1, $s0, 0xf000
+MULT $s0, $s1
+MFLO $v0
+JR $zero
+JR $zero
