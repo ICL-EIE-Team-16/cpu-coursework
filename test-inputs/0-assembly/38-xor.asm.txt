@@ -1,12 +1,5 @@
-<<<<<<< HEAD:test-inputs/0-assembly/xor.asm.txt
 ADDIU $s0, $zero, 0x56f1
 ADDIU $s1, $zero, 0x1472
 XOR $v0, $s0, $s1
 JR $zero
-=======
-ADDIU $s0, $zero, 0x56f1
-ADDIU $s1, $zero, 0x1472
-XOR $v0, $s0, $s1
-JR $zero
->>>>>>> 582beba788663e465a95a16c25c6e2320611827f:test-inputs/0-assembly/38-xor.asm.txt
 JR $zero
