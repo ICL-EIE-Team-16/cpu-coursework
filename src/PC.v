@@ -92,7 +92,8 @@ module PC(
                 else begin
                     address <= next_address;
                 end
-
+            end
+            else if (exec2) begin
                 if (jump) begin
                     jump_flag <= 1;
                     jump_address_reg <= jump_address;

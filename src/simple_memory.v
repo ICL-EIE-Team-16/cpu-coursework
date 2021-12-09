@@ -14,7 +14,7 @@ parameter RAM_FILE = "ram.txt"
 
 //This memory is Avalon compliant and implements 1024 memory locations after
 logic[31:0] mem[SIZE-1:0];
-logic[31:0] offset;
+logic[31:0] offset, mem_word;
 logic[7:0] hi, lo, midhi, midlo;
 assign offset = 32'hBFC00000;
 logic[31:0] shifted_address, offset_address;
@@ -39,12 +39,16 @@ always @(*) begin
     waitrequest = 0;
     shifted_address = addr - offset;
     offset_address = shifted_address>>2;
+    mem_word = mem[offset_address];
 
+    /*
     //Debugging error indicators
-    if (shifted_address[1:0] != 0)
+    if (shifted_address[1:0] != 0 && (read || write))
         $display("Memory error: unaligned address: %h", addr);
     if (read == 1 && write == 1)
         $display("Memory error: Simultaneous RW: %h", addr);
+    */
+
 
     //Byteenable Implementation
     if(byteenable[0] == 1)
@@ -80,7 +84,7 @@ always @(posedge clk) begin
             readdata<=15;
 
     end
-    else begin
+    else if (read || write) begin
         $display("Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  %h", addr);
     end
 

@@ -6,7 +6,7 @@
 //-------------------------------------------------------------------
 module mxu (
 input logic waitrequest,
-input logic[31:0] regdatain,
+input logic[31:0] mxu_reg_b_in,
 input logic[31:0] memin,
 input logic fetch,
 input logic exec1,
@@ -37,12 +37,8 @@ typedef enum logic[6:0] {
         SW = 7'd52
     } instruction_code_t;
 
+// Address processing
 always_comb begin
-    byteenable = 15;
-    dataout = memin;
-    memout = regdatain;
-
-
     if (fetch)
         mem_address = pc_address;
     else
@@ -72,6 +68,8 @@ always_comb begin
     if (exec1) begin
         if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
             write = 1;
+        else
+            write = 0;
     end
     else
         write = 0;
@@ -84,6 +82,46 @@ always_comb begin
         mem_halt = 1;
     else
         mem_halt = 0;
+end
+
+//byteenable signal
+always @(*) begin
+    if(fetch)
+        byteenable = 4'b1111;
+    else if (instruction_code == SW || instruction_code == LW)
+        byteenable = 4'b1111;
+    else if (instruction_code == LB || instruction_code == LBU || instruction_code == SB) begin
+            if(mem_address[1:0] == 0)
+                byteenable = 4'b0001;
+            else if(mem_address[1:0] == 1)
+                byteenable = 4'b0010;
+            else if(mem_address[1:0] == 2)
+                byteenable = 4'b0100;
+            else if(mem_address[1:0] == 3)
+                byteenable = 4'b1000;
+    end
+end
+
+//Decode memory output
+always @(*) begin
+    if (instruction_code == LW)
+            dataout = memin;
+    else if (instruction_code == LB || instruction_code == LBU) begin
+            if(mem_address[1:0] == 0)
+                dataout = {24'b0, memin[7:0]};
+            else if(mem_address[1:0] == 1)
+                dataout = {16'b0, memin[15:8], 8'b0};
+            else if(mem_address[1:0] == 2)
+                dataout = {8'b0, memin[23:16], 16'b0};
+            else if(mem_address[1:0] == 3)
+                dataout = {memin[31:24], 24'b0};
+    end
+    else dataout = 0; // Can be removed, undefined is fine
+end
+
+//Encode memory input
+always @(*) begin
+    memout = mxu_reg_b_in;
 end
 
 endmodule
