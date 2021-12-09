@@ -85,8 +85,10 @@ always_comb begin
 end
 
 //byteenable signal
-always_comb begin
-    if (instruction_code == SW || instruction_code == LW)
+always @(*) begin
+    if(fetch)
+        byteenable = 4'b1111;
+    else if (instruction_code == SW || instruction_code == LW)
         byteenable = 4'b1111;
     else if (instruction_code == LB || instruction_code == LBU || instruction_code == SB) begin
             if(mem_address[1:0] == 0)
@@ -101,7 +103,7 @@ always_comb begin
 end
 
 //Decode memory output
-always_comb begin
+always @(*) begin
     if (instruction_code == LW)
             dataout = memin;
     else if (instruction_code == LB || instruction_code == LBU) begin
@@ -114,6 +116,7 @@ always_comb begin
             else if(mem_address[1:0] == 3)
                 dataout = {memin[31:24], 24'b0};
     end
+    else dataout = 0; // Can be removed, undefined is fine
 end
 
 endmodule

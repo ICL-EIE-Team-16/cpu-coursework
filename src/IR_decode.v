@@ -186,7 +186,7 @@ end
 
 always@(*) begin //make sure reg file enables go high in the right cycle
     if (exec2) begin
-        if (r_type && (instruction_code != MTHI || instruction_code == MTLO)) begin
+        if (r_type && (instruction_code != MTHI && instruction_code != MTLO)) begin
             reg_write_en =1;
         end
         else if (i_type) begin
@@ -195,7 +195,7 @@ always@(*) begin //make sure reg file enables go high in the right cycle
                 reg_write_en = 1;
             end
                 //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-            if ((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011)) begin
+            else if ((opcode==6'b001000)||(opcode==6'b001001)||(opcode==6'b001100)||(opcode==6'b001101)||(opcode==6'b001110)||(opcode==6'b001010)||(opcode==6'b001011)) begin
                 reg_write_en = 1;
             end
             else
