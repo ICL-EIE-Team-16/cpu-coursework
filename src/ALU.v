@@ -78,6 +78,7 @@ always @(*) begin
 
     if(op == ADDU || op == ADDIU) begin
         r = a+b;
+        $display("addiu begins, a=%h, b=%h", a, b);
     end
 
     if(op == SUBU) begin
@@ -93,6 +94,7 @@ always @(*) begin
     end
 
     if(op == SLTU || op == SLTIU) begin
+        $display("slti begins, a=%h, b=%h", a, b);
         if(a<b)begin
             r = 32'h0001;
         end
@@ -120,6 +122,7 @@ always @(*) begin
 
     if(op == SLL) begin
         r = b<<sa;
+        $display("sll begins, b=%h, sa = %h", b, sa);
     end
 
     if(op == SLLV) begin
@@ -142,6 +145,7 @@ always @(*) begin
         mult_intermediate = a*b;
         lo_next = mult_intermediate[31:0];
         hi_next = mult_intermediate[63:32];
+        $display("multu begins, a=%h, b=%h", a, b);
     end 
 
     if(op == DIVU) begin
@@ -218,23 +222,27 @@ always @(*) begin
     end
 
     if(op == BEQ || op == BNE)begin
+        $display("beq entered, a = %h, b = %h", a, b);
         if(a_signed == b_signed)begin
             zero = 1;
             positive = 0;
             negative = 0;
+            $display("eq entered, zero = %d", zero);
         end
         else if(a_signed > b_signed)begin
             zero = 0;
             positive = 1;
             negative = 0;
+            $display("neq entered, positive = %d", positive);
         end
         else if(a_signed < b_signed)begin
             zero = 0;
             positive = 0;
             negative = 1;
+            $display("neq entered, negative = %d", negative);
         end 
     end
-    $display("r=%h", r);
+    /*$display("r=%h", r);*/
 
 end
 
