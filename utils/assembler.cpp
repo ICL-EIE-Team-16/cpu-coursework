@@ -342,7 +342,7 @@ std::string convert_instruction_to_hex(const std::string &command,
 
         code += config.getConstantToAdd();
     } else {
-        std::cerr << "Invalid instruction passed as an argument." << std::endl;
+        std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
     }
 
     return decimal_to_8_char_hex(code);

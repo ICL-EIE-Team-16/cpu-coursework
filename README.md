@@ -27,6 +27,7 @@ Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/
 ## Before submission check
 - src/mipsregisterfile.v:30: warning: System task ($display) cannot be synthesized in an always_ff process. - remove all $display statements before the submission progress
 - can the MIPS address offset be negative?
+- how the rounding in division should work?
 
 ## Authors
 - Michal Palic
