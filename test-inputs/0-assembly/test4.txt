@@ -1,0 +1,9 @@
+ADDIU $s0, $zero, 0x50
+LW $s1, 0($s0)
+SRA $s2, $s1, 0x2
+SRL $s3, $s1, 0x2
+SLL $s4, $s1, 0x2
+
+JR $zero
+#data
+0x50: 0x10
