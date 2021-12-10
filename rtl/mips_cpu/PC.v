@@ -34,27 +34,27 @@ module PC(
     always @(*) begin
 
         if ((instruction_code == BEQ) && zero) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BGTZ) && positive) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BLEZ) && (zero || negative)) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BNE) && (negative || positive)) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if (((instruction_code == BGEZ) || (instruction_code == BGEZAL)) && (positive || zero)) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if (((instruction_code == BLTZ) || (instruction_code == BLTZAL)) && negative) begin
-            jump_address = address+{{14{offset[15]}}, offset, 2'b00};
+            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == JR) || (instruction_code == JALR)) begin
@@ -82,7 +82,7 @@ module PC(
             address <= 32'hBFC00000;
         end
         else begin
-            if (fetch) begin
+            if (exec2) begin //fetch before
                 if (pc_halt) begin
                     address <= 0;
                 end
