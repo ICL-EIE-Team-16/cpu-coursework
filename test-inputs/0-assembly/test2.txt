@@ -3,6 +3,7 @@ LW $s1, 0($s0)
 LW $s2, 4($s0)
 AND $s3, $s0, $s1
 OR $s4,$s1,$s2
+ADDIU $v0, $s4, 0x0
 JR $zero
 #Data
 0x50: 0x0A
