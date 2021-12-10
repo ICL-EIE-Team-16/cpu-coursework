@@ -1,10 +1,11 @@
-LW $v1, 24($zero)
-LW $a0, 28($zero)
-AND $a1, $a0, $v1
-OR $a2,$a0,$v1
+ADDIU $s0, $zero, 0x10
+LW $s1, 0($s0)
+LW $s2, 4($s0)
+AND $s3, $s0, $s1
+OR $s4,$s1,$s2
 JR $zero
 #Data
-0x14: 0x0A
-0x1C: 0x0B
+0x10: 0x0A
+0x14: 0x0B
 
 
