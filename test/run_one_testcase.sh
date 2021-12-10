@@ -1,9 +1,10 @@
 #!/bin/bash
 set -eou pipefail
 
-TESTCASE="$1"
-VERBOSE="$2"
-BASE_TEST_BENCH="$3"
+SOURCE_DIRECTORY="$1"
+TESTCASE="$2"
+VERBOSE="$3"
+BASE_TEST_BENCH="$4"
 INSTRUCTION_REGEX="([a-z]+)"
 INSTR_NAME=""
 if [[ $TESTCASE =~ $INSTRUCTION_REGEX ]]; then
@@ -29,14 +30,14 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
      -s "${BASE_TEST_BENCH}" \
      -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
      -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-     rtl/*.v rtl/mips_cpu/*.v test/testbenches/*.v
+     ${SOURCE_DIRECTORY}/*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v
 else
   # silence the output from the command
   iverilog -g 2012 \
        -s "${BASE_TEST_BENCH}" \
        -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
        -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-       rtl/*.v rtl/mips_cpu/*.v test/testbenches/*.v > /dev/null
+       ${SOURCE_DIRECTORY}/*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v
 fi
 
 

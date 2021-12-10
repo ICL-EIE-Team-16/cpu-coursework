@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eou pipefail
-INSTRUCTION_TO_TEST="$1"
+SOURCE_DIRECTORY="$1"
+INSTRUCTION_TO_TEST="$2"
 
 # Use a wild-card to specifiy that every file with this pattern represents a testcase file
 TESTCASES="./test/test-cases/*/*.asm.txt"
@@ -15,6 +16,6 @@ VERBOSE="DISABLE" # in order to enable VERBOSE output from the script mode, this
 for i in ${TESTCASES} ; do
     TESTNAME=$(basename ${i} .asm.txt)
     # Dispatch to the main test-case script
-    ./test/run_one_testcase.sh ${TESTNAME} ${VERBOSE} "mips_cpu_bus_tb"
-    # ./run_one_testcase.sh ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
+    ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_tb"
+    # ./run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
 done
