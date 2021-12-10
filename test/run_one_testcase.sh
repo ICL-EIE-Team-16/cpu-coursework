@@ -4,13 +4,18 @@ set -eou pipefail
 TESTCASE="$1"
 VERBOSE="$2"
 BASE_TEST_BENCH="$3"
+INSTRUCTION_REGEX="([a-z]+)"
+INSTR_NAME=""
+if [[ $TESTCASE =~ $INSTRUCTION_REGEX ]]; then
+    INSTR_NAME="${BASH_REMATCH[1]}"
+fi
 
 # Redirect output to stder (&2) so that it seperate from genuine outputs
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "Test MIPS CPU using test-case ${TESTCASE}"
    >&2 echo "  1 - Assembling input file"
 fi
-bin/assembler <test-inputs/0-assembly/${TESTCASE}.asm.txt >test-inputs/1-hex/${TESTCASE}.hex.txt
+test/bin/assembler <test/test-cases/${TESTCASE}/${TESTCASE}.asm.txt > test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  2 - Compiling test-bench"
@@ -22,16 +27,16 @@ fi
 if [ "${VERBOSE}" = "ENABLE" ] ; then
   iverilog -g 2012 -Wall \
      -s "${BASE_TEST_BENCH}" \
-     -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test-inputs/1-hex/${TESTCASE}.hex.txt\" \
-     -o test-inputs/2-testcases/"${BASE_TEST_BENCH}"_${TESTCASE} \
-     ../rtl/*.v ../rtl/mips_cpu/*.v testbenches/*.v
+     -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
+     -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+     rtl/*.v rtl/mips_cpu/*.v test/testbenches/*.v
 else
   # silence the output from the command
   iverilog -g 2012 \
-       -s ${BASE_TEST_BENCH} \
-       -P${BASE_TEST_BENCH}.RAM_INIT_FILE=\"test-inputs/1-hex/${TESTCASE}.hex.txt\" \
-       -o test-inputs/2-testcases/${BASE_TEST_BENCH}_${TESTCASE} \
-       ../rtl/*.v ../rtl/mips_cpu/*.v testbenches/*.v > /dev/null
+       -s "${BASE_TEST_BENCH}" \
+       -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
+       -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+       rtl/*.v rtl/mips_cpu/*.v test/testbenches/*.v > /dev/null
 fi
 
 
@@ -42,7 +47,7 @@ fi
 # Use +e to disable automatic script failure if the command fails, as
 # it is possible the simulation might go wrong.
 set +e
-test-inputs/2-testcases/${BASE_TEST_BENCH}_${TESTCASE} > test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.stdout
+test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout
 # Capture the exit code of the simulator in a variable
 RESULT=$?
 set -e
@@ -57,72 +62,29 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "      Extracting result of OUT instructions"
 fi
 # This is the prefix for simulation output lines containing result of OUT instruction
-RAM_PATTERN="Memory OUT: "
-REG_PATTERN="REGFile : OUT: "
 REG_V0_PATTERN="REG v0: OUT: "
 NOTHING=""
-# Use "grep" to look only for lines containing RAM_PATTERN
+
+# Use "grep" to look only for lines containing REG_V0_PATTERN
 set +e
-grep "${RAM_PATTERN}" test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.stdout > test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.ram-out-lines
+grep "${REG_V0_PATTERN}" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines
 set -e
 # Use "sed" to replace "Memory OUT: " with nothing
-sed -e "s/${RAM_PATTERN}/${NOTHING}/g" test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.ram-out-lines > test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.out-ram
-
-# Use "grep" to look only for lines containing REG_PATTERN
-# set +e
-# grep "${REG_PATTERN}" test-inputs/3-output/MIPS_tb_${TESTCASE}.stdout > test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines
-# set -e
-# Use "sed" to replace "Memory OUT: " with nothing
-#sed -e "s/${REG_PATTERN}/${NOTHING}/g" test-inputs/3-output/MIPS_tb_${TESTCASE}.reg-out-lines > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv
-
-# Use "grep" to look only for lines containing REG_PATTERN
-set +e
-grep "${REG_V0_PATTERN}" test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.stdout > test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines
-set -e
-# Use "sed" to replace "Memory OUT: " with nothing
-sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines > test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
+sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  4 - Comparing output"
 fi
-# Note the -w to ignore whitespace - RAM outputs comparison
-# set +e
-# diff -w test-inputs/4-reference/${TESTCASE}.ref test-inputs/3-output/MIPS_tb_${TESTCASE}.out-ram
-# RESULT_RAM=$?
-# set -e
-
-# Note the -w to ignore whitespace
-# set +e
-# tail -n +1 test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg.csv > test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg-content.csv
-# tail -n +1 test-inputs/4-reference/${TESTCASE}-reg.ref.csv > test-inputs/4-reference/${TESTCASE}-reg-content.ref.csv
-# bin/csvhexconvert <test-inputs/4-reference/${TESTCASE}-reg-content.ref.csv >test-inputs/4-reference/${TESTCASE}-reg-content-converted.ref.csv
-# diff -w test-inputs/4-reference/${TESTCASE}-reg-content-converted.ref.csv test-inputs/3-output/MIPS_tb_${TESTCASE}.out-reg-content.csv
-# RESULT_REG=$?
-# set -e
 
 # Note the -w to ignore whitespace
 set +e
-diff -w test-inputs/4-reference/${TESTCASE}-v0.ref test-inputs/3-output/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
+diff -w test/test-cases/${TESTCASE}/${TESTCASE}-v0.ref test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0 > /dev/null
 RESULT_V0=$?
 set -e
 
-# Based on whether differences were found, either pass or fail - RAM comparison
-# if [[ "${RESULT_RAM}" -ne 0 ]] ; then
-#   echo "      ${TESTCASE}, FAIL - RAM"
-# else
-#   echo "      ${TESTCASE}, PASS - RAM"
-# fi
-
-# Based on whether differences were found, either pass or fail
-# if [[ "${RESULT_REG}" -ne 0 ]] ; then
-#     echo "      ${TESTCASE}, FAIL - REG"
-# else
-#    echo "      ${TESTCASE}, PASS - REG"
-# fi
-
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TESTCASE}, ${BASE_TEST_BENCH}, FAIL - V0"
+   echo "${TESTCASE} ${INSTR_NAME} Fail"
 else
-   echo "${TESTCASE}, ${BASE_TEST_BENCH}, PASS - V0"
+   echo "${TESTCASE} ${INSTR_NAME} Pass"
 fi

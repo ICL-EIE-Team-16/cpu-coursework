@@ -41,7 +41,8 @@ Regular expressions for instructions validation are not that perfect yet.
 - Test option to jump backwards.
 - Add negative offsets to memory instructions.
 - Need more programs - that check problems such as negative offsets and correct sign extensions.
-- Add execution permission command for each script. 
+- Add execution permission command for each script.
+- Implement LI instruction
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 
