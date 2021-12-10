@@ -165,4 +165,4 @@ fabric.properties
 ./modules_tb/logs/*
 
 #Michal debug directory
-/src/debug/*
+/rtl/debug/*

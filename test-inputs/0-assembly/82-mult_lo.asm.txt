@@ -1,6 +1,0 @@
-ADDIU $s0, $zero, 0x1234
-ADDIU $s1, $zero, 0x5678
-MULT $s0, $s1
-MFHI $v0
-JR $zero
-JR $zero

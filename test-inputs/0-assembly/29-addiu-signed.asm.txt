@@ -1,3 +1,0 @@
-ADDIU $v0, $zero, 0xBFC2
-JR $zero
-JR $zero

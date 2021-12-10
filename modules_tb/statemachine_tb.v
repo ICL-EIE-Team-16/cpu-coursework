@@ -6,5 +6,5 @@ logic fetch;
 logic exec1;
 logic exec2;
 
-statemachine sm(.clk(clk), .reset(reset), .halt(halt), .fetch());
+statemachine sm(.clk(clk), .reset(reset), .halt(halt), .fetch(fetch));
 endmodule

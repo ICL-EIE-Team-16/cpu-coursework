@@ -1,6 +1,0 @@
-ADDIU $s0, $zero, 0xBFC
-SLL $s1, $s0, 0x14
-LB $v0, 0x10($s1)
-JR $zero
-# Data - assuming big endian addressing
-0x10: 0xEEFFEEFF
