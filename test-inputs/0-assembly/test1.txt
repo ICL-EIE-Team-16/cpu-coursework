@@ -1,4 +1,4 @@
-ADDIU $s0, $zero, 0x10
+ADDIU $s0, $zero, 0x50
 LW $s1, 0($s0)
 ADDI $s2, $zero, 0x14
 SW $s2, 0($s0)
@@ -7,4 +7,4 @@ JR $zero
 
 #Data
 
-0x10: 0x0A
+0x50: 0x0A
