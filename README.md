@@ -34,15 +34,14 @@ All bash scripts in the `test` folder assume that they will be executed in the `
 
 ## Assembler
 In order to speed ut testing, MIPS assembler was implemented in C++. This assembler takes as an input assembly file with MIPS instructions. As an output, it then generates hex files that are loaded to RAM memory using file as a parameter in Verilog. The assembler was developed with a use of test driven development. Unit tests can be found in `test/utils/test`. The test cases are written in Google Test and the whole C++ environment was set up using CMake.
-Due to the fact that MIPS programs start at `0xBFC00000`, all data address are automatically aligned by offset of `0xBFC00000`.
-Currently, the assembler does not implement noop instruction.
-Regular expressions for instructions validation are not that perfect.
+Due to the fact that MIPS programs start at `0xBFC00000`, all data address are automatically aligned by offset of `0xBFC00000`. The nop instruction in the assembler can be written as `NOP`.
+Regular expressions for instructions validation are not that perfect yet.
 
 ### Todo
-- Add clean up to testing scripts.
 - Test option to jump backwards.
 - Add negative offsets to memory instructions.
 - Need more programs - that check problems such as negative offsets and correct sign extensions.
+- Add execution permission command for each script. 
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 

@@ -2,4 +2,3 @@ ADDIU $s0, $zero, 0xBF00
 MTLO $s0
 MFLO $v0
 JR $zero
-JR $zero

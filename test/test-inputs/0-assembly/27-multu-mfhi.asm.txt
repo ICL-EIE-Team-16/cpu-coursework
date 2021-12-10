@@ -8,4 +8,4 @@ ADDIU $s3, $s1, 0x1234
 MULTU $s2, $s3
 MFHI $v0
 JR $zero
-JR $zero
+NOP

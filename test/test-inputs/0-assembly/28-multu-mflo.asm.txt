@@ -8,4 +8,4 @@ ADDIU $s1, $s1, 0x1234
 MULTU $s0, $s1
 MFLO $v0
 JR $zero
-JR $zero
+NOP

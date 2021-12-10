@@ -1,6 +1,7 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
-LB $v0, 0x13($s1)
+LB $v0, 0x17($s1)
 JR $zero
+NOP
 # Data - assuming big endian addressing
-0x10: 0x0000EEFF
+0x14: 0x0000EEFF
