@@ -125,7 +125,7 @@ module mips_cpu_bus#(
         else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
             reg_in = mxu_dout;
         else if (instruction_code == BGEZAL || instruction_code == BLTZAL || instruction_code == JAL || instruction_code == JALR)
-            reg_in = pc_address + 31'd8;
+            reg_in = pc_address + 31'd4;
         else
             reg_in = alu_r;
     end
