@@ -1,5 +1,5 @@
-ADDIU $s0, $zero, 0xFFFF
-BGEZ $s0, 0x0005
+ADDIU $s0, $zero, 0x7FFF
+BGEZ $s0, 0x0004
 ADDIU $v0, $zero, 0x1111
 JR $zero
 JR $zero

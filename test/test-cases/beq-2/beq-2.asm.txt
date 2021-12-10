@@ -1,6 +1,6 @@
 ADDIU $s0, $zero, 0x1111
 ADDIU $s1, $zero, 0x1111
-BEQ $s0, $s1, 0x0006
+BEQ $s0, $s1, 0x0004
 ADDIU $v0, $zero, 0x1111
 JR $zero
 JR $zero
