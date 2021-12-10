@@ -15,5 +15,5 @@ chmod +x ./test/clean_all.sh ./test/build_utils.sh ./test/run_all_testcases.sh .
 if [[ -z "$INSTRUCTION_TO_TEST" ]] ; then
   ./test/run_all_testcases.sh
 else
-  echo "need to run instruction $INSTRUCTION_TO_TEST"
+  ./test/run_all_testcases.sh "$INSTRUCTION_TO_TEST"
 fi

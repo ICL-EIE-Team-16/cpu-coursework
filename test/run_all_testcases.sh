@@ -1,8 +1,14 @@
 #!/bin/bash
 set -eou pipefail
+INSTRUCTION_TO_TEST="$1"
 
 # Use a wild-card to specifiy that every file with this pattern represents a testcase file
 TESTCASES="./test/test-cases/*/*.asm.txt"
+
+if [[ -n "$INSTRUCTION_TO_TEST" ]] ; then
+  TESTCASES="./test/test-cases/$INSTRUCTION_TO_TEST-*/$INSTRUCTION_TO_TEST-*.asm.txt"
+fi
+
 VERBOSE="DISABLE" # in order to enable VERBOSE output from the script mode, this value has to be set to ENABLED
 
 # Loop over every file matching the testcase pattern
