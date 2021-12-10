@@ -70,7 +70,7 @@ typedef enum logic[6:0]{
 
 initial begin
     
-    assign a = 32'h0008;
+    /*assign a = 32'h0008;
     assign b = 32'h000f;
     assign r = r_unsigned;
     assign sa = 6'b000001;
@@ -1109,7 +1109,21 @@ initial begin
     if(a_signed<0)
         assert(zero==0 && positive==0 && negative==1) else $display("flag error, a = %d, zero = %d, positive = %d, negative = %d", a_signed, zero, positive, negative);
     
-    $display("Success!");
+    $display("Success!");*/
+
+    assign a = 32'hbfc21234;
+    assign b = 32'h23451234;
+    assign mult_intermediate = a*b;
+
+    $display("test 7 start");
+
+    assign op = MULTU;
+    assign clk = 0;
+    #1
+    assign clk = 1;
+    #1
+    assert(hi == mult_intermediate[63:32] && lo == mult_intermediate[31:0]) else $display("multu error, hi = %d, lo = %d", hi, lo);
+    $display("hi = %h, lo = %h", hi, lo);
 
 
     $finish;

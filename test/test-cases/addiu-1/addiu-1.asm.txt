@@ -1,0 +1,2 @@
+ADDIU $v0, $zero, 0x10
+JR $zero

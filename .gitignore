@@ -1,3 +1,7 @@
+### Test cases setup
+test/test-cases/*/*.hex.txt
+test/test-cases/*/mips_cpu_bus_*
+
 ### C++ template
 # Prerequisites
 *.d
@@ -165,4 +169,4 @@ fabric.properties
 ./modules_tb/logs/*
 
 #Michal debug directory
-/src/debug/*
+/rtl/debug/*
