@@ -1,0 +1,3 @@
+LUI $v0, 0x1
+JR $ra
+ADDIU $t0, $t0, 0
