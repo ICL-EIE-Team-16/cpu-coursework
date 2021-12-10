@@ -13,7 +13,7 @@ chmod +x ./test/clean_all.sh ./test/build_utils.sh ./test/run_all_testcases.sh .
 ./test/build_utils.sh
 
 if [[ -z "$INSTRUCTION_TO_TEST" ]] ; then
-  ./test/run_all_testcases.sh "$SOURCE_DIRECTORY"
+  ./test/run_all_testcases.sh "$SOURCE_DIRECTORY" ""
 else
   ./test/run_all_testcases.sh "$SOURCE_DIRECTORY" "$INSTRUCTION_TO_TEST"
 fi

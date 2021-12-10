@@ -1,3 +1,0 @@
-ADDIU $v0, $t1, 0xffff
-JR $ra
-ADDIU $t0, $t0, 0

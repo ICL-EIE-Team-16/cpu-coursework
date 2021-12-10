@@ -1,4 +1,0 @@
-ADDIU $t0, $t0, 1
-LI $t1, 8 
-JR $ra
-ADDU $v0, $t0, $t1

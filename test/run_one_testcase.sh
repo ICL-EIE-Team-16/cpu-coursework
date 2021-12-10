@@ -55,7 +55,7 @@ set -e
 
 # Check whether the simulator returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "${TESTCASE}, ${BASE_TEST_BENCH}, FAIL - SIMULATION"
+   echo "${TESTCASE} ${INSTR_NAME} Fail"
    exit
 fi
 
