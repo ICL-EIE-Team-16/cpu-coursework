@@ -186,8 +186,13 @@ end
 
 always@(*) begin //make sure reg file enables go high in the right cycle
     if (exec2) begin
-        if (r_type && (instruction_code != MTHI && instruction_code != MTLO && instruction_code != JR)) begin
-            reg_write_en =1;
+        if (r_type) begin
+            if (instruction_code == MTHI || instruction_code == MTLO || instruction_code == JR)
+                reg_write_en = 0;
+            else if (instruction_code == MULT || instruction_code == MULTU || instruction_code == DIV || instruction_code == DIVU)
+                reg_write_en = 0;
+            else
+                reg_write_en = 1;
         end
         else if (i_type) begin
                 //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
