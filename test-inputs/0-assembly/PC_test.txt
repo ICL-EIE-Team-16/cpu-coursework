@@ -2,37 +2,37 @@ LW $s0, 1000($zero)
 LW $s1, 1004($zero)
 LW $s2, 1000($zero)
 BNE $s0, $s2, 5
-ADDI $v0, $zero, 1
+ADDIU $v0, $zero, 1
 BNE $s0, $s1, 5
-ADDI $v0, $v0, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
+ADDIU $v0, $v0, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
 BEQ $s0, $s1, 5
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
 BEQ $s0, $s2, 5
-ADDI $v0, $v0, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
+ADDIU $v0, $v0, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
 BLEZ $s0, 5
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
 LW $s3, 1008($zero)
 BLEZ $s3, 5
-ADDI $v0, $v0, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
-ADDI $v1, $v1, 1
+ADDIU $v0, $v0, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
+ADDIU $v1, $v1, 1
 BGEZAL $s3, 5
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
 BGEZAL $s1, 5
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
 JR $zero
-ADDI $v0, $v0, 1
-ADDI $v1, $v1, 1
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
+ADDIU $v1, $v1, 1
+ADDIU $v0, $v0, 1
 JR $ra
-ADDI $v0, $v0, 1
+ADDIU $v0, $v0, 1
 #Data
 0x3E8: 0xA
 0x3EC: 0x5
