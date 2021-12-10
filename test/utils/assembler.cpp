@@ -2,6 +2,7 @@
 #include <regex>
 #include <string>
 #include <vector>
+#include <cstring>
 #include "opcodes.h"
 #include "registers.h"
 #include "utils.h"
@@ -26,7 +27,7 @@ std::string decimal_to_8_char_hex(unsigned int num) {
 
 int register_name_to_index(const std::string &registerName) {
     if (registers.find(registerName) == registers.end()) {
-        std::cerr << "Invalid register name provided: " << registerName << std::endl;
+        // std::cerr << "Invalid register name provided: " << registerName << std::endl;
         return -1;
     } else {
         return registers[registerName];
@@ -337,12 +338,12 @@ std::string convert_instruction_to_hex(const std::string &command,
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
-            std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
+            // std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
         }
 
         code += config.getConstantToAdd();
     } else {
-        std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
+        // std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
     }
 
     return decimal_to_8_char_hex(code);
@@ -360,7 +361,7 @@ std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string>
 
     int instrAddress = 0;
     for (int i = 0; i < linesWithoutComments.size(); i++) {
-        std::string line = linesWithoutComments[i];
+        std::string line = trim(linesWithoutComments[i]);
         std::smatch dataMatches;
         if (std::regex_search(line, dataMatches, dataLineRegex)) {
             std::string addressWithoutBase = dataMatches[1];
@@ -368,6 +369,9 @@ std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string>
             int address = convert_immediate_const_to_int(addressWithBase);
             std::string data = decimal_to_8_char_hex(convert_immediate_const_to_int(dataMatches[2]));
             result.insert(std::pair<int, std::string>(address, data));
+        } else if (line == "NOP") {
+            result.insert(std::pair<int, std::string>(instrAddress, decimal_to_8_char_hex(0)));
+            instrAddress += 4;
         } else {
             result.insert(std::pair<int, std::string>(instrAddress, convert_instruction_to_hex(line, configs)));
             instrAddress += 4;
@@ -385,13 +389,12 @@ std::string generate_n_lines_of_zeroes(int n) {
     return result;
 }
 
-std::string convert_ram_content_to_string(std::map<int, std::string>& ramContent) {
+std::string convert_ram_content_to_string(std::map<int, std::string> &ramContent) {
     std::string result = "";
     int lastAddress = -1;
     std::map<int, std::string>::iterator it;
 
-    for (it = ramContent.begin(); it != ramContent.end(); it++)
-    {
+    for (it = ramContent.begin(); it != ramContent.end(); it++) {
         if (it->first - 4 == lastAddress) {
             result += it->second + "\n";
         } else {

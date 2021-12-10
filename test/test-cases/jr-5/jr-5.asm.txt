@@ -1,0 +1,2 @@
+JR $a3
+LI $zero, 0 

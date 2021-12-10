@@ -1,0 +1,2 @@
+JR $ra
+LI $zero, 0

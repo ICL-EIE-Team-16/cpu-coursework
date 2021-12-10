@@ -1,9 +1,0 @@
-ADDIU $s0, $zero, 0xFFFF
-SLL $s0, $s0, 0x10
-ADDIU $s0, $s0, 0xFFFE
-ADDIU $s1, $zero, 0xA
-# Expected multiplication - 0xFFFEFFFE * 0xA = 0xFFFFFFFFFFFFFFEC
-MULT $s0, $s1
-MFLO $v0
-JR $zero
-JR $zero

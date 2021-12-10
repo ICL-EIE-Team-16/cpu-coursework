@@ -1,0 +1,4 @@
+LI $t0, 4096
+LW $v0, 0($t0)
+JR $ra
+LI $zero, 0

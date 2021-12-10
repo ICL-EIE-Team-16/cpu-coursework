@@ -1,0 +1,4 @@
+LI $t0, 4096
+ADDIU $v0, $t1, 0xFFFF
+JR $ra
+SW $v0, 0($t0)
