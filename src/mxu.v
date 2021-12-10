@@ -37,24 +37,27 @@ typedef enum logic[6:0] {
         SW = 7'd52
     } instruction_code_t;
 
+
 // Address processing
-always_comb begin
+always @(*) begin
+
     if (fetch)
         mem_address = pc_address;
     else
         mem_address = alu_r;
+
 end
 
 
 //Read  signal
-always_comb begin
+always @(*) begin
     if (fetch)
         read = 1;
     else if (exec1) begin
         if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
-            read = 1; //This should be one but it's off for debugging
+            read = 1;
         else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
-            read = 1; //This should be one but it's off for debugging
+            read = 1;
         else
             read = 0;
     end
@@ -64,7 +67,7 @@ end
 
 
 //Write signal
-always_comb begin
+always @(*) begin
     if (exec1) begin
         if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
             write = 1;
@@ -77,51 +80,120 @@ end
 
 
 //Memhalt signal
-always_comb begin
+always @(*) begin
     if ((read || write)&& waitrequest)
         mem_halt = 1;
     else
         mem_halt = 0;
 end
 
-//byteenable signal
-always @(*) begin
-    if(fetch)
-        byteenable = 4'b1111;
-    else if (instruction_code == SW || instruction_code == LW)
-        byteenable = 4'b1111;
-    else if (instruction_code == LB || instruction_code == LBU || instruction_code == SB) begin
-            if(mem_address[1:0] == 0)
-                byteenable = 4'b0001;
-            else if(mem_address[1:0] == 1)
-                byteenable = 4'b0010;
-            else if(mem_address[1:0] == 2)
-                byteenable = 4'b0100;
-            else if(mem_address[1:0] == 3)
-                byteenable = 4'b1000;
-    end
-end
 
-//Decode memory output
+//Decodememory i
 always @(*) begin
-    if (instruction_code == LW)
+    if (instruction_code == LW) begin
             dataout = memin;
-    else if (instruction_code == LB || instruction_code == LBU) begin
-            if(mem_address[1:0] == 0)
-                dataout = {24'b0, memin[7:0]};
-            else if(mem_address[1:0] == 1)
-                dataout = {16'b0, memin[15:8], 8'b0};
-            else if(mem_address[1:0] == 2)
-                dataout = {8'b0, memin[23:16], 16'b0};
-            else if(mem_address[1:0] == 3)
-                dataout = {memin[31:24], 24'b0};
+        end
+    else if (instruction_code == LB) begin
+        if(alu_r[1:0] == 0) begin
+            dataout = {{24{memin[31]}},memin[31:24]};
+        end
+        else if(alu_r[1:0] == 1) begin
+            dataout = {{24{memin[23]}},memin[23:16]};
+        end
+        else if(alu_r[1:0] == 2) begin
+            dataout = {{24{memin[15]}},memin[15:8]};
+        end
+        else if(alu_r[1:0] == 3) begin
+            dataout = {{24{memin[7]}},memin[7:0]};
+        end
     end
-    else dataout = 0; // Can be removed, undefined is fine
+    else if (instruction_code == LBU) begin
+        if(alu_r[1:0] == 0) begin
+            dataout = {25'b0, memin[31:24]};
+        end
+        else if(alu_r[1:0] == 1) begin
+            dataout = {25'b0, memin[23:16]};
+        end
+        else if(alu_r[1:0] == 2) begin
+            dataout = {25'b0, memin[15:8]};
+        end
+        else if(alu_r[1:0] == 3) begin
+            dataout = {25'b0, memin[7:0]};
+        end
+    end
+
+    else begin
+        dataout = memin; //Important for fetching
+    end
 end
 
-//Encode memory input
+
+//Encode memory outputs
 always @(*) begin
-    memout = mxu_reg_b_in;
+    if (instruction_code == SW)begin
+        memout = mxu_reg_b_in;
+    end
+    else if (instruction_code == SB) begin
+            if(alu_r[1:0] == 0) begin
+                memout = {mxu_reg_b_in[7:0], 24'b0};
+            end
+            else if(alu_r[1:0] == 1) begin
+                memout = {8'b0, mxu_reg_b_in[7:0], 16'b0};
+            end
+            else if(alu_r[1:0] == 2) begin
+                memout = {16'b0, mxu_reg_b_in[7:0], 8'b0};
+            end
+            else if(alu_r[1:0] == 3) begin
+                memout = {24'b0, mxu_reg_b_in[7:0]};
+            end
+        end
+    else if (instruction_code == SH) begin
+        if(alu_r[1] == 0) begin
+            memout = {16'b0, mxu_reg_b_in[15:0]};
+        end
+        else begin
+            memout = {mxu_reg_b_in[31:16], 16'b0};
+        end
+    end
+    else begin
+        memout = 0;
+    end
+end
+
+//BYTEENABLE SIGNAL
+always @(*) begin
+    if (fetch) begin
+        byteenable = 4'b1111;
+    end
+    else if (instruction_code == SW || instruction_code == LW ) begin
+            byteenable = 4'b1111;
+        end
+
+    else if (instruction_code == SB || instruction_code == LB || instruction_code == LBU) begin
+            if(alu_r[1:0] == 0) begin
+                byteenable = 4'b1000;
+            end
+            else if(alu_r[1:0] == 1) begin
+                byteenable = 4'b0100;
+            end
+            else if(alu_r[1:0] == 2) begin
+                byteenable = 4'b0010;
+            end
+            else if(alu_r[1:0] == 3) begin
+                byteenable = 4'b0001;
+            end
+        end
+    else if (instruction_code == SH) begin
+        if(alu_r[1] == 0) begin
+            byteenable = 4'b1100;
+        end
+        else begin
+            byteenable = 4'b0011;
+        end
+    end
+    else begin
+        byteenable = 4'b0;
+    end
 end
 
 endmodule
