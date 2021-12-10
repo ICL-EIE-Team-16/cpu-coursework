@@ -44,7 +44,7 @@ always @(*) begin
     if (fetch)
         mem_address = pc_address;
     else
-        mem_address = alu_r;
+        mem_address = {alu_r[31:2] , 2'b00};
 
 end
 

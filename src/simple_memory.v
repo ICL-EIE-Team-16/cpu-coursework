@@ -81,7 +81,7 @@ always @(posedge clk) begin
         else if (read == 1)
             readdata<= {hi, midhi, midlo, lo};
         else
-            readdata<=15;
+            readdata<=0;
 
     end
     else if (read || write) begin
