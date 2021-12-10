@@ -56,6 +56,8 @@ Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/
 - can the MIPS address offset be negative?
 - how the rounding in division should work?
 - How will DTs test cases be run? Is he going connect our CPU to his memory?
+- How permissions will be handled? Will you run chmod +x only on test_mips_cpu_bus.tb
+- What about line endings? Will you convert Windows line endings so there is no error with it? -> can actually run dos2unix before the submission
 
 ## Authors
 - Michal Palic

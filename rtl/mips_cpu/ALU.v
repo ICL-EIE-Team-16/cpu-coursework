@@ -142,7 +142,7 @@ always @(*) begin
         mult_intermediate = a*b;
         lo_next = mult_intermediate[31:0];
         hi_next = mult_intermediate[63:32];
-    end 
+    end
 
     if(op == DIVU) begin
         lo_next = a/b;
@@ -153,7 +153,7 @@ always @(*) begin
         mult_intermediate = a_signed*b_signed;
         lo_next = mult_intermediate[31:0];
         hi_next = mult_intermediate[63:32];
-    end 
+    end
 
     if(op == DIV) begin
         lo_next = a_signed/b_signed;
@@ -232,9 +232,8 @@ always @(*) begin
             zero = 0;
             positive = 0;
             negative = 1;
-        end 
+        end
     end
-    $display("r=%h", r);
 
 end
 
