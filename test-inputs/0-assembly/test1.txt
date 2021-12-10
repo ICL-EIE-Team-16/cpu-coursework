@@ -1,9 +1,10 @@
-LW $3, 20($zero)
-ADDI $a0, $zero, 0x14
-SW $a0, 20($zero)
-SRA $a1,$a0, 0x02
+ADDIU $s0, $zero, 0x10
+LW $s1, 0($s0)
+ADDI $s2, $zero, 0x14
+SW $s2, 0($s0)
+SRA $s3,$s2, 0x02
 JR $zero
 
 #Data
 
-0x14: 0x0A
+0x10: 0x0A
