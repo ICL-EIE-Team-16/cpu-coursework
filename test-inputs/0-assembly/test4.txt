@@ -3,6 +3,7 @@ LW $s1, 0($s0)
 SRA $s2, $s1, 0x2
 SRL $s3, $s1, 0x2
 SLL $s4, $s1, 0x2
+ADDIU $v0, $s4, 0x0
 
 JR $zero
 #data
