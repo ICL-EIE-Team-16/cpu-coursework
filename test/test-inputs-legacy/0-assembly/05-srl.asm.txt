@@ -1,4 +1,0 @@
-ADDIU $s0, $zero, 0xBFC
-SLL $s1, $s0, 0x14
-SRL $v0, $s1, 0x14
-JR $zero

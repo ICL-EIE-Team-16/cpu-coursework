@@ -1,7 +1,0 @@
-ADDIU $s0, $zero, 0xBFC
-SLL $s1, $s0, 0x14
-LW $v0, 0x14($s1)
-JR $zero
-NOP
-# Data
-0x14: 0xFFFF
