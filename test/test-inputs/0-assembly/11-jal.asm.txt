@@ -1,8 +1,9 @@
 ADDIU $s0, $zero, 0x1234
-JAL 0x3F00006
+JAL 0x3F00007
 ADDIU $s1, $zero, 0x5678
 ADDIU $s2, $zero, 0x1234
 ADDU $v0, $v0, $s2
+JR $zero
 JR $zero
 ADDIU $v0, $zero, 0x1111
 JR $ra

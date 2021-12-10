@@ -21,6 +21,7 @@ This repository contains code for the CPU coursework for the second-year EIE mod
   - `utils` - assembler files
     - `test` - unit tests for assembler
   - `build_utils.sh` - builds utility files needed
+  - `clean_all.sh` - cleans all files from previous testing
   - `run_all_testcases.sh` - runs all testcases
   - `run_one_module_tb.sh` - runs exactly one test bench, parameter: name of the test bench
   - `run_one_testcase.sh` - runs exactly one testcase, parameters: testcase name, verbose enabled/disabled, base test bench name
@@ -29,6 +30,7 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 
 ## Testing
 All bash scripts in the `test` folder assume that they will be executed in the `test` folder.
+- need to add permissions to all bash scripts in the file
 
 ## Assembler
 In order to speed ut testing, MIPS assembler was implemented in C++. This assembler takes as an input assembly file with MIPS instructions. As an output, it then generates hex files that are loaded to RAM memory using file as a parameter in Verilog. The assembler was developed with a use of test driven development. Unit tests can be found in `test/utils/test`. The test cases are written in Google Test and the whole C++ environment was set up using CMake.
