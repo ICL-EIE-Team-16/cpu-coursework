@@ -78,38 +78,39 @@ public:
 };
 
 std::map<std::string, int> registers{
-        {"$zero", 0},
-        {"$at",   1},
-        {"$v0",   2},
-        {"$v1",   3},
-        {"$a0",   4},
-        {"$a1",   5},
-        {"$a2",   6},
-        {"$a3",   7},
-        {"$t0",   8},
-        {"$t1",   9},
-        {"$t2",   10},
-        {"$t3",   11},
-        {"$t4",   12},
-        {"$t5",   13},
-        {"$t6",   14},
-        {"$t7",   15},
-        {"$s0",   16},
-        {"$s1",   17},
-        {"$s2",   18},
-        {"$s3",   19},
-        {"$s4",   20},
-        {"$s5",   21},
-        {"$s6",   22},
-        {"$s7",   23},
-        {"$t8",   24},
-        {"$t9",   25},
-        {"$k0",   26},
-        {"$k1",   27},
-        {"$gp",   28},
-        {"$sp",   29},
-        {"$s8",   30},
-        {"$ra",   31},
+        {"zero", 0},
+        {"0", 0},
+        {"at",   1},
+        {"v0",   2},
+        {"v1",   3},
+        {"a0",   4},
+        {"a1",   5},
+        {"a2",   6},
+        {"a3",   7},
+        {"t0",   8},
+        {"t1",   9},
+        {"t2",   10},
+        {"t3",   11},
+        {"t4",   12},
+        {"t5",   13},
+        {"t6",   14},
+        {"t7",   15},
+        {"s0",   16},
+        {"s1",   17},
+        {"s2",   18},
+        {"s3",   19},
+        {"s4",   20},
+        {"s5",   21},
+        {"s6",   22},
+        {"s7",   23},
+        {"t8",   24},
+        {"t9",   25},
+        {"k0",   26},
+        {"k1",   27},
+        {"gp",   28},
+        {"sp",   29},
+        {"s8",   30},
+        {"ra",   31},
 };
 
 std::string trim(std::string str) {
@@ -136,18 +137,25 @@ std::string decimal_to_8_char_hex(unsigned int num) {
 }
 
 int register_name_to_index(const std::string &registerName) {
-    if (registers.find(registerName) == registers.end()) {
+    std::regex registerReg("\\$?(\\S+)");
+    std::smatch matches;
+    std::string registerNameParsed = "";
+
+    if (std::regex_search(registerName, matches, registerReg)) {
+        registerNameParsed = matches[1];
+    }
+
+    if (registers.find(registerNameParsed) == registers.end()) {
         std::cerr << "Invalid register name provided: " << registerName << std::endl;
         return -1;
     } else {
-        return registers[registerName];
+        return registers[registerNameParsed];
     }
 }
 
 unsigned int convert_immediate_const_to_int(std::string immediateConst) {
     immediateConst = trim(immediateConst);
 
-    std::cout << "immediateConst: " << immediateConst << std::endl;
     if (immediateConst.substr(0, 2) == "0x") {
         return std::stoul(immediateConst, nullptr, 16);
     } else if (immediateConst.substr(0, 2) == "0b") {
@@ -589,6 +597,8 @@ TEST(Assembler, JRToHexAssembly) {
     EXPECT_EQ("03e00008", convert_instruction_to_hex("JR $ra", configs));
     EXPECT_EQ("02000008", convert_instruction_to_hex("JR $s0", configs));
     EXPECT_EQ("02200008", convert_instruction_to_hex("JR $s1", configs));
+    EXPECT_EQ("00000008", convert_instruction_to_hex("JR $zero #l1", configs));
+    EXPECT_EQ("00000008", convert_instruction_to_hex("JR $0 #l1", configs));
 }
 
 TEST(Assembler, LBToHexAssembly) {

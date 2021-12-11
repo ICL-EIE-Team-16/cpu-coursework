@@ -1,7 +1,8 @@
 module mips_cpu_bus_tb;
     timeunit 1ns/10ps;
 
-    parameter RAM_INIT_FILE = "test/01-binary/countdown.hex.txt";
+    parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";
+    parameter WAVES_OUT_FILE = "test/test-cases/addiu-1/addiu-1.vcd";
     parameter TIMEOUT_CYCLES = 10000;
 
     logic clk;
@@ -24,7 +25,7 @@ module mips_cpu_bus_tb;
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
 
     initial begin
-        $dumpfile("waves.vcd");
+        $dumpfile(WAVES_OUT_FILE);
         $dumpvars(3, mips_cpu_bus_tb);
     end
 
