@@ -5,8 +5,12 @@ SOURCE_DIRECTORY="$1"
 TESTCASE="$2"
 VERBOSE="$3"
 BASE_TEST_BENCH="$4"
+
+# Determine the name of the instruction
+
 INSTRUCTION_REGEX="([a-z]+)"
 INSTR_NAME=""
+
 if [[ $TESTCASE =~ $INSTRUCTION_REGEX ]]; then
     INSTR_NAME="${BASH_REMATCH[1]}"
 fi
@@ -16,24 +20,26 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "Test MIPS CPU using test-case ${TESTCASE}"
    >&2 echo "  1 - Assembling input file"
 fi
+
+# Generate hex files from assembly
 test/bin/assembler <test/test-cases/${TESTCASE}/${TESTCASE}.asm.txt > test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  2 - Compiling test-bench"
 fi
+
 # Compile a specific test bench for this specific test case.
 # The -P command is used to modify the RAM_INIT_FILE parameter on the test-bench at compile-time
-# TODO: add -Wall  to see all the warnings
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
-  if [ -d "/path/to/dir" ] ; then
-    iverilog -g 2012 \
+  if [ -d "${SOURCE_DIRECTORY}/mips_cpu" ] ; then
+    iverilog -g 2012 -Wall \
          -s "${BASE_TEST_BENCH}" \
          -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
          -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
          ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v
   else
-    iverilog -g 2012 \
+    iverilog -g 2012 -Wall \
              -s "${BASE_TEST_BENCH}" \
              -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
              -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
@@ -41,7 +47,7 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
   fi
 else
   # silence the output from the command
-  if [ -d "/path/to/dir" ] ; then
+  if [ -d "${SOURCE_DIRECTORY}/mips_cpu" ] ; then
       iverilog -g 2012 \
            -s "${BASE_TEST_BENCH}" \
            -P"${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
@@ -60,16 +66,15 @@ fi
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  3 - Running test-bench"
 fi
-# Run the simulator, and capture all output to a file
-# Use +e to disable automatic script failure if the command fails, as
-# it is possible the simulation might go wrong.
+
+# Run test bench and redirect it's output to the output file
 set +e
 test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout
 # Capture the exit code of the simulator in a variable
 RESULT=$?
 set -e
 
-# Check whether the simulator returned a failure code, and immediately quit
+# Check whether the test bench returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
    echo "${TESTCASE} ${INSTR_NAME} Fail"
    exit
