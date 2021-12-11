@@ -1,2 +1,2 @@
 JR $a3
-LI $zero, 0 
+ORI $zero, $zero, 0

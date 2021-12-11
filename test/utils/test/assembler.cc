@@ -79,6 +79,7 @@ public:
 
 std::map<std::string, int> registers{
         {"zero", 0},
+        {"0", 0},
         {"at",   1},
         {"v0",   2},
         {"v1",   3},
@@ -597,6 +598,7 @@ TEST(Assembler, JRToHexAssembly) {
     EXPECT_EQ("02000008", convert_instruction_to_hex("JR $s0", configs));
     EXPECT_EQ("02200008", convert_instruction_to_hex("JR $s1", configs));
     EXPECT_EQ("00000008", convert_instruction_to_hex("JR $zero #l1", configs));
+    EXPECT_EQ("00000008", convert_instruction_to_hex("JR $0 #l1", configs));
 }
 
 TEST(Assembler, LBToHexAssembly) {

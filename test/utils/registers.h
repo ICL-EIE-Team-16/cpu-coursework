@@ -6,6 +6,7 @@
 
 std::map<std::string, int> registers{
     {"zero", 0},
+    {"0", 0},
     {"at",   1},
     {"v0",   2},
     {"v1",   3},
