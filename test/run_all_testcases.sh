@@ -17,6 +17,11 @@ VERBOSE="DISABLE"
 # Loop over every file matching the testcase pattern
 for i in ${TESTCASES} ; do
     TESTNAME=$(basename ${i} .asm.txt)
+    set +e
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_tb"
-    # ./run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
+    set -e
+
+    set +e
+    ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
+    set -e
 done

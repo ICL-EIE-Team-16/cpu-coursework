@@ -108,7 +108,7 @@ set -e
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail"
+   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH}"
 else
-   echo "${TESTCASE} ${INSTR_NAME} Pass"
+   echo "${TESTCASE} ${INSTR_NAME} Pass # ${BASE_TEST_BENCH}"
 fi
