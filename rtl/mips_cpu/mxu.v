@@ -121,6 +121,22 @@ always @(*) begin
             dataout = {24'b0, memin[7:0]};
         end
     end
+    else if (instruction_code == LH) begin
+        if(alu_r[1] == 0) begin
+            dataout = {{16{memin[31]}}, memin[31:16]};
+        end
+        else if(alu_r[1] == 1) begin
+            dataout = {{16{memin[15]}}, memin[15:0]};
+        end
+    end
+    else if (instruction_code == LHU) begin
+            if(alu_r[1] == 0) begin
+                dataout = {16'b0, memin[31:16]};
+            end
+            else if(alu_r[1] == 1) begin
+                dataout = {16'b0, memin[15:0]};
+            end
+        end
 
     else begin
         dataout = memin; //Important for fetching
@@ -183,7 +199,8 @@ always @(*) begin
                 byteenable = 4'b1000;
             end
         end
-    else if (instruction_code == SH) begin
+
+    else if (instruction_code == SH || instruction_code == LH || instruction_code == LHU) begin
         if(alu_r[1] == 0) begin
             byteenable = 4'b0011;
         end
