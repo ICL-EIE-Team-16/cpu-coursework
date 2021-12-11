@@ -26,11 +26,19 @@ std::string decimal_to_8_char_hex(unsigned int num) {
 }
 
 int register_name_to_index(const std::string &registerName) {
-    if (registers.find(registerName) == registers.end()) {
-        // std::cerr << "Invalid register name provided: " << registerName << std::endl;
+    std::regex registerReg("\\$?(\\S+)");
+    std::smatch matches;
+    std::string registerNameParsed = "";
+
+    if (std::regex_search(registerName, matches, registerReg)) {
+        registerNameParsed = matches[1];
+    }
+
+    if (registers.find(registerNameParsed) == registers.end()) {
+        std::cerr << "Invalid register name provided: " << registerName << std::endl;
         return -1;
     } else {
-        return registers[registerName];
+        return registers[registerNameParsed];
     }
 }
 
@@ -338,12 +346,18 @@ std::string convert_instruction_to_hex(const std::string &command,
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
-            // std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
+            std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
         }
 
         code += config.getConstantToAdd();
     } else {
-        // std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
+        std::regex emptyLneRegex("^\\s+$");
+        std::smatch emptyLineMatches;
+        if (std::regex_search(command, emptyLineMatches, emptyLneRegex)) {
+            code = 0;
+        } else {
+            std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
+        }
     }
 
     return decimal_to_8_char_hex(code);
@@ -358,18 +372,19 @@ std::map<int, std::string> convert_lines_to_ram_content(std::vector<std::string>
                  [](std::string line) { return !is_line_comment(line); });
 
     std::regex dataLineRegex("0[xX]([\\da-fA-F]+):\\s*(\\S*)");
+    std::regex nopLineRegex("[N,n][O,o][P,p]");
 
     int instrAddress = 0;
     for (int i = 0; i < linesWithoutComments.size(); i++) {
         std::string line = trim(linesWithoutComments[i]);
-        std::smatch dataMatches;
+        std::smatch dataMatches, nopMatches;
         if (std::regex_search(line, dataMatches, dataLineRegex)) {
             std::string addressWithoutBase = dataMatches[1];
             std::string addressWithBase = "0x" + addressWithoutBase;
             int address = convert_immediate_const_to_int(addressWithBase);
             std::string data = decimal_to_8_char_hex(convert_immediate_const_to_int(dataMatches[2]));
             result.insert(std::pair<int, std::string>(address, data));
-        } else if (line == "NOP") {
+        } else if (std::regex_search(line, nopMatches, nopLineRegex) || line.size() == 0) {
             result.insert(std::pair<int, std::string>(instrAddress, decimal_to_8_char_hex(0)));
             instrAddress += 4;
         } else {
