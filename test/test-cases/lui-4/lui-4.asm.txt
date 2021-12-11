@@ -1,2 +1,4 @@
 LUI $v0, 0x1
 ADDIU $v0, $v0, 1
+JR $ra
+NOP

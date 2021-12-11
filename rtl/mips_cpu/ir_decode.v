@@ -178,6 +178,9 @@ always@(*) begin
             //Sign extension logic for immediate - Multiple formats
                 if (instruction_code == ANDI || instruction_code == ORI || instruction_code == XORI)
                     immediate = {16'd0,instruction[15:0]};
+                else if (instruction_code == LUI) begin
+                    immediate = {instruction[15:0], 16'd0};
+                end
                 else
                     immediate = {{16{instruction[15]}},instruction[15:0]};
         end

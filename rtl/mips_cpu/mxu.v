@@ -109,18 +109,34 @@ always @(*) begin
     end
     else if (instruction_code == LBU) begin
         if(alu_r[1:0] == 0) begin
-            dataout = {25'b0, memin[31:24]};
+            dataout = {24'b0, memin[31:24]};
         end
         else if(alu_r[1:0] == 1) begin
-            dataout = {25'b0, memin[23:16]};
+            dataout = {24'b0, memin[23:16]};
         end
         else if(alu_r[1:0] == 2) begin
-            dataout = {25'b0, memin[15:8]};
+            dataout = {24'b0, memin[15:8]};
         end
         else if(alu_r[1:0] == 3) begin
-            dataout = {25'b0, memin[7:0]};
+            dataout = {24'b0, memin[7:0]};
         end
     end
+    else if (instruction_code == LH) begin
+        if(alu_r[1] == 0) begin
+            dataout = {{16{memin[31]}}, memin[31:16]};
+        end
+        else if(alu_r[1] == 1) begin
+            dataout = {{16{memin[15]}}, memin[15:0]};
+        end
+    end
+    else if (instruction_code == LHU) begin
+            if(alu_r[1] == 0) begin
+                dataout = {16'b0, memin[31:16]};
+            end
+            else if(alu_r[1] == 1) begin
+                dataout = {16'b0, memin[15:0]};
+            end
+        end
 
     else begin
         dataout = memin; //Important for fetching
@@ -171,24 +187,25 @@ always @(*) begin
 
     else if (instruction_code == SB || instruction_code == LB || instruction_code == LBU) begin
             if(alu_r[1:0] == 0) begin
-                byteenable = 4'b1000;
-            end
-            else if(alu_r[1:0] == 1) begin
-                byteenable = 4'b0100;
-            end
-            else if(alu_r[1:0] == 2) begin
-                byteenable = 4'b0010;
-            end
-            else if(alu_r[1:0] == 3) begin
                 byteenable = 4'b0001;
             end
+            else if(alu_r[1:0] == 1) begin
+                byteenable = 4'b0010;
+            end
+            else if(alu_r[1:0] == 2) begin
+                byteenable = 4'b0100;
+            end
+            else if(alu_r[1:0] == 3) begin
+                byteenable = 4'b1000;
+            end
         end
-    else if (instruction_code == SH) begin
+
+    else if (instruction_code == SH || instruction_code == LH || instruction_code == LHU) begin
         if(alu_r[1] == 0) begin
-            byteenable = 4'b1100;
+            byteenable = 4'b0011;
         end
         else begin
-            byteenable = 4'b0011;
+            byteenable = 4'b1100;
         end
     end
     else begin

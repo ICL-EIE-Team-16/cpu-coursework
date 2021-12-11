@@ -6,3 +6,4 @@ ADDIU $v0, $zero, 0x1234
 JR $zero
 ADDIU $v0, $v0, 0x1234
 JR $zero
+NOP

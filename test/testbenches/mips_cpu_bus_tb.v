@@ -57,8 +57,10 @@ module mips_cpu_bus_tb;
         reset = 0;
     end
 
-    always @(negedge active) begin
+    always @(posedge clk) begin
+        if(~active) begin
         $display("REG v0: OUT: %h", register_v0);
         $finish;
+        end
     end
 endmodule
