@@ -2,31 +2,38 @@
 
 set -eou pipefail
 
-TESTCASES="./test-cases/*"
+TESTCASES="./test-inputs-legacy/0-assembly/*"
 
-INSTRUCTION_REGEX="./test-cases/([a-z]+-[1-9])"
+ASSEMBLY_REGEX="./test-inputs-legacy/0-assembly/([1-9]+)-([a-z]+)"
 
 # Loop over every file matching the testcase pattern
 for i in ${TESTCASES} ; do
-    if [[ ${i} =~ $INSTRUCTION_REGEX ]]; then
-        INSTR_PATH="./test-cases/${BASH_REMATCH[1]}/*-v0.ref"
-        for i in ${INSTR_PATH} ; do
-          if [ ${i} != "./test-cases/${BASH_REMATCH[1]}/${BASH_REMATCH[1]}-v0.ref" ]
+    if [[ ${i} =~ $ASSEMBLY_REGEX ]]; then
+        if [ ! -d "test-cases/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}" ]
           then
-              #cat ${i} > ./test-cases/${BASH_REMATCH[1]}/${BASH_REMATCH[1]}-v0.ref
-            rm -rf ${i}
-          fi
-        done
+            mkdir "test-cases/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}"
+          end
+        fi
 
-        INSTR_PATH="./test-cases/${BASH_REMATCH[1]}/*.asm.txt"
-        for i in ${INSTR_PATH} ; do
-          if [ ${i} != "./test-cases/${BASH_REMATCH[1]}/${BASH_REMATCH[1]}.asm.txt" ]
-          then
-            rm -rf ${i}
-            # cat ${i} > ./test-cases/${BASH_REMATCH[1]}/${BASH_REMATCH[1]}.asm.txt
+        # ASM_PATH="./test-inputs-legacy/0-assembly/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}*"
+        REF_V0_PATH="./test-inputs-legacy/4-reference/${BASH_REMATCH[1]}-${BASH_REMATCH[2]}*"
+
+        # for x in ${ASM_PATH} ; do
+          # if [ -f "$x" ]; then
+            # cat ${x} > ./test-cases/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}.asm.txt
+          # fi
+        # done
+
+        for x in ${REF_V0_PATH} ; do
+          echo "here: ${x}"
+          if [ -f "$x" ]; then
+            cat ${x} > ./test-cases/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}/${BASH_REMATCH[2]}-${BASH_REMATCH[1]}-v0.ref
           fi
         done
     else
       echo "does not match"
     fi
 done
+
+# ./test-inputs-legacy/0-assembly/70-sltiu-false.asm.txt
+# ./test-inputs-legacy/0-assembly/80-divu_lo.asm.txt
