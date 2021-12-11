@@ -1,4 +1,4 @@
 ADDIU $t0, $t0, 1
-LI $t1, 8 
+ORI $t1, $zero, 0x0008
 JR $ra
 ADDU $v0, $t0, $t1
