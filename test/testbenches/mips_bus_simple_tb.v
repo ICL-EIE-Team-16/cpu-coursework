@@ -1,4 +1,4 @@
-module mips_cpu_bus_tb;
+module mips_bus_simple_tb;
     timeunit 1ns/10ps;
 
     parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";

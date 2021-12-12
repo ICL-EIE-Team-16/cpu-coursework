@@ -1,4 +1,4 @@
-module rand_memory #(
+module random_memory #(
 parameter SIZE=1024,
 parameter RAM_FILE = "ram.txt"
 )(
@@ -14,7 +14,7 @@ parameter RAM_FILE = "ram.txt"
 
 //This memory is Avalon compliant and implements 1024 memory locations after
 logic[31:0] mem[SIZE-1:0];
-logic[31:0] offset;
+logic[31:0] offset, mem_read_word, mem_write_word;
 logic[7:0] hi, lo, midhi, midlo;
 assign offset = 32'hBFC00000;
 logic[31:0] shifted_address, offset_address;
@@ -42,31 +42,35 @@ initial begin
 always @(*) begin
     shifted_address = addr - offset;
     offset_address = shifted_address>>2;
+    mem_read_word = mem[offset_address];
 
+    /*
     //Debugging error indicators
-    if (shifted_address[1:0] != 0)
+    if (shifted_address[1:0] != 0 && (read || write))
         $display("Memory error: unaligned address: %h", addr);
     if (read == 1 && write == 1)
         $display("Memory error: Simultaneous RW: %h", addr);
+    */
+
 
     //Byteenable Implementation
     if(byteenable[0] == 1)
-        hi = mem[offset_address][31:24];
+        hi = mem_read_word[31:24];
     else
         hi = 0;
 
     if(byteenable[1] == 1)
-        midhi = mem[offset_address][23:16];
+        midhi = mem_read_word[23:16];
     else
         midhi = 0;
 
     if(byteenable[2] == 1)
-        midlo = mem[offset_address][15:8];
+        midlo = mem_read_word[15:8];
     else
         midlo = 0;
 
     if(byteenable[3] == 1)
-        lo = mem[offset_address][7:0];
+        lo = mem_read_word[7:0];
     else
         lo = 0;
 
@@ -74,26 +78,43 @@ end
 
 
 always @(posedge clk) begin
-    if (delay[3]) begin
-        if (offset_address >= 0 && offset_address <= 1023) begin
-            if (write == 1)
-                mem[offset_address] <= writedata;
-            else if (read == 1)
-                readdata<= {hi, midhi, midlo, lo};
-            else
-                readdata<=15;
+    if (offset_address >= 0 && offset_address <= 1023) begin
+        if (write == 1 & waitrequest == 0) begin
+            for (int i=0; i<SIZE; i++) begin
+                if ( offset_address == i) begin
+                    mem[offset_address] <= (({{8{~byteenable[0]}}, {8{~byteenable[1]}}, {8{~byteenable[2]}}, {8{~byteenable[3]}}} & mem[offset_address]) | ({{8{byteenable[0]}}, {8{byteenable[1]}}, {8{byteenable[2]}}, {8{byteenable[3]}}} & writedata));
+                end
+                else begin
+                    mem[i] <= mem[i];
+                end
+            end
+
         end
         else begin
-            $display("Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  %h", addr);
+            for (int i=0; i<SIZE; i++) begin
+                mem[i] <= mem[i];
+            end
         end
+
+        if (read == 1 & waitrequest == 0)
+            readdata<= {hi, midhi, midlo, lo};
+        else begin
+            readdata<=0;
+        end
+
     end
+    else if (read || write) begin
+        $display("Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  %h", addr);
+    end
+
 end
 
 always @(posedge clk) begin
-
     if (delay[1] == 1) begin
         waitrequest = 0;
     end
+    else
+        waitrequest = 1;
 end
 
 always @(posedge clk) begin
@@ -120,3 +141,4 @@ always @(posedge clk) begin
 end
 
 endmodule
+
