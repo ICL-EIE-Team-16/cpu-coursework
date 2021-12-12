@@ -36,6 +36,8 @@ initial begin
             $readmemh(RAM_FILE, mem, 0, SIZE-1);
         end
         waitrequest = 1;
+        delay = 0;
+        shiftreg = 0;
     end
 
 
@@ -96,7 +98,7 @@ always @(posedge clk) begin
             end
         end
 
-        if (read == 1 & waitrequest == 0)
+        if (read == 1 && waitrequest == 0)
             readdata<= {hi, midhi, midlo, lo};
         else begin
             readdata<=0;
@@ -109,12 +111,8 @@ always @(posedge clk) begin
 
 end
 
-always @(posedge clk) begin
-    if (delay[1] == 1) begin
-        waitrequest = 0;
-    end
-    else
-        waitrequest = 1;
+always @(*) begin
+    waitrequest = ~delay[3];
 end
 
 always @(posedge clk) begin
@@ -132,10 +130,20 @@ always @(posedge clk) begin
     delay[3]<= delay[2];
     delay[2]<= delay[1];
     delay[1]<= delay[0];
-    delay[0]<= 0;
+
 
     if((read || write ) && (delay == 0)) begin
-        delay[shiftreg[6:5]+1] <= 1;
+        if (shiftreg[6:5] == 0) begin
+            delay[0] <= 1;
+        end
+        else begin
+            delay[shiftreg[6:5]] <= 1;
+            delay[0] <= 0;
+        end
+
+    end
+    else begin
+        delay[0] <= 0;
     end
 
 end
