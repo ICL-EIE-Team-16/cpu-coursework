@@ -138,7 +138,7 @@ module mips_cpu_bus#(
     end
 
     statemachine sm(.clk(clk), .reset(reset), .halt(pc_halt||mem_halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
-    mxu mainmxu(.waitrequest(waitrequest), .mxu_reg_b_in(reg_b_out), .memin(readdata), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
+    mxu mainmxu(.waitrequest(waitrequest), .mxu_reg_b_in(reg_b_out), .memin(readdata), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
     ALU mainalu(.reset(reset), .clk(clk), .fetch(fetch), .exec1(exec1), .exec2(exec2), .a(reg_a_out), .b(alu_b), .op(instruction_code_1), .sa(shift_amount), .zero(zero), .positive(positive), .negative(negative), .r(alu_r));
     mipsregisterfile#(DISP_REG_VALS_TO_OUT) regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en && ~(pc_halt || mem_halt)), .register_a_index(reg_a_idx_1), .register_b_index(reg_b_idx_1), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0));
     IR_decode ir(

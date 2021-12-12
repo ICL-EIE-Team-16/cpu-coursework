@@ -68,12 +68,6 @@ module PC(
             jump = 0;
         end
 
-        if (address == 0) begin
-            pc_halt = 1;
-        end
-        else
-            pc_halt = 0;
-
     end
 
     always_ff @(posedge clk) begin
@@ -99,6 +93,13 @@ module PC(
                 jump_flag <= 0;
                 jump_address_reg <= 0;
             end
+        end
+
+        if (address == 0) begin
+            pc_halt <= 1;
+        end
+        else begin
+            pc_halt <= 0;
         end
     end
 
