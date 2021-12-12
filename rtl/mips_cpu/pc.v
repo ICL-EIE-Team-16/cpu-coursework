@@ -29,10 +29,9 @@ module PC(
     } instruction_code_t;
 
 
-    assign next_address = address+4;
+    assign next_address = address + 4;
 
     always @(*) begin
-
         if ((instruction_code == BEQ) && zero) begin
             jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
@@ -82,25 +81,23 @@ module PC(
             address <= 32'hBFC00000;
         end
         else begin
-            if (exec2) begin //fetch before
-                if (pc_halt) begin
-                    address <= 0;
-                end
-                else if (jump_flag) begin
-                    address <= jump_address_reg;
-                end
-                else begin
-                    address <= next_address;
-                end
+            if (pc_halt) begin
+                address <= 0;
+            end
+            else if (jump_flag) begin
+                address <= jump_address_reg;
+            end
+            else begin
+                address <= next_address;
+            end
 
-                if (jump) begin
-                    jump_flag <= 1;
-                    jump_address_reg <= jump_address;
-                end
-                else begin
-                    jump_flag <= 0;
-                    jump_address_reg <= 0;
-                end
+            if (jump) begin
+                jump_flag <= 1;
+                jump_address_reg <= jump_address;
+            end
+            else begin
+                jump_flag <= 0;
+                jump_address_reg <= 0;
             end
         end
     end

@@ -3,7 +3,7 @@ module mips_cpu_bus_memory_tb;
 
     parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";
     parameter WAVES_OUT_FILE = "test/test-cases/addiu-1/addiu-1.vcd";
-    parameter TIMEOUT_CYCLES = 10000;
+    parameter TIMEOUT_CYCLES = 100000;
 
     logic clk;
     logic reset;
@@ -49,7 +49,6 @@ module mips_cpu_bus_memory_tb;
     end
 
     initial begin
-        $display("REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra");
         reset = 0;
         #5;
         reset = 1;

@@ -18,11 +18,12 @@ module mips_cpu_bus#(
 );
 
     logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative;
-    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate, reg_in, alu_r, mxu_dout;
-    logic[4:0] reg_a_idx, reg_b_idx, reg_in_idx, shift_amount;
+    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout;
+    logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
-    logic[6:0] instruction_code;
+    logic[6:0] instruction_code_1, instruction_code_2;
     assign alu_a = reg_a_out;
+    assign is_current_instruction_valid = 0;
 
     typedef enum logic[6:0]{
         ADD = 7'd1,
@@ -132,11 +133,21 @@ module mips_cpu_bus#(
             reg_in = alu_r;
     end
 
+    always_ff @(posedge clk) begin
+        if (exec1 == 1) begin
+            is_current_instruction_valid <= 1;
+        end
+    end
+
     statemachine sm(.clk(clk), .reset(reset), .halt(pc_halt||mem_halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
     mxu mainmxu(.waitrequest(waitrequest), .mxu_reg_b_in(reg_b_out), .memin(readdata), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
     ALU mainalu(.reset(reset), .clk(clk), .fetch(fetch), .exec1(exec1), .exec2(exec2), .a(reg_a_out), .b(alu_b), .op(instruction_code), .sa(shift_amount), .zero(zero), .positive(positive), .negative(negative), .r(alu_r));
     mipsregisterfile#(DISP_REG_VALS_TO_OUT) regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en && ~(pc_halt || mem_halt)), .register_a_index(reg_a_idx), .register_b_index(reg_b_idx), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0));
-    IR_decode ir(.clk(clk), .current_instruction(readdata), .fetch(fetch), .exec1(exec1), .exec2(exec2), .shift_amount(shift_amount), .destination_reg(reg_in_idx), .reg_b_idx(reg_b_idx), .reg_a_idx(reg_a_idx), .immediate(immediate), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code(instruction_code));
+    IR_decode ir(
+        .clk(clk), .current_instruction(readdata), .is_current_instruction_valid(is_current_instruction_valid), .fetch(fetch), .exec1(exec1), .exec2(exec2),
+        .shift_amount(shift_amount), .destination_reg(reg_in_idx), .reg_a_idx_1(reg_a_idx_1), .reg_a_idx_2(reg_a_idx_2), .reg_b_idx_1(reg_b_idx_1), .reg_b_idx_2(reg_b_idx_2),
+        .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2)
+    );
     PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .offset(immediate[15:0]), .instr_index(jump_const), .register_data(reg_a_out), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt));
 
 endmodule

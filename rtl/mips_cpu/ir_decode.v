@@ -1,4 +1,3 @@
-//add in 7 bit instruction code
 module IR_decode(
     input logic clk,
     input logic[31:0] current_instruction,
