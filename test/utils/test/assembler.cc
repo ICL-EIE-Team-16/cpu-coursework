@@ -685,6 +685,7 @@ TEST(Assembler, MULTUToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("02350019", convert_instruction_to_hex("MULTU     $s1,    $s5", configs));
     EXPECT_EQ("02970019", convert_instruction_to_hex("MULTU $s4,   $s7", configs));
+    EXPECT_EQ("02b60019", convert_instruction_to_hex("MULTU $s5, $s6", configs));
 }
 
 TEST(Assembler, ORToHexAssembly) {
@@ -806,6 +807,7 @@ TEST(Assembler, XORIToHexAssembly) {
     EXPECT_EQ("3a341425", convert_instruction_to_hex("XORI  $s4, $s1, 0x1425", configs));
     EXPECT_EQ("3ab1003d", convert_instruction_to_hex("XORI $s1, $s5, 0b111101", configs));
     EXPECT_EQ("3a9504e6", convert_instruction_to_hex("XORI $s5, $s4, 1254", configs));
+    EXPECT_EQ("3a02ff56", convert_instruction_to_hex("XORI $v0, $s0, 0xff56", configs));
 }
 
 TEST(Assembler, MFHIToHexAssembly) {
