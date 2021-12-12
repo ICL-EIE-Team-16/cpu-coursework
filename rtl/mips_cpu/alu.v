@@ -178,7 +178,7 @@ always @(*) begin
 
 
     // Non ALU instructions
-    if(op == LB || op == LBU || op == LH || op == LHU || op == LUI || op == LW ) begin
+    if(op == LB || op == LBU || op == LH || op == LHU || op == LW || op == LWL || op == LWR) begin
             r = a+b;
     end
 

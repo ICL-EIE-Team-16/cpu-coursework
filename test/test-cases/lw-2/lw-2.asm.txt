@@ -1,4 +1,7 @@
-ORI $t0, $zero, 4096
-LW $v0, 0($t0)
-JR $ra
-ORI $zero, $zero, 0
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+LW $v0, 0x40($s1)
+JR $zero
+NOP
+# Data
+0x40: 0x11111111

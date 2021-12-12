@@ -137,9 +137,36 @@ always @(*) begin
                 dataout = {16'b0, memin[15:0]};
             end
         end
-
+    else if (instruction_code == LWL) begin
+        if(alu_r[1:0] == 0) begin
+            dataout = memin;
+        end
+        else if(alu_r[1:0] == 1) begin
+            dataout = {memin[23:0], mxu_reg_b_in[7:0]};
+        end
+        else if(alu_r[1:0] == 2) begin
+            dataout = {memin[15:0], mxu_reg_b_in[15:0]};
+        end
+        else if(alu_r[1:0] == 3) begin
+            dataout = {memin[7:0], mxu_reg_b_in[23:0]};
+        end
+    end
+    else if (instruction_code == LWR) begin
+        if(alu_r[1:0] == 0) begin
+            dataout = mxu_reg_b_in;
+        end
+        else if(alu_r[1:0] == 1) begin
+            dataout = {mxu_reg_b_in[23:0], memin[7:0]};
+        end
+        else if(alu_r[1:0] == 2) begin
+            dataout = {mxu_reg_b_in[15:0], memin[15:0]};
+        end
+        else if(alu_r[1:0] == 3) begin
+            dataout = {mxu_reg_b_in[7:0], memin[23:0]};
+        end
+    end
     else begin
-        dataout = memin; //Important for fetching
+        dataout = memin;
     end
 end
 
@@ -165,10 +192,10 @@ always @(*) begin
         end
     else if (instruction_code == SH) begin
         if(alu_r[1] == 0) begin
-            memout = {16'b0, mxu_reg_b_in[15:0]};
+            memout = {mxu_reg_b_in[15:0], 16'b0};
         end
         else begin
-            memout = {mxu_reg_b_in[31:16], 16'b0};
+            memout = {16'b0, mxu_reg_b_in[15:0]};
         end
     end
     else begin
@@ -208,9 +235,38 @@ always @(*) begin
             byteenable = 4'b1100;
         end
     end
+    else if (instruction_code == LWL) begin
+        if(alu_r[1:0] == 0) begin
+            byteenable = 4'b1111;
+        end
+        else if(alu_r[1:0] == 1) begin
+            byteenable = 4'b1110;
+        end
+        else if(alu_r[1:0] == 2) begin
+            byteenable = 4'b1100;
+        end
+        else if(alu_r[1:0] == 3) begin
+            byteenable = 4'b1000;
+        end
+    end
+    else if (instruction_code == LWR) begin
+        if(alu_r[1:0] == 0) begin
+            byteenable = 4'b0000;
+        end
+        else if(alu_r[1:0] == 1) begin
+            byteenable = 4'b0001;
+        end
+        else if(alu_r[1:0] == 2) begin
+            byteenable = 4'b0011;
+        end
+        else if(alu_r[1:0] == 3) begin
+            byteenable = 4'b0111;
+        end
+    end
     else begin
         byteenable = 4'b0;
     end
+
 end
 
 endmodule
