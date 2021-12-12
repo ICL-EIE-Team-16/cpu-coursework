@@ -93,10 +93,8 @@ NOTHING=""
 
 # Use "grep" to look only for lines containing REG_V0_PATTERN
 set +e
-grep "${REG_V0_PATTERN}" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines
+grep "${REG_V0_PATTERN}" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout | sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
 set -e
-# Use "sed" to replace "Memory OUT: " with nothing
-sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.v0-out-lines > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  4 - Comparing output"
@@ -110,7 +108,7 @@ set -e
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail"
+   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH}"
 else
-   echo "${TESTCASE} ${INSTR_NAME} Pass"
+   echo "${TESTCASE} ${INSTR_NAME} Pass # ${BASE_TEST_BENCH}"
 fi
