@@ -41,11 +41,12 @@ typedef enum logic[6:0] {
 // Address processing
 always @(*) begin
 
-    if (fetch)
+    if (fetch) begin
         mem_address = pc_address;
-    else
+    end
+    else begin
         mem_address = {alu_r[31:2] , 2'b00};
-
+    end
 end
 
 
@@ -156,13 +157,13 @@ always @(*) begin
             dataout = mxu_reg_b_in;
         end
         else if(alu_r[1:0] == 1) begin
-            dataout = {mxu_reg_b_in[23:0], memin[7:0]};
+            dataout = {mxu_reg_b_in[31:8], memin[31:24]};
         end
         else if(alu_r[1:0] == 2) begin
-            dataout = {mxu_reg_b_in[15:0], memin[15:0]};
+            dataout = {mxu_reg_b_in[31:16], memin[31:16]};
         end
         else if(alu_r[1:0] == 3) begin
-            dataout = {mxu_reg_b_in[7:0], memin[23:0]};
+            dataout = {mxu_reg_b_in[31:24], memin[31:8]};
         end
     end
     else begin

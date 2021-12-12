@@ -178,10 +178,12 @@ always @(*) begin
 
 
     // Non ALU instructions
-    if(op == LB || op == LBU || op == LH || op == LHU || op == LW || op == LWL || op == LWR) begin
+    if(op == LB || op == LBU || op == LH || op == LHU || op == LW || op == LWL ) begin
             r = a+b;
     end
-
+    if(op == LWR) begin
+        r = a+b+4;
+    end
     //Store instructions
     if(op == SB || op == SH || op == SW) begin
             r = a+b;

@@ -114,7 +114,7 @@ always @(posedge clk) begin
     delay[0]<= 0;
 
     if((read || write ) && (delay == 0)) begin
-        delay[shiftreg[5:6]+1] <= 1;
+        delay[shiftreg[6:5]+1] <= 1;
     end
 
 end
