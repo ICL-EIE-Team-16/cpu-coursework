@@ -95,10 +95,13 @@ module IR_decode(
 
 //Instruction register saving behaviour
     always_ff @(posedge clk) begin
-        if (is_current_instruction_valid) begin
+        if (is_current_instruction_valid)
             instruction_2 <= instruction_1;
-            instruction_1 <= current_instruction;
-        end
+    end
+
+    always @(*) begin
+        if (is_current_instruction_valid)
+            instruction_1 = current_instruction;
     end
 
 //Type decode
