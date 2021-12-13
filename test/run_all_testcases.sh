@@ -18,7 +18,6 @@ VERBOSE="ENABLED"
 for i in ${TESTCASES} ; do
     TESTNAME=$(basename ${i} .asm.txt)
 
-    # TODO: comment all test case runs apart from mips_bus_simple_tb that will be run during submission
     set +e
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_simple_tb"
     set -e
