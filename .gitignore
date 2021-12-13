@@ -1,6 +1,6 @@
 ### Test cases setup
 test/test-cases/*/*.hex.txt
-test/test-cases/*/mips_cpu_bus_*
+test/test-cases/*/mips_bus_*
 
 ### C++ template
 # Prerequisites
