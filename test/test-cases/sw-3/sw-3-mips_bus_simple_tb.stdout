@@ -19,8 +19,8 @@ address: bfc00010
 address: bfc00120
 address: bfc00120
 address: bfc00014
-address: bfc00120
-address: bfc00120
+address: 00000000
+address: 00000000
 address: bfc00018
 address: 00000000
 address: 00000000

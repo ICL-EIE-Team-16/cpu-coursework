@@ -19,8 +19,8 @@ Memory error: Address range miss, only 1024 words after BFC00000 implemented by 
 address: xxxxxxxX
 address: bfc00004
 address: bfc00004
-address: xxxxxxxX
-address: xxxxxxxX
+address: 00000000
+address: 00000000
 address: bfc00008
 address: bfc00008
 address: 00000000

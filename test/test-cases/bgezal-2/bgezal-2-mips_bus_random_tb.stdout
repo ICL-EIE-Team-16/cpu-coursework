@@ -31,8 +31,8 @@ address: bfc00020
 address: bfc00020
 address: bfc00020
 address: bfc00020
-address: 00004444
-address: 00004444
+address: 00000000
+address: 00000000
 address: bfc00024
 address: bfc00024
 address: bfc00024
@@ -47,8 +47,8 @@ address: 00005554
 address: bfc00010
 address: bfc00010
 address: bfc00010
-address: 00006664
-address: 00006664
+address: 00000000
+address: 00000000
 address: bfc00014
 address: bfc00014
 address: bfc00014

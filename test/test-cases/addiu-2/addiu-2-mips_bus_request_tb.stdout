@@ -9,8 +9,8 @@ address: ffff8010
 address: ffff8010
 address: bfc00004
 address: bfc00004
-address: ffff8010
-address: ffff8010
+address: 00000000
+address: 00000000
 address: bfc00008
 address: bfc00008
 address: 00000000

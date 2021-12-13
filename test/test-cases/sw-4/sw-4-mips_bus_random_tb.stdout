@@ -17,8 +17,8 @@ address: fffffffc
 address: bfc00008
 address: bfc00008
 address: bfc00008
-address: fffffffc
-address: fffffffc
+address: 00000000
+address: 00000000
 address: bfc0000c
 address: bfc0000c
 address: 00001000

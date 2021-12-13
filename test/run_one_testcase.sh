@@ -94,7 +94,7 @@ NOTHING=""
 
 # Use "grep" to look only for lines containing REG_V0_PATTERN
 set +e
-grep "${REG_V0_PATTERN}" test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout | sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0
+grep "${REG_V0_PATTERN}" test/test-cases/${TESTCASE}/${TEST_ID}.stdout | sed -e "s/${REG_V0_PATTERN}/${NOTHING}/g" > test/test-cases/${TESTCASE}/${TEST_ID}.out-v0
 set -e
 
 if [ "${VERBOSE}" = "ENABLE" ] ; then
@@ -103,7 +103,7 @@ fi
 
 # Note the -w to ignore whitespace
 set +e
-diff -w test/test-cases/${TESTCASE}/${TESTCASE}-v0.ref test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.out-v0 > /dev/null
+diff -w test/test-cases/${TESTCASE}/${TESTCASE}-v0.ref test/test-cases/${TESTCASE}/${TEST_ID}.out-v0 > /dev/null
 RESULT_V0=$?
 set -e
 

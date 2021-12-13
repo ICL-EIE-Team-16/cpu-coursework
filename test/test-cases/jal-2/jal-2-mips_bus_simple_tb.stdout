@@ -13,8 +13,8 @@ address: bfc00008
 address: bfc00024
 address: bfc00024
 address: bfc0000c
-address: bfc00048
-address: bfc00048
+address: 00000000
+address: 00000000
 address: bfc00010
 address: 00005678
 address: 00005678
@@ -22,8 +22,8 @@ address: bfc00024
 address: 00001110
 address: 00001110
 address: bfc00028
-address: 00001110
-address: 00001110
+address: 00000000
+address: 00000000
 address: bfc0002c
 address: 00002220
 address: 00002220

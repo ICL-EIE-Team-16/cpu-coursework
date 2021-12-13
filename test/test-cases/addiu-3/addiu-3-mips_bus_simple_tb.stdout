@@ -7,8 +7,8 @@ address: bfc00000
 address: ffffbfc0
 address: ffffbfc0
 address: bfc00004
-address: ffffbfc0
-address: ffffbfc0
+address: 00000000
+address: 00000000
 address: bfc00008
 address: 00000000
 address: 00000000
