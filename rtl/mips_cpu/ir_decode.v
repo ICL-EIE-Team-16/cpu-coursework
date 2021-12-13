@@ -151,6 +151,7 @@ module IR_decode(
             reg_a_idx_1 = instruction_1[25:21]; //rs
             reg_b_idx_1 = instruction_1[20:16]; //rt
             destination_reg_1 = instruction_1[15:11]; //rd
+            shift_amount = instruction_1[10:6]; //sa
             function_code_1 = instruction_1[5:0];
             immediate_1 = 0;
             memory = 0;
@@ -160,6 +161,7 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_1 = 5'd0;
             reg_b_idx_1 = 5'd0;
+            shift_amount = 0;
             function_code_1 = 6'd0;
             immediate_1 = 32'd0;
             memory = instruction_1[25:0];
@@ -173,6 +175,7 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_1 = instruction_1[25:21];
             reg_b_idx_1 = instruction_1[20:16];
+            shift_amount = 0;
             function_code_1 = 6'd0;
             memory = 26'd0;
 
@@ -198,7 +201,6 @@ module IR_decode(
             reg_a_idx_2 = instruction_2[25:21]; //rs
             reg_b_idx_2 = instruction_2[20:16]; //rt
             destination_reg_2 = instruction_2[15:11]; //rd
-            shift_amount = instruction_2[10:6]; //sa
             function_code_2 = instruction_2[5:0];
             immediate_2 = 0;
             //if instruction
@@ -207,7 +209,6 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_2 = 5'd0;
             reg_b_idx_2 = 5'd0;
-            shift_amount = 0;
             function_code_2 = 6'd0;
             immediate_2 = 32'd0;
 
@@ -220,7 +221,6 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_2 = instruction_2[25:21];
             reg_b_idx_2 = instruction_2[20:16];
-            shift_amount = 0;
             function_code_2 = 6'd0;
 
             if (instruction_code_2 == BGEZAL || instruction_code_2 == BLTZAL) begin

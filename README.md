@@ -44,7 +44,8 @@ Regular expressions for instructions validation are not that perfect yet.
 - Add execution permission command for each script.
 - Implement LI instruction
 - Pipelining
-  - What happens if there is NOP after instruction that is in the branch delay slot after jump to zero address 
+  - What happens if there is NOP after instruction that is in the branch delay slot after jump to zero address
+- Supplies ALU with pc_address for for AL type instructions to calculate PC+8 - comment in mips_cpu_bus - is this correct?
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 
 ## Possible problems
