@@ -7,3 +7,5 @@ JR $zero #l1
 ADDIU $v0, $v0, 0x100
 BEQ $s0, $s1, 0x6 # l2 - jump backwards to l1
 ADDIU $v0, $v0, 0x1000
+JR $zero
+JR $zero

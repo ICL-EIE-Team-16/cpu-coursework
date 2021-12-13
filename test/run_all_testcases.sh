@@ -21,7 +21,7 @@ for i in ${TESTCASES} ; do
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_tb"
     set -e
     
-    set +e
-    ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
-    set -e
+   # set +e
+   # ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_cpu_bus_memory_tb"
+   # set -e
 done

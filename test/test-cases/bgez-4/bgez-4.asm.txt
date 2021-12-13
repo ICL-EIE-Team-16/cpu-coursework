@@ -6,3 +6,5 @@ JR $zero #l1
 ADDIU $v0, $v0, 0x100
 BGEZ $s0, 0x5 # l2 - jump backwards to l1
 ADDIU $v0, $v0, 0x1000
+JR $zero
+JR $zero
