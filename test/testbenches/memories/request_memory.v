@@ -78,7 +78,7 @@ always @(posedge clk) begin
         if (write == 1 & waitrequest == 0) begin
             for (int i=0; i<SIZE; i++) begin
                 if ( offset_address == i) begin
-                    mem[offset_address] <= (({{8{~byteenable[0]}}, {8{~byteenable[1]}}, {8{~byteenable[2]}}, {8{~byteenable[3]}}} & mem[offset_address]) | ({{8{byteenable[0]}}, {8{byteenable[1]}}, {8{byteenable[2]}}, {8{byteenable[3]}}} & writedata));
+                    mem[offset_address] <= (({{8{~byteenable[0]}}, {8{~byteenable[1]}}, {8{~byteenable[2]}}, {8{~byteenable[3]}}} & mem[offset_address]) | ({{8{byteenable[0]}}, {8{byteenable[1]}}, {8{byteenable[2]}}, {8{byteenable[3]}}} & {writedata[7:0], writedata[15:8], writedata[23:16], writedata[31:24]}));
                 end
                 else begin
                     mem[i] <= mem[i];
@@ -93,7 +93,7 @@ always @(posedge clk) begin
         end
 
         if (read == 1 & waitrequest == 0)
-            readdata<= {hi, midhi, midlo, lo};
+            readdata<= {lo, midlo, midhi, hi};
         else begin
             readdata<=0;
         end
