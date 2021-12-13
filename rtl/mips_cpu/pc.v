@@ -88,7 +88,7 @@ module PC(
             end
         end
 
-        if (address == 0) begin
+        if (previous_address == 0) begin // TODO: source of possible bug?
             pc_halt <= 1;
         end
         else begin
