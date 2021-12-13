@@ -15,3 +15,4 @@ address: 00000000
 address: 00000000
 Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000000
 REG v0: OUT: 00000002
+test/testbenches/mips_bus_simple_tb.v:65: $finish called at 21000 (10ps)

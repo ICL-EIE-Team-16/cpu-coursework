@@ -13,8 +13,8 @@ address: fffffffc
 address: fffffffc
 address: bfc00008
 address: bfc00008
-address: fffffffc
-address: fffffffc
+address: 00000000
+address: 00000000
 address: bfc0000c
 address: bfc0000c
 address: 00001000
@@ -24,4 +24,5 @@ Memory error: Address range miss, only 1024 words after BFC00000 implemented by 
 address: 00001000
 address: 00000000
 REG v0: OUT: ffffffff
+test/testbenches/mips_bus_request_tb.v:65: $finish called at 37000 (10ps)
 Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000000
