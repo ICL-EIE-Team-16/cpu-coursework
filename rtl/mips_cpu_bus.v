@@ -17,7 +17,7 @@ module mips_cpu_bus#(
     input logic[31:0] readdata
 );
 
-    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid;
+    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding;
     logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
@@ -86,6 +86,14 @@ module mips_cpu_bus#(
         active = ~pc_halt;
     end
 
+//Ignore data forwarding
+    always_comb begin
+        ignore_forwarding = instruction_code_2 == BGTZ || instruction_code_2 == DIV || instruction_code_2 == DIVU
+            || instruction_code_2 == MTHI || instruction_code_2 == MTLO || instruction_code_2 == MULT || instruction_code_2 == MULTU
+            || instruction_code_2 == BEQ || instruction_code_2 == BGEZ || instruction_code_2 == BGEZAL || instruction_code_2 == BGTZ
+            || instruction_code_2 == BLEZ || instruction_code_2 == BLTZ || instruction_code_2 == BLTZAL || instruction_code_2 == BNE
+            || instruction_code_2 == J || instruction_code_2 == JAL || instruction_code_2 == JR || instruction_code_2 == SB || instruction_code_2 == SH || instruction_code_2 == SW;
+    end
 
 //MUX @ ALU B input
     always_comb begin
@@ -102,7 +110,7 @@ module mips_cpu_bus#(
             alu_b = immediate_1;
         else if (instruction_code_1 == LUI || instruction_code_1 == LW || instruction_code_1 == LWL || instruction_code_1 == LWR)
             alu_b = immediate_1;
-        else if (reg_b_idx_1 == reg_in_idx)
+        else if (reg_b_idx_1 == reg_in_idx && !ignore_forwarding) // TODO: maybe need to add NOP
             alu_b = alu_r_saved;
         else
             alu_b = reg_b_out;
@@ -115,7 +123,7 @@ module mips_cpu_bus#(
             alu_a = pc_address;
         else
             alu_a = reg_a_out;*/
-        if (reg_a_idx_1 == reg_in_idx) begin
+        if (reg_a_idx_1 == reg_in_idx && !ignore_forwarding) begin
             alu_a = alu_r_saved;
         end else
             alu_a = reg_a_out;
