@@ -1,9 +1,9 @@
-module mips_cpu_bus_memory_tb;
+module mips_bus_random_tb;
     timeunit 1ns/10ps;
 
     parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";
     parameter WAVES_OUT_FILE = "test/test-cases/addiu-1/addiu-1.vcd";
-    parameter TIMEOUT_CYCLES = 10000;
+    parameter TIMEOUT_CYCLES = 1000;
 
     logic clk;
     logic reset;
@@ -21,13 +21,15 @@ module mips_cpu_bus_memory_tb;
     logic[31:0] num;
     logic[4:0] sa;
 
-    rand_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
+    random_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
 
+    /*
     initial begin
         $dumpfile(WAVES_OUT_FILE);
         $dumpvars(3, mips_cpu_bus_tb);
     end
+    */
 
     // Generate clock
     initial begin
@@ -55,12 +57,12 @@ module mips_cpu_bus_memory_tb;
         reset = 1;
         #20;
         reset = 0;
-        #1000;
-        $finish;
     end
 
-    always @(negedge active) begin
+    always @(posedge clk) begin
+        if(~active) begin
         $display("REG v0: OUT: %h", register_v0);
         $finish;
+        end
     end
 endmodule

@@ -1,9 +1,10 @@
 ADDIU $s0, $s0, 0x1
 ADDIU $s1, $s1, 0x0
 ADDIU $v0, $zero, 0x1
-BNE $s0, $s1, 0x8 
-ADDIU $v0, $zero, 0x10
+BNE $s0, $s1, 0x4
+ADDIU $v0, $v0, 0x10
 JR $zero #l1
 ADDIU $v0, $v0, 0x100
-BNE $s0, $s1, 0x6 # l2 - jump backwards to l1
+BNE $s0, $s1, 0xFFFE # l2 - jump backwards to l1
 ADDIU $v0, $v0, 0x1000
+NOP
