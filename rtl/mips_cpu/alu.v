@@ -240,37 +240,32 @@ always @(*) begin
 end
 
 always_ff @(posedge clk) begin
-
     if (reset) begin
         lo <= 0;
         hi <= 0;
     end
-
     else begin
-
-        if(exec2) begin
-            if(op == MULTU)begin
-                lo <= lo_next;
-                hi <= hi_next;
-            end
-            if(op == DIVU)begin
-                lo <= lo_next;
-                hi <= hi_next;
-            end
-            if(op == MULT)begin
-                lo <= lo_next;
-                hi <= hi_next;
-            end
-            if(op == DIV)begin
-                lo <= lo_next;
-                hi <= hi_next;
-            end
-            if(op == MTHI)begin
-                hi <= a;
-            end
-            if(op == MTLO)begin
-                lo <= a;
-            end
+        if(op == MULTU)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == DIVU)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == MULT)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == DIV)begin
+            lo <= lo_next;
+            hi <= hi_next;
+        end
+        if(op == MTHI)begin
+            hi <= a;
+        end
+        if(op == MTLO)begin
+            lo <= a;
         end
     end
 end
