@@ -66,7 +66,6 @@ else
     fi
 fi
 
-
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  3 - Running test-bench"
 fi
@@ -80,7 +79,7 @@ set -e
 
 # Check whether the test bench returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail"
+   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH} - simulation"
    exit
 fi
 
@@ -115,7 +114,7 @@ set -e
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH}"
+   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH} - result comparison"
 else
    echo "${TESTCASE} ${INSTR_NAME} Pass # ${BASE_TEST_BENCH}"
 fi

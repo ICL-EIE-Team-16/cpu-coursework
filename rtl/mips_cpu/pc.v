@@ -9,9 +9,9 @@ module PC(
     output logic[31:0] address,
     output logic pc_halt
 );
-    logic[31:0] next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
-    logic[31:0] jump_address, jump_address_reg;
-    logic jump, jump_flag;
+    logic[31:0] previous_address, next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
+    logic[31:0] jump_address;
+    logic jump;
 
     typedef enum logic[6:0]{
         BEQ = 30,
@@ -33,27 +33,27 @@ module PC(
 
     always @(*) begin
         if ((instruction_code == BEQ) && zero) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BGTZ) && positive) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BLEZ) && (zero || negative)) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == BNE) && (negative || positive)) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if (((instruction_code == BGEZ) || (instruction_code == BGEZAL)) && (positive || zero)) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if (((instruction_code == BLTZ) || (instruction_code == BLTZAL)) && negative) begin
-            jump_address = address + {{14{offset[15]}}, offset, 2'b00};
+            jump_address = previous_address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end
         else if ((instruction_code == JR) || (instruction_code == JALR)) begin
@@ -61,7 +61,7 @@ module PC(
             jump = 1;
         end
         else if ((instruction_code == J) || (instruction_code == JAL)) begin
-            jump_address = {address[31:28], instr_index, 2'b00};
+            jump_address = {previous_address[31:28], instr_index, 2'b00};
             jump = 1;
         end
         else begin
@@ -71,6 +71,8 @@ module PC(
     end
 
     always_ff @(posedge clk) begin
+        previous_address <= address;
+
         if (reset) begin
             address <= 32'hBFC00000;
         end
@@ -78,20 +80,11 @@ module PC(
             if (pc_halt) begin
                 address <= 0;
             end
-            else if (jump_flag) begin
-                address <= jump_address_reg;
+            else if (jump) begin
+                address <= jump_address;
             end
             else begin
                 address <= next_address;
-            end
-
-            if (jump) begin
-                jump_flag <= 1;
-                jump_address_reg <= jump_address;
-            end
-            else begin
-                jump_flag <= 0;
-                jump_address_reg <= 0;
             end
         end
 
