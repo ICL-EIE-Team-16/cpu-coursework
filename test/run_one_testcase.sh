@@ -38,14 +38,14 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
          -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
          -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
          -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-         ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v
+         ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v test/testbenches/memories/*.v
   else
     iverilog -g 2012 -Wall \
              -s "${BASE_TEST_BENCH}" \
              -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
              -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\"\
              -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-             ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v
+             ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v test/testbenches/memories/*.v
   fi
 else
   # silence the output from the command
@@ -55,14 +55,14 @@ else
            -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
            -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
            -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-           ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v > /dev/null
+           ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v test/testbenches/memories/*.v > /dev/null
     else
       iverilog -g 2012 \
                -s "${BASE_TEST_BENCH}" \
                -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
                -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
                -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
-               ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v > /dev/null
+               ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v test/testbenches/memories/*.v > /dev/null
     fi
 fi
 

@@ -1,5 +1,5 @@
 Loading from test/test-cases/bgezal-1/bgezal-1.hex.txt
-WARNING: rtl/mips_cpu/request_memory.v:33: $readmemh(test/test-cases/bgezal-1/bgezal-1.hex.txt): Not enough words in the file for the requested range [0:1023].
+WARNING: test/testbenches/memories/request_memory.v:33: $readmemh(test/test-cases/bgezal-1/bgezal-1.hex.txt): Not enough words in the file for the requested range [0:1023].
 num: 10000000000000000000000000000000: 
 shifted num: 00000000000000000000100000000000: 
 REGFile : OUT: $zero,$at,$v0,$v1,$a0,$a1,$a2,$a3,$t0,$t1,$t2,$t3,$t4,$t5,$t6,$t7,$s0,$s1,$s2,$s3,$s4,$s5,$s6,$s7,$t8,$t9,$k0,$k1,$gp,$sp,$s8,$ra
