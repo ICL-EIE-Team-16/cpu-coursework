@@ -5,6 +5,7 @@ SOURCE_DIRECTORY="$1"
 TESTCASE="$2"
 VERBOSE="$3"
 BASE_TEST_BENCH="$4"
+TEST_ID="$TESTCASE-$BASE_TEST_BENCH"
 
 # Determine the name of the instruction
 
@@ -36,15 +37,15 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
     iverilog -g 2012 -Wall \
          -s "${BASE_TEST_BENCH}" \
          -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
-         -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
-         -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+         -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TEST_ID}.vcd\" \
+         -o test/test-cases/${TESTCASE}/${TEST_ID} \
          ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v test/testbenches/memories/*.v
   else
     iverilog -g 2012 -Wall \
              -s "${BASE_TEST_BENCH}" \
              -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
-             -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\"\
-             -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+             -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TEST_ID}.vcd\"\
+             -o test/test-cases/${TESTCASE}/${TEST_ID} \
              ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v test/testbenches/memories/*.v
   fi
 else
@@ -53,15 +54,15 @@ else
       iverilog -g 2012 \
            -s "${BASE_TEST_BENCH}" \
            -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
-           -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
-           -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+           -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TEST_ID}.vcd\" \
+           -o test/test-cases/${TESTCASE}/${TEST_ID} \
            ${SOURCE_DIRECTORY}/mips_cpu_*.v ${SOURCE_DIRECTORY}/mips_cpu/*.v test/testbenches/*.v test/testbenches/memories/*.v > /dev/null
     else
       iverilog -g 2012 \
                -s "${BASE_TEST_BENCH}" \
                -P "${BASE_TEST_BENCH}".RAM_INIT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.hex.txt\" \
-               -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TESTCASE}.vcd\" \
-               -o test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} \
+               -P "${BASE_TEST_BENCH}".WAVES_OUT_FILE=\"test/test-cases/${TESTCASE}/${TEST_ID}.vcd\" \
+               -o test/test-cases/${TESTCASE}/${TEST_ID} \
                ${SOURCE_DIRECTORY}/mips_cpu_*.v test/testbenches/*.v test/testbenches/memories/*.v > /dev/null
     fi
 fi
@@ -73,14 +74,14 @@ fi
 
 # Run test bench and redirect it's output to the output file
 set +e
-test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE} > test/test-cases/${TESTCASE}/${BASE_TEST_BENCH}_${TESTCASE}.stdout
+test/test-cases/${TESTCASE}/${TEST_ID} > test/test-cases/${TESTCASE}/${TEST_ID}.stdout
 # Capture the exit code of the simulator in a variable
 RESULT=$?
 set -e
 
 # Check whether the test bench returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH} - simulation"
+   echo "${TEST_ID} Fail # simulation"
    exit
 fi
 
@@ -108,7 +109,7 @@ set -e
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TESTCASE} ${INSTR_NAME} Fail # ${BASE_TEST_BENCH} - result comparison"
+   echo "${TEST_ID} Fail # result comparison"
 else
-   echo "${TESTCASE} ${INSTR_NAME} Pass # ${BASE_TEST_BENCH}"
+   echo "${TEST_ID} Pass"
 fi
