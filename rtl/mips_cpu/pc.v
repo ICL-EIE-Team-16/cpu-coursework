@@ -7,6 +7,7 @@ module PC(
     input logic[31:0] register_data,
     input logic zero, positive, negative,
     output logic[31:0] address,
+    output logic[31:0] return_address,
     output logic pc_halt
 );
     logic[31:0] previous_address, next_address; //next address to be fetched, PC gets updated with this value after each FETCH cycle.
@@ -71,6 +72,7 @@ module PC(
     end
 
     always_ff @(posedge clk) begin
+        return_address <= previous_address + 31'd8;
         previous_address <= address;
 
         if (reset) begin

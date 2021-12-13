@@ -18,7 +18,7 @@ module mips_cpu_bus#(
 );
 
     logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid;
-    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved;
+    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
     logic[6:0] instruction_code_1, instruction_code_2;
@@ -128,7 +128,7 @@ module mips_cpu_bus#(
         else if (instruction_code_2 == LW || instruction_code_2 == LWL || instruction_code_2 == LWR)
             reg_in = mxu_dout;
         else if (instruction_code_2 == BGEZAL || instruction_code_2 == BLTZAL || instruction_code_2 == JAL || instruction_code_2 == JALR)
-            reg_in = pc_address + 31'd8;
+            reg_in = return_address;
         else if (instruction_code_2 == LUI)
             reg_in = immediate_2;
         else
@@ -149,6 +149,6 @@ module mips_cpu_bus#(
         .shift_amount(shift_amount), .destination_reg_1(destination_reg_1), .destination_reg_2(reg_in_idx), .reg_a_idx_1(reg_a_idx_1), .reg_a_idx_2(reg_a_idx_2), .reg_b_idx_1(reg_b_idx_1), .reg_b_idx_2(reg_b_idx_2),
         .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2)
     );
-    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .offset(immediate_1[15:0]), .instr_index(jump_const), .register_data(reg_a_out), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt));
+    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .offset(immediate_1[15:0]), .instr_index(jump_const), .register_data(reg_a_out), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt), .return_address(return_address));
 
 endmodule
