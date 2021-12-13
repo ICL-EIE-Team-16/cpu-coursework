@@ -76,6 +76,8 @@ typedef enum logic[6:0]{
 always @(*) begin
     
 
+    $display("ALU - a: %h, b: %h", a, b);
+
     if(op == ADDU || op == ADDIU) begin
         r = a+b;
     end

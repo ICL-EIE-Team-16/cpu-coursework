@@ -7,7 +7,8 @@ module IR_decode(
     input logic exec2,
 
     output logic[4:0] shift_amount, // only relevant to r_type instructions
-    output logic[4:0] destination_reg,
+    output logic[4:0] destination_reg_1,
+    output logic[4:0] destination_reg_2,
     output logic[4:0] reg_a_idx_1,
     output logic[4:0] reg_a_idx_2,
     output logic[4:0] reg_b_idx_1,
@@ -149,6 +150,7 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_1 = instruction_1[25:21]; //rs
             reg_b_idx_1 = instruction_1[20:16]; //rt
+            destination_reg_1 = instruction_1[15:11]; //rd
             function_code_1 = instruction_1[5:0];
             immediate_1 = 0;
             memory = 0;
@@ -161,6 +163,11 @@ module IR_decode(
             function_code_1 = 6'd0;
             immediate_1 = 32'd0;
             memory = instruction_1[25:0];
+
+            if (instruction_code_1 == JAL)
+                destination_reg_1 = 31;
+            else
+                destination_reg_1 = 0;
         end
         else if (i_type_1 == 1) begin
             //assign groups of bits of instruction word to each field.
@@ -168,6 +175,13 @@ module IR_decode(
             reg_b_idx_1 = instruction_1[20:16];
             function_code_1 = 6'd0;
             memory = 26'd0;
+
+            if (instruction_code_1 == BGEZAL || instruction_code_1 == BLTZAL) begin
+                destination_reg_1 = 31;
+            end
+            else begin
+                destination_reg_1 = instruction_1[20:16];
+            end
 
             //Sign extension logic for immediate - Multiple formats
             if (instruction_code_1 == ANDI || instruction_code_1 == ORI || instruction_code_1 == XORI)
@@ -183,7 +197,7 @@ module IR_decode(
             //assign groups of bits of instruction word to each field.
             reg_a_idx_2 = instruction_2[25:21]; //rs
             reg_b_idx_2 = instruction_2[20:16]; //rt
-            destination_reg = instruction_2[15:11]; //rd
+            destination_reg_2 = instruction_2[15:11]; //rd
             shift_amount = instruction_2[10:6]; //sa
             function_code_2 = instruction_2[5:0];
             immediate_2 = 0;
@@ -198,9 +212,9 @@ module IR_decode(
             immediate_2 = 32'd0;
 
             if (instruction_code_2 == JAL)
-                destination_reg = 31;
+                destination_reg_2 = 31;
             else
-                destination_reg = 0;
+                destination_reg_2 = 0;
         end
         else if (i_type_2 == 1) begin
             //assign groups of bits of instruction word to each field.
@@ -210,10 +224,10 @@ module IR_decode(
             function_code_2 = 6'd0;
 
             if (instruction_code_2 == BGEZAL || instruction_code_2 == BLTZAL) begin
-                destination_reg = 31;
+                destination_reg_2 = 31;
             end
             else begin
-                destination_reg = instruction_2[20:16];
+                destination_reg_2 = instruction_2[20:16];
             end
 
             //Sign extension logic for immediate - Multiple formats

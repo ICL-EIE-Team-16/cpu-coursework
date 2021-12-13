@@ -692,6 +692,7 @@ TEST(Assembler, ORToHexAssembly) {
     std::map<std::string, InstructionParseConfig> configs = initializeConfigMap();
     EXPECT_EQ("02538825", convert_instruction_to_hex("OR $s1, $s2, $s3", configs));
     EXPECT_EQ("02f59025", convert_instruction_to_hex("OR $s2, $s7,   $s5", configs));
+    EXPECT_EQ("02531025", convert_instruction_to_hex("OR $v0, $s2, $s3", configs));
 }
 
 TEST(Assembler, ORIToHexAssembly) {
