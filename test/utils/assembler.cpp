@@ -35,8 +35,7 @@ int register_name_to_index(const std::string &registerName) {
     }
 
     if (registers.find(registerNameParsed) == registers.end()) {
-        std::cerr << "Invalid register name provided: " << registerName << std::endl;
-        return -1;
+        return std::stoi(registerNameParsed);
     } else {
         return registers[registerNameParsed];
     }
@@ -422,8 +421,22 @@ std::string convert_ram_content_to_string(std::map<int, std::string> &ramContent
     return result;
 }
 
+int find_max(int *array, int size) {
+    int result = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (result < array[i]) {
+            result = array[i];
+        }
+    }
+
+    return result;
+}
+
 int main() {
-    std::string line;
+    int balance[5] = {1000, 2, 3, 17, 50};
+    std::cout << find_max(balance, 5) << std::endl;
+    /*std::string line;
     std::vector<std::string> lines;
 
     while (getline(std::cin, line)) {
@@ -431,5 +444,5 @@ int main() {
     }
 
     std::map<int, std::string> ramContent = convert_lines_to_ram_content(lines);
-    std::cout << convert_ram_content_to_string(ramContent);
+    std::cout << convert_ram_content_to_string(ramContent);*/
 }

@@ -146,8 +146,7 @@ int register_name_to_index(const std::string &registerName) {
     }
 
     if (registers.find(registerNameParsed) == registers.end()) {
-        std::cerr << "Invalid register name provided: " << registerName << std::endl;
-        return -1;
+        return std::stoi(registerNameParsed);
     } else {
         return registers[registerNameParsed];
     }
@@ -599,6 +598,8 @@ TEST(Assembler, JRToHexAssembly) {
     EXPECT_EQ("02200008", convert_instruction_to_hex("JR $s1", configs));
     EXPECT_EQ("00000008", convert_instruction_to_hex("JR $zero #l1", configs));
     EXPECT_EQ("00000008", convert_instruction_to_hex("JR $0 #l1", configs));
+    EXPECT_EQ("03e00008", convert_instruction_to_hex("JR $ra", configs));
+    EXPECT_EQ("03e00008", convert_instruction_to_hex("JR $31", configs));
 }
 
 TEST(Assembler, LBToHexAssembly) {
