@@ -1,0 +1,8 @@
+ADDIU $s0, $zero, 0x1234
+J 0x3F00005
+ADDIU $s1, $zero, 0x5678
+ADDIU $v0, $zero, 0xFFFF
+JR $zero
+ADDIU $v0, $zero, 0x1111
+JR $zero
+NOP

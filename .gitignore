@@ -1,3 +1,9 @@
+### Test cases setup
+test/test-cases/*/*
+
+!test/test-cases/*/*.asm.txt
+!test/test-cases/*/*-v0.ref
+
 ### C++ template
 # Prerequisites
 *.d
@@ -71,7 +77,7 @@
 *.x86_64
 *.hex
 
-# Debug files
+# debug files
 *.dSYM/
 *.su
 *.idb
@@ -161,7 +167,8 @@ fabric.properties
 
 #SystemVerilog debugging
 *.vcd
-/src/memory/build
-/src/memory/*.sh
-
 ./bin/*
+./modules_tb/logs/*
+
+#Michal debug directory
+/rtl/debug/*
