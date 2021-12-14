@@ -1,0 +1,9 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s1, $s1, 0x21
+LBU $v0, -3($s1)
+JR $zero
+NOP
+
+# Data - assuming big endian addressing
+0x20: 0xAABBCCDD
