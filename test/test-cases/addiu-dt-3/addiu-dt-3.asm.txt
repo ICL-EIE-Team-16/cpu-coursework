@@ -1,4 +1,4 @@
-ADDIU $v0, $t1, -1
+ADDIU $v0, $t1, 0xFFFF
 JR $ra
-ADDIU $t0, $t0, 0
+ADDIU $t0, $t0, 0x0000
 NOP
