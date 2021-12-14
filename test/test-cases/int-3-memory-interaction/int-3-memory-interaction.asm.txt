@@ -1,4 +1,6 @@
-ADDIU $s0, $zero, 0x50
+ADDIU $s0, $zero, 0xBFC0
+SLL $s0, $s0, 0x10
+ADDIU $s0, $s0, 0x100
 LW $s1, 0($s0)
 LW $s2, 4($s0)
 AND $s3, $s0, $s1
@@ -6,5 +8,5 @@ OR $s4, $s1, $s2
 ADDIU $v0, $s4, 0x0
 JR $zero
 #Data
-0x50: 0x0A
-0x54: 0x0B
+0x100: 0x0A
+0x104: 0x0B
