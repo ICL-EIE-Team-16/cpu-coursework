@@ -44,6 +44,7 @@ Regular expressions for instructions validation are not that perfect yet.
 - Add execution permission command for each script.
 - Implement LI instruction
 - Remove error output statements from the assembler
+- Make sure that before the submission that the generation of wave forms is uncommented. 
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 
