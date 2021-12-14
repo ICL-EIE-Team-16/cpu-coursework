@@ -1,0 +1,9 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s1, $s1, 0x20
+LW $v0, 0xFFFC($s1)
+JR $zero
+NOP
+
+# Data
+0x1C: 0x11111111

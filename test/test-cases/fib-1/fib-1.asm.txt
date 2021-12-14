@@ -1,10 +1,10 @@
 ADDIU $s4, $zero, 16’d3
-BEQ $s4, $zero, 0xC  # $s4 contains Number
+BEQ $s4, $zero, 0xA  # $s4 contains Number
 ADDIU $zero, $zero, 0
 ORI $v0, $zero, 16’d0 # Store 0 in register v0 
 ADDU $v0, $v0, $s4
 ADDIU $s4, $s4, -1 # $L7 start
-BNE $s4, $zero, 0x6
+BNE $s4, $zero, 0xFFFF
 ADDU $v0, $v0, $s4
 SUBU $v0, $v0, $s4
 JR $ra

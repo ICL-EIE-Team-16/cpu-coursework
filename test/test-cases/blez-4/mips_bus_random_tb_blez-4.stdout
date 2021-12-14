@@ -23,16 +23,27 @@ address: bfc0000c
 address: bfc0000c
 address: 00000010
 address: 00000010
+address: bfc00018
+address: bfc00018
+address: 00000020
+address: 00000020
+address: bfc0001c
+address: bfc0001c
+address: bfc0001c
+address: bfc0001c
+address: 00001010
+address: 00001010
 address: bfc00010
 address: bfc00010
-address: 00000010
-address: 00000010
+address: bfc00010
+address: bfc00010
+address: bfc00010
+address: 00002010
+address: 00002010
 address: bfc00014
 address: bfc00014
-address: bfc00014
-address: bfc00014
-address: 00000110
-address: 00000110
+address: 00001110
+address: 00001110
 address: 00000000
 Memory error: Address range miss, only 1024 words after BFC00000 implemented by default. Increase RANGE parameter as required. ADDR:  00000000
-REG v0: OUT: 00000110
+REG v0: OUT: 00001111
