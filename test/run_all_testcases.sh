@@ -17,6 +17,7 @@ VERBOSE="ENABLED"
 # Loop over every file matching the testcase pattern
 for i in ${TESTCASES} ; do
     TESTNAME=$(basename ${i} .asm.txt)
+
     set +e
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_simple_tb"
     set -e
