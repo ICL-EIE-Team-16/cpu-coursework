@@ -1,4 +1,4 @@
-LUI	$v0, 0x1
+LUI $v0, 0x01
 JR $ra
 ADDIU $t0, $t0, 0
 NOP

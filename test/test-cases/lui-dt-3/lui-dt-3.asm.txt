@@ -1,4 +1,4 @@
-LUI	$v0, 0x1
+LUI $v0, 0x0001
 ADDIU $v0, $v0, 1
 JR $zero
 ADDIU $t0, $t0, 0
