@@ -13,3 +13,6 @@ if ls test/test-cases/*/*-mips_bus_* 1> /dev/null 2>&1; then
     rm -rf test/test-cases/*/*-mips_bus_*
 fi
 
+if ls test/test-cases/*/mips_bus_* 1> /dev/null 2>&1; then
+    rm -rf test/test-cases/*/mips_bus_*
+fi

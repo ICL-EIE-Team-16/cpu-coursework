@@ -35,8 +35,7 @@ int register_name_to_index(const std::string &registerName) {
     }
 
     if (registers.find(registerNameParsed) == registers.end()) {
-        // std::cerr << "Invalid register name provided: " << registerName << std::endl;
-        return -1;
+        return std::stoi(registerNameParsed);
     } else {
         return registers[registerNameParsed];
     }
@@ -318,17 +317,20 @@ std::map<std::string, InstructionParseConfig> initializeConfigMap() {
 
 std::string convert_instruction_to_hex(const std::string &command,
                                        const std::map<std::string, InstructionParseConfig> configs) {
-    std::string trimmedCommand = trim(command);
     unsigned int code = 0;
+    std::string trimmedCommand = trim(command);
     std::string instrName = trimmedCommand.substr(0, trimmedCommand.find(" "));
-    auto it = configs.find(instrName);
+    std::string instrNameUpper = to_upper(instrName);
+    std::string commandWithUpdatedCase = command;
+    commandWithUpdatedCase.replace(0, commandWithUpdatedCase.find(" "), instrNameUpper);
+    auto it = configs.find(instrNameUpper);
 
     if (it != configs.end()) {
         InstructionParseConfig config = it->second;
         code += (config.getOpcode() << 26);
 
         std::smatch matches;
-        if (std::regex_search(command, matches, config.getRegex())) {
+        if (std::regex_search(commandWithUpdatedCase, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
                 if (bitShift < 0) {
@@ -342,22 +344,16 @@ std::string convert_instruction_to_hex(const std::string &command,
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
             }
-        } else if (instrName == "JALR" && std::regex_search(command, matches, std::regex("JALR (.+)"))) {
+        } else if (instrName == "JALR" && std::regex_search(commandWithUpdatedCase, matches, std::regex("JALR (.+)"))) {
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
-            // std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
+            std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
         }
 
         code += config.getConstantToAdd();
     } else {
-        std::regex emptyLneRegex("^\\s+$");
-        std::smatch emptyLineMatches;
-        if (std::regex_search(command, emptyLineMatches, emptyLneRegex)) {
-            code = 0;
-        } else {
-            // std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
-        }
+        std::cerr << "Invalid instruction passed as an argument." << command << " updated case: " << commandWithUpdatedCase << std::endl;
     }
 
     return decimal_to_8_char_hex(code);
