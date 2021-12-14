@@ -8,3 +8,4 @@ NOP
 ADDIU $v0, $zero, 0x1111
 JR $ra
 ADDIU $v0, $v0, 0x1111
+NOP

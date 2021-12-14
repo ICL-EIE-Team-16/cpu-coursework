@@ -5,3 +5,4 @@ ADDIU $v0, $zero, 0xFFFF
 JR $zero
 ADDIU $v0, $zero, 0x1111
 JR $zero
+NOP

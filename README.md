@@ -43,6 +43,7 @@ Regular expressions for instructions validation are not that perfect yet.
 - Need more programs - that check problems such as negative offsets and correct sign extensions.
 - Add execution permission command for each script.
 - Implement LI instruction
+- Remove error output statements from the assembler
 
 Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
 

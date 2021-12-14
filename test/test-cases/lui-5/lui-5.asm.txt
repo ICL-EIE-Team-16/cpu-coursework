@@ -1,0 +1,3 @@
+LUI $v0, 0xFFFF
+JR $zero
+JR $zero

@@ -1,4 +1,7 @@
-ORI $t0, $zero, 4096
-JR $ra
-SW $t0, 0($t0)
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s2, $zero, 0x1234
+SW $s2, 0x120($s1)
+LW $v0, 0x120($s1)
+JR $zero
 

@@ -1,3 +1,6 @@
-ADDIU $t0, $t0, 4096
-JR $ra
-SW $v0, 0($t0)
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s2, $zero, 0xFFFF
+SW $s2, 0x20($s1)
+LW $v0, 0x20($s1)
+JR $zero

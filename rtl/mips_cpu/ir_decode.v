@@ -20,6 +20,7 @@ output logic [6:0] instruction_code
 logic r_type;
 logic j_type;
 logic i_type;
+logic last_exec1;
 logic [5:0] opcode;
 logic [5:0] function_code;
 
@@ -86,7 +87,10 @@ typedef enum logic [6:0] {
 
 //Instruction register saving behaviour
 always_ff @(posedge clk) begin
-    if (exec1)
+    //Positive edge detection
+    last_exec1 <= exec1;
+
+    if (exec1 & ~last_exec1)
         saved_instruction <= current_instruction;
 
     else
@@ -94,9 +98,9 @@ always_ff @(posedge clk) begin
 end
 
  always @(*) begin
-    if (exec1)
+    if (exec1 & ~last_exec1)
          instruction = current_instruction;
-    else if (exec2)
+    else
          instruction = saved_instruction;
 end
 
@@ -178,6 +182,9 @@ always@(*) begin
             //Sign extension logic for immediate - Multiple formats
                 if (instruction_code == ANDI || instruction_code == ORI || instruction_code == XORI)
                     immediate = {16'd0,instruction[15:0]};
+                else if (instruction_code == LUI) begin
+                    immediate = {instruction[15:0], 16'd0};
+                end
                 else
                     immediate = {{16{instruction[15]}},instruction[15:0]};
         end

@@ -3,3 +3,4 @@ JR $ra
 ADDIU $t0, $t0, 16
 JR $t0
 ORI $zero, $zero, 0
+NOP
