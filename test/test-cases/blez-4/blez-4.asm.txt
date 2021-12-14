@@ -1,8 +1,8 @@
-ADDIU $s0, $s0, 0xFFFF
+ADDIU $s0, $s0, 0x7FFF
 ADDIU $v0, $zero, 0x1
-BLEZ $s0, 0x4
-ADDIU $v0, $v0, 0x10 
+BGEZAL $s0, 0x4
+ADDIU $v0, $v0, 0x10
 JR $zero #l1
 ADDIU $v0, $v0, 0x100
-BLEZ $s0, 0xFFFE # l2 - jump backwards to l1
+BGEZAL $s0, 0xFFFE # l2 - jump backwards to l1
 ADDIU $v0, $v0, 0x1000
