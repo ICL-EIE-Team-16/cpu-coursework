@@ -1,0 +1,2 @@
+JR $ra
+ORI $zero, $zero, 0

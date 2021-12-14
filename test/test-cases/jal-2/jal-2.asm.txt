@@ -1,0 +1,13 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s1, $s1, 0x24
+JALR $s1
+ADDIU $s2, $zero, 0x5678
+ADDIU $s3, $zero, 0x1234
+ADDU $v0, $v0, $s3
+JR $zero
+NOP
+ADDIU $v0, $zero, 0x1111
+JR $ra
+ADDIU $v0, $v0, 0x1111
+NOP

@@ -1,9 +1,0 @@
-BGTZ $s0, 0x0005
-ADDIU $v0, $zero, 0x1111
-ADDIU $v0, $v0, 0x1111
-JR $zero
-JR $zero
-ADDIU $v0, $v0, 0x5555
-ADDIU $v0, $v0, 0x1111
-JR $zero
-JR $zero

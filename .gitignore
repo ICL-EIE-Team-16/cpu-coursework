@@ -1,3 +1,9 @@
+### Test cases setup
+test/test-cases/*/*
+
+!test/test-cases/*/*.asm.txt
+!test/test-cases/*/*-v0.ref
+
 ### C++ template
 # Prerequisites
 *.d
@@ -165,4 +171,4 @@ fabric.properties
 ./modules_tb/logs/*
 
 #Michal debug directory
-/src/debug/*
+/rtl/debug/*
