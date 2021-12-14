@@ -12,7 +12,7 @@ ADDIU $v0, $v0, 1
 JR $ra # $L4 start
 ORI $v0, $zero, 16’b000000000000001 # Store 1 in register v0 
 JR $zero
-JR $zero
+NOP
 
 # Ref: v0 = 7
 #fibonnacci
