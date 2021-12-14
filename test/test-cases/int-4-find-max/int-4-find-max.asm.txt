@@ -1,27 +1,27 @@
 addiu $4, $0, 0xBFC0
 sll   $4, $4, 0x10
 addiu $4, $4, 0x0100
-end: JAL 0xf00007
+JAL 0xf00007
 addiu $5, $0, 0xa
 jr $zero
 nop
 blez    $5, 0xd
 sll     $5, $5, 2
 addu    $5, $4, $5
-move    $2, $0
+addiu    $2, $0, 0
 lw      $3, 0($4)
 nop
 slt     $6, $2, $3
 beq     $6, $0, 0x3
 addiu   $4, $4, 4
-move    $2, $3
+addiu    $2, $3, 0
 bne     $5, $4, 0xfffa
 nop
 jr       $31
 nop
 jr       $31
 addiu $2, $0, 0x0
-$data
+# Data
 0x100: 0x300
 0x104: 0x1000
 0x108: 0x20000

@@ -3,6 +3,7 @@
 #include <regex>
 #include <vector>
 #include <map>
+#include <locale>
 
 class InstructionParseConfig {
 private:
@@ -79,7 +80,7 @@ public:
 
 std::map<std::string, int> registers{
         {"zero", 0},
-        {"0", 0},
+        {"0",    0},
         {"at",   1},
         {"v0",   2},
         {"v1",   3},
@@ -117,6 +118,17 @@ std::string trim(std::string str) {
     str.erase(0, str.find_first_not_of(' '));
     str.erase(str.find_last_not_of(' ') + 1);
     return str;
+}
+
+std::string to_upper(std::string str) {
+    std::string result;
+    std::locale loc;
+
+    for (char i : str) {
+        result += std::toupper(i, loc);
+    }
+
+    return result;
 }
 
 std::string decimal_to_8_char_hex(unsigned int num) {
@@ -425,14 +437,17 @@ std::string convert_instruction_to_hex(const std::string &command,
     unsigned int code = 0;
     std::string trimmedCommand = trim(command);
     std::string instrName = trimmedCommand.substr(0, trimmedCommand.find(" "));
-    auto it = configs.find(instrName);
+    std::string instrNameUpper = to_upper(instrName);
+    std::string commandWithUpdatedCase = command;
+    commandWithUpdatedCase.replace(0, commandWithUpdatedCase.find(" "), instrNameUpper);
+    auto it = configs.find(instrNameUpper);
 
     if (it != configs.end()) {
         InstructionParseConfig config = it->second;
         code += (config.getOpcode() << 26);
 
         std::smatch matches;
-        if (std::regex_search(command, matches, config.getRegex())) {
+        if (std::regex_search(commandWithUpdatedCase, matches, config.getRegex())) {
             for (int i = 1; i < matches.size(); i++) {
                 int bitShift = config.getBitShifts()[i - 1];
                 if (bitShift < 0) {
@@ -446,7 +461,7 @@ std::string convert_instruction_to_hex(const std::string &command,
                     code += register_name_to_index(matches[i]) << bitShift;
                 }
             }
-        } else if (instrName == "JALR" && std::regex_search(command, matches, std::regex("JALR (.+)"))) {
+        } else if (instrName == "JALR" && std::regex_search(commandWithUpdatedCase, matches, std::regex("JALR (.+)"))) {
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
@@ -482,6 +497,8 @@ TEST(Assembler, ADDUIToHexAssembly) {
     EXPECT_EQ("263000ff", convert_instruction_to_hex("ADDIU $s0, $s1, 0xff", configs));
     EXPECT_EQ("26510003", convert_instruction_to_hex("ADDIU $s1, $s2, 0b00011", configs));
     EXPECT_EQ("2611000b", convert_instruction_to_hex("ADDIU $s1, $s0, 11", configs));
+    EXPECT_EQ("2404bfc0", convert_instruction_to_hex("ADDIU $4, $0, 0xBFC0", configs));
+    EXPECT_EQ("2404bfc0", convert_instruction_to_hex("addiu $4, $0, 0xBFC0", configs));
 }
 
 TEST(Assembler, ANDToHexAssembly) {
