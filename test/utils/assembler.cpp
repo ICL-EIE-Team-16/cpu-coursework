@@ -35,7 +35,7 @@ int register_name_to_index(const std::string &registerName) {
     }
 
     if (registers.find(registerNameParsed) == registers.end()) {
-        std::cerr << "Invalid register name provided: " << registerName << std::endl;
+        // std::cerr << "Invalid register name provided: " << registerName << std::endl;
         return -1;
     } else {
         return registers[registerNameParsed];
@@ -346,7 +346,7 @@ std::string convert_instruction_to_hex(const std::string &command,
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
-            std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
+            // std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
         }
 
         code += config.getConstantToAdd();
@@ -356,7 +356,7 @@ std::string convert_instruction_to_hex(const std::string &command,
         if (std::regex_search(command, emptyLineMatches, emptyLneRegex)) {
             code = 0;
         } else {
-            std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
+            // std::cerr << "Invalid instruction passed as an argument. Command: " << command << std::endl;
         }
     }
 
