@@ -1,6 +1,6 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
-ADDIU $t0, $t0 , 0x0020
+ADDIU $t0, $s1 , 0x0020
 LW $v0, 0x0($t0)
 JR $ra
 NOP
