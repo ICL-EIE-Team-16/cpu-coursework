@@ -9,7 +9,10 @@ if ls test/test-cases/*/*.vcd 1> /dev/null 2>&1; then
     rm -rf test/test-cases/*/*.vcd
 fi
 
-if ls test/test-cases/*/mips_cpu* 1> /dev/null 2>&1; then
-    rm -rf test/test-cases/*/mips_cpu*
+if ls test/test-cases/*/*-mips_bus_* 1> /dev/null 2>&1; then
+    rm -rf test/test-cases/*/*-mips_bus_*
 fi
 
+if ls test/test-cases/*/mips_bus_* 1> /dev/null 2>&1; then
+    rm -rf test/test-cases/*/mips_bus_*
+fi
