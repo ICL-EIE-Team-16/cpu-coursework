@@ -81,7 +81,7 @@ set -e
 
 # Check whether the test bench returned a failure code, and immediately quit
 if [[ "${RESULT}" -ne 0 ]] ; then
-   echo "${TEST_ID} Fail # simulation"
+   echo "${TEST_ID} ${INSTR_NAME} Fail # simulation"
    exit
 fi
 
@@ -109,7 +109,7 @@ set -e
 
 # Based on whether differences were found, either pass or fail
 if [[ "${RESULT_V0}" -ne 0 ]] ; then
-   echo "${TEST_ID} Fail # result comparison"
+   echo "${TEST_ID} ${INSTR_NAME} Fail # result comparison"
 else
-   echo "${TEST_ID} Pass"
+   echo "${TEST_ID} ${INSTR_NAME} Pass"
 fi
