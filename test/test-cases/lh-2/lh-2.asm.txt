@@ -4,6 +4,5 @@ ADDIU $s1, $s1, 0x20
 LH $v0, 0xFFFF($s1)
 JR $zero
 NOP
-
 # Data - assuming big endian memory
 0x1C: 0x1234F678
