@@ -28,7 +28,6 @@ typedef enum logic[6:0] {
         LBU = 7'd43,
         LH = 7'd44,
         LHU = 7'd45,
-        LUI = 7'd46,
         LW = 7'd47,
         LWL = 7'd48,
         LWR = 7'd49,
@@ -57,7 +56,7 @@ always @(*) begin
     else if (exec1) begin
         if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
             read = 1;
-        else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
+        else if (instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
             read = 1;
         else
             read = 0;
