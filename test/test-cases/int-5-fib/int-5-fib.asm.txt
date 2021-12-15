@@ -1,0 +1,13 @@
+ADDIU $4, $zero, 0x3
+BEQ $4, $0, 0xA
+NOP
+ADDIU $2, $zero, 0x0
+ADDU $2, $2, $4
+ADDIU $4, $4, 0xFFFF #$L7
+BNE $4, $0, 0xFFFF
+ADDU $2, $2, $4
+SUBU $2, $2, $4
+JR $zero
+ADDIU $2, $2, 0x1
+JR $zero #$L4
+ADDIU $2, $2, 0x1                      
