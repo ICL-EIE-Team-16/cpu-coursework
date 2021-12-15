@@ -78,6 +78,7 @@ always @(*) begin
 
     if(op == ADDU || op == ADDIU) begin
         r = a+b;
+        $display("addiu, a=%h, b=%h, r=%h", a, b, r);
     end
 
     if(op == SUBU) begin
@@ -108,6 +109,7 @@ always @(*) begin
         else begin
             r = 32'h0000;
         end
+        $display("slti, a=%h, b=%h, r=%h", a, b, r);
     end
 
     if(op == AND || op == ANDI) begin
@@ -153,6 +155,7 @@ always @(*) begin
         mult_intermediate = a_signed*b_signed;
         lo_next = mult_intermediate[31:0];
         hi_next = mult_intermediate[63:32];
+        $display("mult, a_signed=%h, b_signed=%h", a_signed, b_signed);
     end
 
     if(op == DIV) begin
@@ -235,6 +238,7 @@ always @(*) begin
             positive = 0;
             negative = 1;
         end
+        $display("bne comparison entered, zero = %h", zero);
     end
 
 end

@@ -46,6 +46,7 @@ module PC(
             jump = 1;
         end
         else if ((instruction_code == BNE) && (negative || positive)) begin
+            $display("bne entered");
             jump_address = address + {{14{offset[15]}}, offset, 2'b00};
             jump = 1;
         end

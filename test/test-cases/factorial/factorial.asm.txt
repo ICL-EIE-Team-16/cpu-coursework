@@ -1,0 +1,39 @@
+ADDIU $v0, $zero, 0x0 
+ADDIU $s5, $zero, 0x0
+ADDIU $s6, $zero, 0x3 //number of iterations is immediate + 1
+ADDIU $s4, $zero, 0x4 //factorial base is immediate
+SLTI $s2, $s4, 0x2
+BNE $s2, $zero, 0x18  //this program calculates the sum of factorials of increasing magnitude
+ADDIU $s4, $s4, 0x1   //for example setting the number of iterations to 4 and base factorial to 4 will
+ADDIU $s3, $zero, 0x2 //yield 4! + 5! + 6! + 7! as a result    
+ADDIU $s2, $zero, 0x1                                           
+MULT $s2, $s3
+ADDIU $s3, $s3, 0x1
+MFLO $s2
+NOP
+BNE $s3, $s4, 0xFFFD
+MULT $s2, $s3
+ADDU $v0, $v0, $s2
+ADDIU $s5, $s5, 0x1
+SLT $s3, $s6, $s5
+BNE $s3, $zero, 0x6
+NOP
+J 0x3f00004
+NOP
+JR $zero
+JR $zero
+JR $zero
+JR $zero
+ADDIU $v0, $v0, 0x0
+JR $zero
+JR $zero
+ADDIU $s2, $zero, 0x1
+ADDU $v0, $v0, $s2
+ADDIU $s5, $s5, 0x1
+SLT $s3, $s6, $s5
+BNE $s3, $zero, 0x6
+NOP
+J 0x3f00004
+NOP
+JR $zero
+JR $zero     
