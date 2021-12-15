@@ -46,7 +46,7 @@ module mips_bus_simple_tb;
     initial begin
         reset = 0;
         reset_sent = 0;
-        #5;
+        #40;
         reset = 1;
         #20;
         reset = 0;
