@@ -17,7 +17,7 @@ module mips_cpu_bus#(
     input logic[31:0] readdata
 );
 
-    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard;
+    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard, correct_op, registers_match;
     logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address, jump_register_data, readdata_unscrambled, writedata_unscrambled, mxu_reg_b_in, alu_r_mxu;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
@@ -125,7 +125,11 @@ module mips_cpu_bus#(
             alu_a = pc_address;
         else
             alu_a = reg_a_out;*/
-        if (reg_a_idx_1 == reg_in_idx && !ignore_forwarding) begin
+        correct_op = instruction_code_2 == LUI;
+        registers_match = reg_a_idx_1 == reg_in_idx;
+        if (registers_match && correct_op) begin
+            alu_a = immediate_2;
+        end else if (reg_a_idx_1 == reg_in_idx && !ignore_forwarding) begin
             alu_a = alu_r_saved;
         end else
             alu_a = reg_a_out;
@@ -164,7 +168,8 @@ module mips_cpu_bus#(
 
 // MUX MXU ALU result
     always_comb begin
-        if (instruction_code_2 == LB)
+        if (instruction_code_2 == LB || instruction_code_2 == LBU || instruction_code_2 == LH || instruction_code_2 == LHU
+            || instruction_code_2 == LUI || instruction_code_2 == LWL || instruction_code_2 == LWR)
             alu_r_mxu = alu_r_saved;
         else
             alu_r_mxu = alu_r;

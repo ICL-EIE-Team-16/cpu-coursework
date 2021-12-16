@@ -6,7 +6,7 @@ LWL $s2, 0x25($s1)
 LWL $s3, 0x2A($s1)
 ADDU $v0, $s2, $s3
 JR $zero
-JR $zero
+NOP
 # Data - assuming big endian addressing
 0x24: 0xFF789ABC
 0x28: 0xFFAB1234
