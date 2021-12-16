@@ -36,43 +36,26 @@ module mxu(
         SW = 7'd52
     } instruction_code_t;
 
-
 // Address processing
     always @(*) begin
-
-        //if (fetch)
-        mem_address = pc_address;
-        /*else
-            mem_address = {alu_r[31:2], 2'b00};*/
-
+        if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU || instruction_code == LW
+            || instruction_code == LWL || instruction_code == LWR || instruction_code == SB || instruction_code == SW || instruction_code == SH)
+            mem_address = {alu_r[31:2], 2'b00};
+        else
+            mem_address = pc_address;
     end
 
 
 //Read  signal
     always @(*) begin
-        if (fetch || exec1 || exec2)
-            read = 1;
-            /*else if (exec1) begin
-                if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
-                    read = 1;
-                else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
-                    read = 1;
-                else
-                    read = 0;
-            end*/
-        else
-            read = 0;
+        read = ~write || fetch;
     end
 
 
 //Write signal
     always @(*) begin
-        if (exec1) begin
-            if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
-                write = 1;
-            else
-                write = 0;
-        end
+        if (instruction_code == SB || instruction_code == SW || instruction_code == SH)
+            write = 1;
         else
             write = 0;
     end

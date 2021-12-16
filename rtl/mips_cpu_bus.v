@@ -17,7 +17,7 @@ module mips_cpu_bus#(
     input logic[31:0] readdata
 );
 
-    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding;
+    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard;
     logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address, jump_register_data, readdata_unscrambled, writedata_unscrambled;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
@@ -166,8 +166,9 @@ module mips_cpu_bus#(
     IR_decode ir(
         .clk(clk), .current_instruction(readdata_unscrambled), .is_current_instruction_valid(is_current_instruction_valid), .fetch(fetch), .exec1(exec1), .exec2(exec2),
         .shift_amount(shift_amount), .destination_reg_1(destination_reg_1), .destination_reg_2(reg_in_idx), .reg_a_idx_1(reg_a_idx_1), .reg_a_idx_2(reg_a_idx_2), .reg_b_idx_1(reg_b_idx_1), .reg_b_idx_2(reg_b_idx_2),
-        .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2)
+        .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2),
+        .memory_hazard(memory_hazard)
     );
-    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .offset(immediate_1[15:0]), .instr_index(jump_const), .register_data(jump_register_data), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt), .return_address(return_address));
+    PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .offset(immediate_1[15:0]), .instr_index(jump_const), .register_data(jump_register_data), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt), .return_address(return_address), .memory_hazard(memory_hazard));
 
 endmodule

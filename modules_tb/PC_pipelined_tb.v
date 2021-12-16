@@ -10,6 +10,7 @@ module PC_pipelined_tb();
     logic[25:0] instr_index;
     logic[31:0] register_data;
     logic zero, positive, negative;
+    logic memory_hazard;
 
     // outputs
     logic[31:0] address;
@@ -56,13 +57,28 @@ module PC_pipelined_tb();
 
         assert(address == 32'hBFC00014) else $error("address is %h but it should be: 0xBFC00014", address);
 
+        memory_hazard = 1;
+
+        #2;
+
+        memory_hazard = 0;
+        assert(address == 32'hBFC00014) else $error("address is %h but it should be: 0xBFC00014", address);
+
+        #2;
+
+        assert(address == 32'hBFC00018) else $error("address is %h but it should be: 0xBFC00018", address);
+
+        #2;
+
+        assert(address == 32'hBFC0001C) else $error("address is %h but it should be: 0xBFC0001C", address);
+
         $display("Test finished!");
         $finish();
     end
 
     PC dut(
         .clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code), .offset(offset), .instr_index(instr_index),
-        .register_data(register_data), .zero(zero), .positive(positive), .negative(negative), .address(address), .pc_halt(pc_halt)
+        .register_data(register_data), .zero(zero), .positive(positive), .negative(negative), .memory_hazard(memory_hazard), .address(address), .pc_halt(pc_halt)
     );
 
     statemachine statemachine(

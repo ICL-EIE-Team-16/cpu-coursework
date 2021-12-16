@@ -6,6 +6,7 @@ module PC(
     input logic[25:0] instr_index,
     input logic[31:0] register_data,
     input logic zero, positive, negative,
+    input logic memory_hazard,
     output logic[31:0] address,
     output logic[31:0] return_address,
     output logic pc_halt
@@ -79,6 +80,9 @@ module PC(
             address <= 32'hBFC00000;
         end
         else begin
+            if (memory_hazard) begin
+                address <= address;
+            end else
             if (pc_halt) begin
                 address <= 0;
             end
