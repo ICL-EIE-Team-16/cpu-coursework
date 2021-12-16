@@ -6,8 +6,8 @@ ADDIU $s4, $zero, 0x0056
 ADDIU $s5, $zero, 0x0078
 SB $s2, 0x34($s1)
 SB $s3, 0x35($s1)
-SB $s3, 0x36($s1)
-SB $s3, 0x37($s1)
+SB $s4, 0x36($s1)
+SB $s5, 0x37($s1)
 LW $v0, 0x34($s1)
 JR $zero
-JR $zero
+NOP

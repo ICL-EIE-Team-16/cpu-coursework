@@ -1,14 +1,14 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
 ADDIU $s2, $zero, 0x1234
-SLL $s2, $s2, 0x8
-ADDIU $s3, $zero, 0x1212
-SLL $s3, $s3, 0x4
-LWR $s2, 0x25($s1)
-LWR $s3, 0x2A($s1)
+SLL $s2, $s2, 0x10
+ADDIU $s3, $zero, 0x8212
+SLL $s3, $s3, 0xC
+LWR $s2, 0x35($s1)
+LWR $s3, 0x36($s1)
 ADDU $v0, $s2, $s3
 JR $zero
 JR $zero
-# Data - assuming big endian addressing - expected calculation 0x12789ABC + 0x0012AB12 = 0x128B45CE
-0x24: 0x789ABCFF
-0x28: 0xAB1234FF
+# Data - assuming big endian addressing - expected calculation 0x123400AB + 0xF821AB12 = 0x0a55abbd
+0x34: 0x789ABCFF
+0x38: 0xAB1234FF

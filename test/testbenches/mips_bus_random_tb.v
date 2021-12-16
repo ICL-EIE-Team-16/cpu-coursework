@@ -1,4 +1,4 @@
-module mips_cpu_bus_memory_tb;
+module mips_bus_random_tb;
     timeunit 1ns/10ps;
 
     parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";
@@ -7,6 +7,7 @@ module mips_cpu_bus_memory_tb;
 
     logic clk;
     logic reset;
+    logic reset_sent;
     logic active;
     logic waitrequest;
     logic running;
@@ -18,24 +19,18 @@ module mips_cpu_bus_memory_tb;
     logic[31:0] readdata;
     logic[31:0] register_v0;
     logic[3:0] byteenable;
-    logic[31:0] num;
-    logic[4:0] sa;
 
-    rand_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
+    random_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
 
     initial begin
         $dumpfile(WAVES_OUT_FILE);
-        $dumpvars(3, mips_cpu_bus_tb);
+        $dumpvars(3, mips_bus_random_tb);
     end
 
     // Generate clock
     initial begin
         clk = 0;
-        num = 32'h80000000;
-        sa = 5'b10100;
-        $display("num: %b: ", num);
-        $display("shifted num: %b: ", num >>> (sa));
 
         repeat (TIMEOUT_CYCLES) begin
             #10;
@@ -50,16 +45,19 @@ module mips_cpu_bus_memory_tb;
 
     initial begin
         reset = 0;
-        #5;
+        reset_sent = 0;
+        #40;
         reset = 1;
         #20;
         reset = 0;
-        #1000;
-        $finish;
+        reset_sent = 1;
     end
 
-    always @(negedge active) begin
-        $display("REG v0: OUT: %h", register_v0);
-        $finish;
+    // When the active signal is LOW after the reset was driven HIGH, the test bench will be terminated, which means that the CPU was halted
+    always @(posedge clk) begin
+        if(~active && reset_sent) begin
+            $display("REG v0: OUT: %h", register_v0);
+            $finish;
+        end
     end
 endmodule

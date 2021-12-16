@@ -1,0 +1,7 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s2, $zero, 0x1234
+SW $s2, 0x20($s1)
+SW $zero, 0x20($s1)
+LW $v0, 0x20($s1)
+JR $zero

@@ -1,0 +1,8 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s1, $s1, 0x20
+LHU $v0, 0xFFFF($s1)
+JR $zero
+NOP
+# Data - assuming big endian memory
+0x1C: 0x1234F678

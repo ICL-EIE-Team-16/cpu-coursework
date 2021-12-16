@@ -1,0 +1,4 @@
+ADDIU $t0, $t0, 0
+JR $ra
+ADDIU $t0, $t0, 0
+NOP

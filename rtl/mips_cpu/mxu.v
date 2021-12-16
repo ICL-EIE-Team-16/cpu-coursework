@@ -28,7 +28,6 @@ module mxu(
         LBU = 7'd43,
         LH = 7'd44,
         LHU = 7'd45,
-        LUI = 7'd46,
         LW = 7'd47,
         LWL = 7'd48,
         LWR = 7'd49,
@@ -53,14 +52,14 @@ module mxu(
     always @(*) begin
         if (fetch || exec1 || exec2)
             read = 1;
-        /*else if (exec1) begin
-            if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
-                read = 1;
-            else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
-                read = 1;
-            else
-                read = 0;
-        end*/
+            /*else if (exec1) begin
+                if (instruction_code == LB || instruction_code == LBU || instruction_code == LH || instruction_code == LHU)
+                    read = 1;
+                else if (instruction_code == LUI || instruction_code == LW || instruction_code == LWL || instruction_code == LWR)
+                    read = 1;
+                else
+                    read = 0;
+            end*/
         else
             read = 0;
     end
@@ -137,9 +136,36 @@ module mxu(
                 dataout = {16'b0, memin[15:0]};
             end
         end
-
+        else if (instruction_code == LWL) begin
+            if (alu_r[1:0] == 0) begin
+                dataout = memin;
+            end
+            else if (alu_r[1:0] == 1) begin
+                dataout = {memin[23:0], mxu_reg_b_in[7:0]};
+            end
+            else if (alu_r[1:0] == 2) begin
+                dataout = {memin[15:0], mxu_reg_b_in[15:0]};
+            end
+            else if (alu_r[1:0] == 3) begin
+                dataout = {memin[7:0], mxu_reg_b_in[23:0]};
+            end
+        end
+        else if (instruction_code == LWR) begin
+            if (alu_r[1:0] == 0) begin
+                dataout = mxu_reg_b_in;
+            end
+            else if (alu_r[1:0] == 1) begin
+                dataout = {mxu_reg_b_in[31:8], memin[31:24]};
+            end
+            else if (alu_r[1:0] == 2) begin
+                dataout = {mxu_reg_b_in[31:16], memin[31:16]};
+            end
+            else if (alu_r[1:0] == 3) begin
+                dataout = {mxu_reg_b_in[31:24], memin[31:8]};
+            end
+        end
         else begin
-            dataout = memin; //Important for fetching
+            dataout = memin;
         end
     end
 
@@ -165,10 +191,10 @@ module mxu(
         end
         else if (instruction_code == SH) begin
             if (alu_r[1] == 0) begin
-                memout = {16'b0, mxu_reg_b_in[15:0]};
+                memout = {mxu_reg_b_in[15:0], 16'b0};
             end
             else begin
-                memout = {mxu_reg_b_in[31:16], 16'b0};
+                memout = {16'b0, mxu_reg_b_in[15:0]};
             end
         end
         else begin
@@ -177,43 +203,73 @@ module mxu(
     end
 
 //BYTEENABLE SIGNAL
-    always @(*) begin
-        if (fetch || exec1 || exec2) begin
-            byteenable = 4'b1111;
-        end else begin
-            byteenable = 4'b0;
-        end
-        /*end
-        else if (instruction_code == SW || instruction_code == LW) begin
-            byteenable = 4'b1111;
-        end
+        always @(*) begin
+            if (fetch || exec1 || exec2) begin
+                byteenable = 4'b1111;
+            end else begin
+                byteenable = 4'b0;
+            end
+            /*end
+            else if (instruction_code == SW || instruction_code == LW) begin
+                byteenable = 4'b1111;
+            end
 
-        else if (instruction_code == SB || instruction_code == LB || instruction_code == LBU) begin
-            if (alu_r[1:0] == 0) begin
-                byteenable = 4'b0001;
+            else if (instruction_code == SB || instruction_code == LB || instruction_code == LBU) begin
+                if (alu_r[1:0] == 0) begin
+                    byteenable = 4'b0001;
+                end
+                else if (alu_r[1:0] == 1) begin
+                    byteenable = 4'b0010;
+                end
+                else if (alu_r[1:0] == 2) begin
+                    byteenable = 4'b0100;
+                end
+                else if (alu_r[1:0] == 3) begin
+                    byteenable = 4'b1000;
+                end
             end
-            else if (alu_r[1:0] == 1) begin
-                byteenable = 4'b0010;
-            end
-            else if (alu_r[1:0] == 2) begin
-                byteenable = 4'b0100;
-            end
-            else if (alu_r[1:0] == 3) begin
-                byteenable = 4'b1000;
-            end
-        end
 
-        else if (instruction_code == SH || instruction_code == LH || instruction_code == LHU) begin
-            if (alu_r[1] == 0) begin
-                byteenable = 4'b0011;
+            else if (instruction_code == SH || instruction_code == LH || instruction_code == LHU) begin
+                if (alu_r[1] == 0) begin
+                    byteenable = 4'b0011;
+                end
+                else begin
+                    byteenable = 4'b1100;
+                end
             end
             else begin
-                byteenable = 4'b1100;
-            end
-        end
-        else begin
-            byteenable = 4'b0;
-        end*/
     end
+    else if (instruction_code == LWL) begin
+        if (alu_r[1:0] == 0) begin
+            byteenable = 4'b1111;
+        end
+        else if (alu_r[1:0] == 1) begin
+            byteenable = 4'b1110;
+        end
+        else if (alu_r[1:0] == 2) begin
+            byteenable = 4'b1100;
+        end
+        else if (alu_r[1:0] == 3) begin
+            byteenable = 4'b1000;
+        end
+    end
+    else if (instruction_code == LWR) begin
+        if (alu_r[1:0] == 0) begin
+            byteenable = 4'b0000;
+        end
+        else if (alu_r[1:0] == 1) begin
+            byteenable = 4'b0001;
+        end
+        else if (alu_r[1:0] == 2) begin
+            byteenable = 4'b0011;
+        end
+        else if (alu_r[1:0] == 3) begin
+            byteenable = 4'b0111;
+        end
+    end
+    else begin
+        byteenable = 4'b0;
+    end*/
+end
 
 endmodule
