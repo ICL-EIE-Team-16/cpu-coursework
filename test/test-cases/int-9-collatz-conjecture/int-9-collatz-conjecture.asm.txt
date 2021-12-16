@@ -1,1 +1,20 @@
-
+ADDI $a0, $zero, 3                    #stores the x value
+ADD $v0, $zero, $zero                 #counter
+ADDI $a1, $zero , 6                   #stores START address
+ADDI $a2, $zero, 3                    #stores 3
+ADDI $t0, $zero, 1                    #stores 1
+BEQ $a0, $t1, 0xC                     #if x=1 branch 12 forwards to end         START
+ADDI $v0, $v0, 1                      #increment counter by 1
+ANDI $a3, $a0, 1                      #check to see if x is currently odd or even
+BNE $a3, $zero, 4                     #if the AND doesnt return 0 then x is odd, branch to odd
+nop                   
+SRL $a0, $a0, 1                       #even section, x=x/2                      EVEN
+JR $a1                                #back to start
+nop
+MULT $a0, $a2                         #odd section x=3x+1                       ODD
+MFLO $a0
+ADDIU $a0, $a0, 1
+JR $a1                                #back to start
+nop
+JR $zero                              #terminate
+nop
