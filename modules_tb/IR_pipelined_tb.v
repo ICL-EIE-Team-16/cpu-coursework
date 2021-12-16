@@ -21,6 +21,7 @@ module IR_pipelined_tb();
     logic reg_write_en;
     logic[6:0] instruction_code_1;
     logic[6:0] instruction_code_2;
+    logic memory_hazard;
 
     //set a clock
     initial begin
@@ -139,13 +140,69 @@ module IR_pipelined_tb();
         assert (instruction_code_1 == 7'd29) else $error("instruction code 1 is %b, but it should be 0001110", instruction_code_1);
         assert (immediate_1 == 32'hff56) else $error("immediate 1 is %h, but it should be 0x00001111", immediate_1);
         assert (reg_a_idx_1 == 5'b10000) else $error("register a idx 1 is %b, but it should be 10000", reg_a_idx_1);
-        assert (destination_reg_2 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_2);
+        assert (destination_reg_1 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_1);
         assert (instruction_code_2 == 7'd16) else $error("instruction code 2 is %b, but it should be 0001110", instruction_code_2);
         assert (immediate_2 == 32'h1111) else $error("immediate 2 is %h, but it should be 0x00001111", immediate_2);
         assert (reg_a_idx_2 == 5'b10000) else $error("register a idx 2 is %b, but it should be 10000", reg_a_idx_2);
         assert (destination_reg_2 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_2);
 
         #1;
+
+        current_instruction = 32'h8e220014; // LW $v0, 0x14($s1)
+
+        fetch = 1;
+        exec1 = 0;
+        exec2 = 0;
+
+        #1;
+
+        assert (instruction_code_1 == 7'd47) else $error("instruction code 1 is %b, but it should be 0101111", instruction_code_1);
+        assert (immediate_1 == 32'h14) else $error("immediate 1 is %h, but it should be 0x0014", immediate_1);
+        assert (reg_a_idx_1 == 5'b10001) else $error("register a idx 1 is %b, but it should be 10001", reg_a_idx_1);
+        assert (destination_reg_1 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_1);
+        assert (memory_hazard == 1) else $error("memory_hazard is %b, but it should be 1", memory_hazard);
+        assert (instruction_code_2 == 7'd29) else $error("instruction code 1 is %b, but it should be 0001110", instruction_code_1);
+        assert (immediate_2 == 32'hff56) else $error("immediate 1 is %h, but it should be 0x00001111", immediate_1);
+        assert (reg_a_idx_2 == 5'b10000) else $error("register a idx 1 is %b, but it should be 10000", reg_a_idx_1);
+        assert (destination_reg_2 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_2);
+
+        #1;
+
+        fetch = 0;
+        exec1 = 1;
+        exec2 = 0;
+
+        #1;
+
+        assert (instruction_code_1 == 7'd17) else $error("instruction code 1 is %b, but it should be 0", instruction_code_1); // SLL is NOP
+        assert (immediate_1 == 32'h0) else $error("immediate 1 is %h, but it should be 0x0014", immediate_1);
+        assert (reg_a_idx_1 == 5'b00000) else $error("register a idx 1 is %b, but it should be 00000", reg_a_idx_1);
+        assert (reg_b_idx_1 == 5'b00000) else $error("register b idx 1 is %b, but it should be 00000", reg_a_idx_1);
+        assert (destination_reg_1 == 5'b00000) else $error("destination register is %b, but it should be 0000010", destination_reg_1);
+        assert (instruction_code_2 == 7'd47) else $error("instruction code 1 is %b, but it should be 0101111", instruction_code_2);
+        assert (immediate_2 == 32'h14) else $error("immediate 1 is %h, but it should be 0x0014", immediate_2);
+        assert (reg_a_idx_2 == 5'b10001) else $error("register a idx 1 is %b, but it should be 10001", reg_a_idx_2);
+        assert (destination_reg_2 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_2);
+
+        #1;
+
+        current_instruction = 32'h3a02ff56; // XORI $v0, $s0, 0xff56
+
+        fetch = 0;
+        exec1 = 0;
+        exec2 = 1;
+
+        #1;
+
+        assert (instruction_code_1 == 7'd29) else $error("instruction code 1 is %b, but it should be 0001110", instruction_code_1);
+        assert (immediate_1 == 32'hff56) else $error("immediate 1 is %h, but it should be 0x00001111", immediate_1);
+        assert (reg_a_idx_1 == 5'b10000) else $error("register a idx 1 is %b, but it should be 10000", reg_a_idx_1);
+        assert (destination_reg_1 == 5'b00010) else $error("destination register is %b, but it should be 0000010", destination_reg_1);
+        assert (instruction_code_2 == 7'd17) else $error("instruction code 1 is %b, but it should be 0", instruction_code_1); // SLL is NOP
+        assert (immediate_2 == 32'h0) else $error("immediate 1 is %h, but it should be 0x0014", immediate_1);
+        assert (reg_a_idx_2 == 5'b00000) else $error("register a idx 1 is %b, but it should be 00000", reg_a_idx_1);
+        assert (reg_b_idx_2 == 5'b00000) else $error("register b idx 1 is %b, but it should be 00000", reg_a_idx_1);
+        assert (destination_reg_2 == 5'b00000) else $error("destination register is %b, but it should be 0000010", destination_reg_1);
 
         $display("Test finished!");
         $finish();
@@ -156,7 +213,7 @@ module IR_pipelined_tb();
         .clk(clk), .is_current_instruction_valid(is_current_instruction_valid), .current_instruction(current_instruction), .fetch(fetch), .exec1(exec1), .exec2(exec2),
         .shift_amount(shift_amount), .destination_reg_1(destination_reg_1), .destination_reg_2(destination_reg_2), .reg_a_idx_1(reg_a_idx_1), .reg_a_idx_2(reg_a_idx_2),
         .reg_b_idx_1(reg_b_idx_1), .reg_b_idx_2(reg_b_idx_2), .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(memory),
-        .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2)
+        .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2), .memory_hazard(memory_hazard)
     );
 
 endmodule

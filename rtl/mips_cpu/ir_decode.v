@@ -18,7 +18,8 @@ module IR_decode(
     output logic[25:0] memory, // only relevant to j_type instructions – memory address
     output logic reg_write_en, // for register files
     output logic[6:0] instruction_code_1,
-    output logic[6:0] instruction_code_2
+    output logic[6:0] instruction_code_2,
+    output logic memory_hazard
 );
 
     logic r_type_1;
@@ -27,6 +28,7 @@ module IR_decode(
     logic j_type_2;
     logic i_type_1;
     logic i_type_2;
+    logic memory_hazard_prev;
     logic[5:0] opcode_1;
     logic[5:0] opcode_2;
     logic[5:0] function_code_1;
@@ -98,10 +100,13 @@ module IR_decode(
     always_ff @(posedge clk) begin
         if (is_current_instruction_valid)
             instruction_2 <= instruction_1;
+        memory_hazard_prev <= memory_hazard;
     end
 
     always @(*) begin
-        if (is_current_instruction_valid)
+        if (memory_hazard_prev)
+            instruction_1 = 32'h0;
+        else if (is_current_instruction_valid)
             instruction_1 = current_instruction;
     end
 
@@ -381,5 +386,7 @@ module IR_decode(
         else if (opcode_2 == 6'b101001) instruction_code_2 = SH;
         else if (opcode_2 == 6'b101011) instruction_code_2 = SW;
     end
+
+    hazard_detector hazard_detector(.instruction_code(instruction_code_1), .memory_hazard(memory_hazard));
 
 endmodule
