@@ -171,4 +171,4 @@ fabric.properties
 ./modules_tb/logs/*
 
 #Michal debug directory
-/rtl/debug/*
+/rtl_pipelined/debug/*
