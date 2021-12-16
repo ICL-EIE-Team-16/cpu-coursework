@@ -1,0 +1,5 @@
+LUI $s0, 0xffff
+ADDIU $s0, $zero, 0xffff
+ANDI $v0, $s0, 0xffff
+JR $zero
+NOP
