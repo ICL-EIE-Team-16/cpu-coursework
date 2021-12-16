@@ -9,16 +9,17 @@ module mips_bus_simple_tb;
     logic reset;
     logic reset_sent;
     logic active;
-    logic waitrequest;
     logic running;
+    logic[31:0] register_v0;
 
+    logic waitrequest;
     logic[31:0] address;
     logic write;
     logic read;
     logic[31:0] writedata;
     logic[31:0] readdata;
-    logic[31:0] register_v0;
     logic[3:0] byteenable;
+
 
     simple_memory#(1024, RAM_INIT_FILE) ram(.clk(clk), .read(read), .write(write), .addr(address), .byteenable(byteenable), .writedata(writedata), .readdata(readdata), .waitrequest(waitrequest));
     mips_cpu_bus#(1) dut(.clk(clk), .reset(reset), .active(active), .register_v0(register_v0), .address(address), .write(write), .read(read), .waitrequest(waitrequest), .writedata(writedata), .byteenable(byteenable), .readdata(readdata));
