@@ -18,7 +18,7 @@ module mips_cpu_bus#(
 );
 
     logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard;
-    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address, jump_register_data, readdata_unscrambled, writedata_unscrambled;
+    logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address, jump_register_data, readdata_unscrambled, writedata_unscrambled, mxu_reg_b_in;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount;
     logic[25:0] jump_const;
     logic[6:0] instruction_code_1, instruction_code_2;
@@ -85,7 +85,7 @@ module mips_cpu_bus#(
     always @(*) begin
         active = ~pc_halt;
         readdata_unscrambled = {readdata[7:0], readdata[15:8], readdata[23:16], readdata[31:24]};
-        //writedata = {writedata_unscrambled[7:0], writedata_unscrambled[15:8], writedata_unscrambled[23:16], writedata_unscrambled[31:24]};
+        writedata = {writedata_unscrambled[7:0], writedata_unscrambled[15:8], writedata_unscrambled[23:16], writedata_unscrambled[31:24]};
     end
 
 //Ignore data forwarding
@@ -153,6 +153,15 @@ module mips_cpu_bus#(
             jump_register_data = reg_a_out;
     end
 
+//MUX MXU reg in
+    always_comb begin
+        if (reg_in_idx == reg_b_idx_1) begin
+            mxu_reg_b_in = alu_r_saved;
+        end else begin
+            mxu_reg_b_in = reg_b_out;
+        end
+    end
+
 //Data forwarding register
     always_ff @(posedge clk) begin
         is_current_instruction_valid <= 1;
@@ -160,7 +169,7 @@ module mips_cpu_bus#(
     end
 
     statemachine sm(.clk(clk), .reset(reset), .halt(pc_halt || mem_halt), .fetch(fetch), .exec1(exec1), .exec2(exec2));
-    mxu mainmxu(.waitrequest(waitrequest), .mxu_reg_b_in(reg_b_out), .memin(readdata_unscrambled), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
+    mxu mainmxu(.waitrequest(waitrequest), .mxu_reg_b_in(mxu_reg_b_in), .memin(readdata_unscrambled), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .pc_address(pc_address), .alu_r(alu_r), .mem_address(address), .dataout(mxu_dout), .memout(writedata_unscrambled), .read(read), .write(write), .byteenable(byteenable), .mem_halt(mem_halt));
     ALU mainalu(.reset(reset), .clk(clk), .fetch(fetch), .exec1(exec1), .exec2(exec2), .a(alu_a), .b(alu_b), .op(instruction_code_1), .sa(shift_amount), .zero(zero), .positive(positive), .negative(negative), .r(alu_r));
     mipsregisterfile#(DISP_REG_VALS_TO_OUT) regfile(.clk(clk), .reset(reset), .write_enable(reg_write_en && ~(pc_halt || mem_halt)), .register_a_index(reg_a_idx_1), .register_b_index(reg_b_idx_1), .write_register(reg_in_idx), .write_data(reg_in), .register_a_data(reg_a_out), .register_b_data(reg_b_out), .v0(register_v0));
     IR_decode ir(
