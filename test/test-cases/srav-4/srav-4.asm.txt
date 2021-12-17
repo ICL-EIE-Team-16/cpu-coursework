@@ -1,4 +1,4 @@
-LUI $s1, 0x7000
+LUI $s1, 0x8000
 ADDIU $s2, $zero, 0x1c
 SRAV $v0, $s1, $s2
 JR $zero
