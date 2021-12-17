@@ -6,4 +6,4 @@ SH $s2, 0x24($s1)
 SH $s3, 0x26($s1)
 LW $v0, 0x24($s1)
 JR $zero
-JR $zero
+NOP

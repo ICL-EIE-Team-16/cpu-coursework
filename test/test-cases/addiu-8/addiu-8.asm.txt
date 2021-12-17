@@ -1,0 +1,3 @@
+ADDIU $v0, $t1, 0xffff
+JR $ra
+NOP

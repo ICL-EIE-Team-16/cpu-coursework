@@ -8,7 +8,7 @@ LWR $s2, 0x35($s1)
 LWR $s3, 0x36($s1)
 ADDU $v0, $s2, $s3
 JR $zero
-JR $zero
+NOP
 # Data - assuming big endian addressing - expected calculation 0x123400AB + 0xF821AB12 = 0x0a55abbd
 0x34: 0x789ABCFF
 0x38: 0xAB1234FF

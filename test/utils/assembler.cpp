@@ -2,7 +2,6 @@
 #include <regex>
 #include <string>
 #include <vector>
-#include <cstring>
 #include "opcodes.h"
 #include "registers.h"
 #include "utils.h"
@@ -348,7 +347,7 @@ std::string convert_instruction_to_hex(const std::string &command,
             code += register_name_to_index(matches[1]) << config.getBitShifts()[1];
             code += 31 << config.getBitShifts()[0];
         } else {
-            std::cerr << "Invalid instruction pattern passed as an argument." << std::endl;
+            std::cerr << "Invalid instruction pattern passed as an argument. Command with updated case: " << commandWithUpdatedCase << std::endl;
         }
 
         code += config.getConstantToAdd();

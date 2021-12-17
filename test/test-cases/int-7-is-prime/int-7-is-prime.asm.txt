@@ -1,0 +1,15 @@
+BEQ $0, $0, 0x4
+addiu $4, $0, 0x11
+jr $0
+nop
+slt     $2, $4, $6
+bne     $2, $0, 0x8
+andi    $4, $4, 0x1
+beq     $4, $0, 0x4
+addiu      $2, $0, 1
+jr       $31
+nop
+jr       $31
+addiu      $2, $0, 0xffff
+jr       $31
+addiu      $2, $0, 1
