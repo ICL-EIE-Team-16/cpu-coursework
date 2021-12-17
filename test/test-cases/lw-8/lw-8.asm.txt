@@ -1,0 +1,115 @@
+addiu $4, $0, 0xBFC0
+sll $4, $4, 0x10
+addiu $4, $4, 0x200
+JAL 0x3f0000B
+addiu $5, $0, 0x14
+addiu $4, $0, 0xBFC0
+sll $4, $4, 0x10
+addiu $4, $4, 0x200
+j 0x3f0002C
+nop
+addiu $12, $0, 2
+slt     $2, $5, $12
+bne     $2, $0, 0x25
+addiu      $3, $0, 1                        # 0x1
+addiu    $9, $0, 0x0
+srl     $7, $3, 31
+addu    $7, $7, $3
+sra     $7, $7, 1
+addiu $12, $0, 2
+slt     $2, $7, $12
+bne     $2, $0, 0x13
+addiu      $2, $0, 2                        # 0x2
+addiu   $7, $7, 1
+addiu      $8, $0, 1                        # 0x1
+div     $3, $2
+mfhi    $6
+bne     $6, $0, 0x3
+addiu   $2, $2, 1
+addiu   $8, $0, 0xffff                 # 0xffffffffffffffff
+bne     $7, $2, 0xfffb
+nop
+addiu      $2, $0, 1                        # 0x1
+beq     $8, $2, 0x8
+sll     $2, $9, 2
+addiu   $3, $3, 1
+bne     $5, $3, 0xffed
+srl     $7, $3, 31
+jr       $31
+nop
+sll     $2, $9, 2
+addu    $2, $4, $2
+sw      $3, 0($2)
+beq $0, $0, 0xfff8
+addiu   $9, $9, 1
+LW $s0, 0($4)
+LW $s1, 4($4)
+LW $s2, 8($4)
+LW $s3, 0xC($4)
+LW $s4, 0x10($4)
+LW $s5, 0x14($4)
+LW $s6, 0x18($4)
+LW $s7, 0x1C($4)
+LW $t8, 0x20($4)
+ADDIU $t0, $zero, 0x1
+ADDIU $t1, $zero, 0x2
+ADDIU $t2, $zero, 0x3
+ADDIU $t3, $zero, 0x5
+ADDIU $t4, $zero, 0x7
+ADDIU $t5, $zero, 0xB
+ADDIU $t6, $zero, 0xD
+ADDIU $t7, $zero, 0x11
+ADDIU $t9, $zero, 0x13
+ADDIU $v0, $zero, 0
+BNE $s0, $t0, 0x1b
+NOP
+ADDIU $v0, $v0, 1
+BNE $s1, $t1, 0x18
+NOP
+ADDIU $v0, $v0, 1
+BNE $s2, $t2, 0x15
+NOP
+ADDIU $v0, $v0, 1
+BNE $s3, $t3, 0x12
+NOP
+ADDIU $v0, $v0, 1
+BNE $s4, $t4, 0xf
+NOP
+ADDIU $v0, $v0, 1
+BNE $s5, $t5, 0xC
+NOP
+ADDIU $v0, $v0, 1
+BNE $s6, $t6, 9
+NOP
+ADDIU $v0, $v0, 1
+BNE $s7, $t7, 6
+NOP
+ADDIU $v0, $v0, 1
+BNE $t8, $t9, 3
+NOP
+ADDIU $v0, $v0, 1
+JR $zero
+NOP
+# void calculate_primes_to_n(int *array, int n) {
+#    int index = 0;
+#
+#    for(int i = 1; i < n; i++) {
+#        int prime = 1;
+#        int half = i / 2;
+#
+#        if (i == 1 || i == 2) {
+#            prime = 1;
+#        }
+#
+#        for (int j = 2; j <= half; j++) {
+#            if (i % j == 0) {
+#                prime = -1;
+#            }
+#        }
+#
+#        if (prime == 1) {
+#            array[index] = i;
+#            index++;
+#        }
+#    }
+#}

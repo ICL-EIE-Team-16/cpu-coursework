@@ -1,0 +1,65 @@
+ADDIU $4, $zero, 0xBFC0
+SLL $4, $4, 0x10
+ADDIU $4, $4, 0x0100
+ADDIU $5, $0, 0x5
+ADDIU $6, $0, 0
+JAL 0x3f00009
+ADDIU $7, $0, 8
+JR $0
+nop
+beq $0, $0, 0xa # fix to JUMP
+subu    $3, $7, $6
+lw      $3, 0($8)
+nop
+beq     $3, $5, 0x15
+slt     $8, $3, $5
+beq     $8, $0, 0x15
+nop
+addiu   $6, $2, 0x0
+subu    $3, $7, $6
+srl     $2, $3, 31
+addu    $2, $2, $3
+sra     $2, $2, 1
+addu    $2, $6, $2
+sll     $8, $2, 0x2
+slt     $3, $3, $2
+beq     $3, $0, 0xfff2
+addu    $8, $4, $8
+sll     $3, $6, 2
+addu    $3, $4, $3
+lw      $3, 0($3)
+nop
+beq     $3, $5, 0xffec
+nop
+addiu      $2, $0, 0xffff
+jr       $31
+nop
+beq $0, $0, 0xffee
+addiu    $7, $2, 0x0
+# Data
+0x100: 0x1
+0x104: 0x2
+0x108: 0x5
+0x10C: 0x10
+0x110: 0x20
+0x114: 0x40
+0x118: 0x50
+0x11C: 0x80
+# Code being executed
+# int binary_search_index(int *array, int number, int start, int end) {
+#      int middle = (end - start) / 2;
+#
+#      if (end - start <= 1 && array[start] != number) {
+#          return -1;
+#      } else {
+#          int array_num = array[start + middle];
+#          std::cout << "array_num: " << array_num << std::endl;
+#          if (array_num == number) {
+#              return start + middle;
+#          } else if (number > array_num) {
+#              return binary_search_index(array, number, start + middle, end);
+#          } else {
+#              return binary_search_index(array, number, start, start + middle);
+#          }
+#      }
+#  }
