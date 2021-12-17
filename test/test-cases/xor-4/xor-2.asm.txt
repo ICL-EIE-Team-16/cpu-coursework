@@ -1,0 +1,5 @@
+ADDIU $s0, $zero, 0x0000
+ADDIU $s1, $zero, 0xffff
+XOR $v0, $s0, $s1
+JR $zero
+NOP
