@@ -5,6 +5,7 @@ module IR_decode(
     input logic fetch,
     input logic exec1,
     input logic exec2,
+    input logic waitrequest,
 
     output logic[4:0] shift_amount, // only relevant to r_type instructions
     output logic[4:0] destination_reg_1,
@@ -29,6 +30,8 @@ module IR_decode(
     logic i_type_1;
     logic i_type_2;
     logic memory_hazard_prev;
+    logic waitrequest_prev;
+    logic waitrequest_prev_prev;
     logic[5:0] opcode_1;
     logic[5:0] opcode_2;
     logic[5:0] function_code_1;
@@ -96,6 +99,12 @@ module IR_decode(
 
     } instcode_t;
 
+// Wait request received in the previous clock cycle
+    always_ff @(posedge clk) begin
+        waitrequest_prev_prev <= waitrequest_prev;
+        waitrequest_prev <= waitrequest;
+    end
+
 //Instruction register saving behaviour
     always_ff @(posedge clk) begin
         if (is_current_instruction_valid)
@@ -106,7 +115,7 @@ module IR_decode(
     always @(*) begin
         if (memory_hazard_prev)
             instruction_1 = 32'h0;
-        else if (is_current_instruction_valid)
+        else if (is_current_instruction_valid && !waitrequest_prev)
             instruction_1 = current_instruction;
     end
 
@@ -252,26 +261,27 @@ module IR_decode(
                 reg_write_en = 0;
             else if (instruction_code_2 == MULT || instruction_code_2 == MULTU || instruction_code_2 == DIV || instruction_code_2 == DIVU)
                 reg_write_en = 0;
-            else
+            else if (!waitrequest_prev_prev)
                 reg_write_en = 1;
+            else
+                reg_write_en = 0;
         end
         else if (i_type_2) begin
             //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
-            if ((opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10001) || (opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10000) || (opcode_2 == 6'b100000) || (opcode_2 == 6'b100100) || (opcode_2 == 6'b100001) || (opcode_2 == 6'b100101) || (opcode_2 == 6'b001111) || (opcode_2 == 6'b100011) || (opcode_2 == 6'b100010) || (opcode_2 == 6'b100110)) begin
+            if (((opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10001) || (opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10000) || (opcode_2 == 6'b100000) || (opcode_2 == 6'b100100) || (opcode_2 == 6'b100001) || (opcode_2 == 6'b100101) || (opcode_2 == 6'b001111) || (opcode_2 == 6'b100011) || (opcode_2 == 6'b100010) || (opcode_2 == 6'b100110)) && !waitrequest_prev_prev) begin
                 reg_write_en = 1;
             end
                 //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
-            else if ((opcode_2 == 6'b001000) || (opcode_2 == 6'b001001) || (opcode_2 == 6'b001100) || (opcode_2 == 6'b001101) || (opcode_2 == 6'b001110) || (opcode_2 == 6'b001010) || (opcode_2 == 6'b001011)) begin
+            else if (((opcode_2 == 6'b001000) || (opcode_2 == 6'b001001) || (opcode_2 == 6'b001100) || (opcode_2 == 6'b001101) || (opcode_2 == 6'b001110) || (opcode_2 == 6'b001010) || (opcode_2 == 6'b001011)) && !waitrequest_prev_prev) begin
                 reg_write_en = 1;
             end
             else
                 reg_write_en = 0;
         end
-        else if (j_type_2 && instruction_code_2 == JAL)
+        else if (j_type_2 && instruction_code_2 == JAL && !waitrequest_prev_prev)
             reg_write_en = 1;
         else
             reg_write_en = 0;
-
     end
 
 //decoding the instruction code which will replace opcode, rtype, itype and jtype outputs
