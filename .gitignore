@@ -172,3 +172,4 @@ fabric.properties
 
 #Michal debug directory
 /rtl_pipelined/debug/*
+!rtl_cache/cache.vcd

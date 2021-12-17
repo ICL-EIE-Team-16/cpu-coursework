@@ -1,0 +1,425 @@
+$date
+	Fri Dec 17 20:38:45 2021
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module l1cache_tb $end
+$var wire 32 ! readdata_ram [31:0] $end
+$var wire 32 " writedata_ram [31:0] $end
+$var wire 1 # write_ram $end
+$var wire 1 $ waitrequest_cpu $end
+$var wire 32 % readdata_cpu [31:0] $end
+$var wire 1 & read_ram $end
+$var wire 4 ' byteenable_ram [3:0] $end
+$var wire 32 ( addr_ram [31:0] $end
+$var reg 32 ) addr_cpu [31:0] $end
+$var reg 4 * byteenable_cpu [3:0] $end
+$var reg 1 + clk $end
+$var reg 1 , read_cpu $end
+$var reg 1 - reset $end
+$var reg 1 . waitrequest_ram $end
+$var reg 1 / write_cpu $end
+$var reg 32 0 writedata_cpu [31:0] $end
+$scope module dut $end
+$var wire 32 1 addr_cpu [31:0] $end
+$var wire 4 2 byteenable_cpu [3:0] $end
+$var wire 1 + clk $end
+$var wire 1 , read_cpu $end
+$var wire 32 3 readdata_ram [31:0] $end
+$var wire 1 - reset $end
+$var wire 32 4 viewer_address_queue0 [31:0] $end
+$var wire 32 5 viewer_address_queue1 [31:0] $end
+$var wire 32 6 viewer_address_queue2 [31:0] $end
+$var wire 32 7 viewer_address_queue3 [31:0] $end
+$var wire 32 8 viewer_mem0 [31:0] $end
+$var wire 32 9 viewer_mem1 [31:0] $end
+$var wire 32 : viewer_mem2 [31:0] $end
+$var wire 32 ; viewer_mem3 [31:0] $end
+$var wire 20 < viewer_tag [19:0] $end
+$var wire 1 = viewer_valid $end
+$var wire 1 . waitrequest_ram $end
+$var wire 1 / write_cpu $end
+$var wire 32 > writedata_cpu [31:0] $end
+$var reg 32 ? addr_ram [31:0] $end
+$var reg 10 @ block_id_cpu [9:0] $end
+$var reg 4 A byteenable_ram [3:0] $end
+$var reg 8 B hi [7:0] $end
+$var reg 1 C hit $end
+$var reg 10 D last_block_id_ram [9:0] $end
+$var reg 32 E last_queue_address [31:0] $end
+$var reg 1 F last_queue_valid $end
+$var reg 1 G last_ram_read $end
+$var reg 1 H last_ram_waitrequest $end
+$var reg 1 I last_ram_write $end
+$var reg 20 J last_tag_ram [19:0] $end
+$var reg 8 K lo [7:0] $end
+$var reg 8 L midhi [7:0] $end
+$var reg 8 M midlo [7:0] $end
+$var reg 1 & read_ram $end
+$var reg 32 N readdata_cpu [31:0] $end
+$var reg 32 O readdata_internal [31:0] $end
+$var reg 20 P tag_cpu [19:0] $end
+$var reg 4 Q valid_queue [3:0] $end
+$var reg 1 $ waitrequest_cpu $end
+$var reg 1 # write_ram $end
+$var reg 32 R writedata_ram [31:0] $end
+$scope begin $ivl_for_loop1 $end
+$var integer 32 S i [31:0] $end
+$upscope $end
+$upscope $end
+$scope begin $ivl_for_loop0 $end
+$var integer 32 T i [31:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b1000000000000 T
+b0 S
+bx R
+bx Q
+bx P
+bx O
+bx N
+bx M
+bx L
+bx K
+bx J
+xI
+xH
+xG
+xF
+bx E
+bx D
+xC
+bx B
+bx A
+bx @
+bx ?
+bx >
+x=
+bx <
+bx ;
+bx :
+bx 9
+bx 8
+bx 7
+bx 6
+bx 5
+bx 4
+bx 3
+bx 2
+bx 1
+bx 0
+x/
+x.
+1-
+x,
+0+
+bx *
+bx )
+bx (
+bx '
+x&
+bx %
+x$
+x#
+bx "
+bx !
+$end
+#1
+b1111 '
+b1111 A
+b0 K
+b0 M
+b0 L
+b0 B
+1&
+0#
+b0x J
+b0 <
+0=
+0F
+b0 Q
+b10000000000 S
+1+
+#2
+0&
+b0 O
+1$
+0C
+b100 @
+b0 P
+0+
+b10000 )
+b10000 1
+b1111 *
+b1111 2
+0/
+1,
+0.
+0-
+#3
+1&
+b100110001 !
+b100110001 3
+b10011 (
+b10011 ?
+b10011 4
+b10010 5
+b10001 6
+b10000 7
+b1111 Q
+0G
+0I
+0H
+b0 %
+b0 N
+1+
+#4
+0+
+#5
+b100100001 !
+b100100001 3
+b10010 (
+b10010 ?
+b100 D
+b0 J
+b10010 4
+b10001 5
+b10000 6
+b0 7
+b111 Q
+1G
+1F
+b10011 E
+1+
+#6
+0+
+#7
+b100010001 !
+b100010001 3
+b10001 (
+b10001 ?
+b10001 4
+b10000 5
+b0 6
+b11 Q
+b100100001 ;
+b10010 E
+1+
+#8
+0+
+#9
+b100000001 !
+b100000001 3
+b10000 (
+b10000 ?
+b10000 4
+b0 5
+b1 Q
+b100010001 :
+b10001 E
+1+
+#10
+0+
+#11
+0&
+b1 !
+b1 3
+b0 (
+b0 ?
+b0 4
+b0 Q
+b100000001 9
+b10000 E
+1+
+#12
+0+
+#13
+b1 K
+b1 O
+0$
+b0 D
+1C
+1=
+b1 8
+0G
+0F
+b0 E
+1+
+#14
+0+
+#15
+b1 %
+b1 N
+1+
+#16
+0+
+#17
+1+
+#18
+0+
+#19
+b100000001 %
+b100000001 N
+b1 M
+b100000001 O
+1+
+b10001 )
+b10001 1
+#20
+0+
+#21
+1+
+#22
+0+
+#23
+1+
+#24
+0+
+#25
+1+
+#26
+0+
+#27
+1+
+#28
+0+
+#29
+1&
+b101110001 !
+b101110001 3
+b10111 (
+b10111 ?
+b10111 4
+b10110 5
+b10101 6
+b10100 7
+b1111 Q
+b0 %
+b0 N
+b0 K
+b0 M
+b0 O
+1$
+0C
+b101 @
+1+
+b10110 )
+b10110 1
+#30
+0+
+#31
+b101100001 !
+b101100001 3
+b10110 (
+b10110 ?
+b101 D
+b1 J
+b10110 4
+b10101 5
+b10100 6
+b0 7
+b111 Q
+1G
+1F
+b10111 E
+1+
+#32
+0+
+#33
+b101010001 !
+b101010001 3
+b10101 (
+b10101 ?
+b10101 4
+b10100 5
+b0 6
+b11 Q
+b10110 E
+1+
+#34
+0+
+#35
+b101000001 !
+b101000001 3
+b10100 (
+b10100 ?
+b10100 4
+b0 5
+b1 Q
+b10101 E
+1+
+#36
+0+
+#37
+0&
+b1 !
+b1 3
+b0 (
+b0 ?
+b0 4
+b0 Q
+b10100 E
+1+
+#38
+0+
+#39
+b1010001 K
+b1 M
+b101010001 O
+0$
+b0 D
+b0 J
+1C
+0G
+0F
+b0 E
+1+
+#40
+0+
+#41
+b101010001 %
+b101010001 N
+1+
+#42
+0+
+#43
+1+
+#44
+0+
+#45
+b101100001 %
+b101100001 N
+b1100001 K
+b101100001 O
+1+
+b10111 )
+b10111 1
+#46
+0+
+#47
+1+
+#48
+0+
+#49
+1+
+#50
+0+
+#51
+1+
+#52
+0+
+#53
+1+
+#54
+0+
+#55
+1+
+#56
+0+
