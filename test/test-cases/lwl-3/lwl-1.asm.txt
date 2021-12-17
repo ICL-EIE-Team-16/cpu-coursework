@@ -1,0 +1,12 @@
+ADDIU $s0, $zero, 0xBFC
+SLL $s1, $s0, 0x14
+ADDIU $s2, $zero, 0x1234
+ADDIU $s3, $zero, 0x1212
+LWL $s2, 0x24($s1)
+LWL $s3, 0x27($s1)
+ADDU $v0, $s2, $s3
+JR $zero
+NOP
+# Data - assuming big endian addressing
+0x24: 0xFF789ABC
+0x28: 0xFFAB1234
