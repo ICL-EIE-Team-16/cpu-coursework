@@ -1,0 +1,7 @@
+ADDIU $v0, $zero, 0xA
+J 0x3F00005
+NOP
+ADDIU $v0, $v0, 0xB0
+ADDIU $v0, $v0, 0xC00
+ADDIU $v0, $v0, 0xD000
+JR $zero

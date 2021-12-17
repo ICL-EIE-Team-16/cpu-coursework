@@ -1,5 +1,5 @@
 ADDIU $s0, $zero, 0xffff
 ADDIU $s1, $zero, 0x0000
-SLT $v0, $s0, $s1
+XOR $v0, $s0, $s1
 JR $zero
 NOP
