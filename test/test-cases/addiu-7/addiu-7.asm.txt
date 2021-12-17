@@ -1,0 +1,4 @@
+ADDIU $v0, $s0, 1
+JR $zero
+ADDIU $t0, $t0, 0
+NOP

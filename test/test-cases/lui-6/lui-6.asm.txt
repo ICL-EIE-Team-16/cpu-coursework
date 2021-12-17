@@ -1,0 +1,3 @@
+LUI $v0, 0x1f
+JR $ra
+NOP

@@ -1,3 +1,4 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $v0, $s0, 0x14
 JR $zero
+NOP

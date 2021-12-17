@@ -2,4 +2,4 @@ ADDIU $s0, $zero, 0x6456
 MTHI $s0
 MFHI $v0
 JR $zero
-JR $zero
+NOP

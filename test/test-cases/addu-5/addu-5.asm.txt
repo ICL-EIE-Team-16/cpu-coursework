@@ -1,0 +1,5 @@
+ADDIU $t2, $t2, 2
+ADDIU $t1, $zero, 7
+JR $ra
+ADDU $v0, $t2, $t1
+NOP
