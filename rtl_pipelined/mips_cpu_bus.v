@@ -94,7 +94,8 @@ module mips_cpu_bus#(
             || instruction_code_2 == MTHI || instruction_code_2 == MTLO || instruction_code_2 == MULT || instruction_code_2 == MULTU
             || instruction_code_2 == BEQ || instruction_code_2 == BGEZ || instruction_code_2 == BGEZAL || instruction_code_2 == BGTZ
             || instruction_code_2 == BLEZ || instruction_code_2 == BLTZ || instruction_code_2 == BLTZAL || instruction_code_2 == BNE
-            || instruction_code_2 == J || instruction_code_2 == JAL || instruction_code_2 == JR || instruction_code_2 == SB || instruction_code_2 == SH || instruction_code_2 == SW;
+            || instruction_code_2 == J || instruction_code_2 == JAL || instruction_code_2 == JR || instruction_code_2 == SB
+            || instruction_code_2 == SH || instruction_code_2 == SW || waitrequest_prev;
     end
 
 //MUX @ ALU B input
@@ -179,8 +180,8 @@ module mips_cpu_bus#(
 //Data forwarding register
     always_ff @(posedge clk) begin
         is_current_instruction_valid <= 1;
-        alu_r_saved <= alu_r;
         waitrequest_prev <= waitrequest;
+        alu_r_saved <= alu_r;
     end
 
     always @(*) begin
