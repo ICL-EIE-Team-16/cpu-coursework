@@ -1,5 +1,5 @@
 ADDIU $s0, $zero, 0x645
-#SLL $s1, $s0, 0x14
+SLL $s1, $s0, 0x14
 ADDIU $s1, $s1, 0x1111
 MTHI $s1
 MFHI $v0
