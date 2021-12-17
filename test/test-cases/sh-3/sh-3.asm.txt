@@ -1,7 +1,6 @@
 ADDIU $s2, $zero, 0xf234
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
-
 SH $s2, 0x26($s1)
 LW $v0, 0x24($s1)
 JR $zero
