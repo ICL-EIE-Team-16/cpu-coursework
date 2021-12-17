@@ -1,4 +1,4 @@
-LUI $s1, 0xffff
+LUI $s0, 0xffff
 ADDIU $s1, $zero, 0xffff
 AND $v0, $s0, $s1
 JR $zero
