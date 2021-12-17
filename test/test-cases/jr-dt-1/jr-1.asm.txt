@@ -1,2 +1,0 @@
-JR	$ra
-ADDIU	$zero, $zero, 0

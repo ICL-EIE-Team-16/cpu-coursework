@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ADDIU $s0, $zero, 0x1234
 ADDIU $s1, $s0, 0x2345
 ADDIU $s2, $s1, 0x3456
@@ -5,3 +6,8 @@ ADDIU $s3, $s2, 0x4567
 ADDIU $s4, $s3, 0x5678
 JR $ra
 ADDIU $v0, $s4, 2
+=======
+ADDIU $v0, $t1, 0xffff
+JR $ra
+NOP
+>>>>>>> master

@@ -2,4 +2,4 @@ ADDIU $s0, $zero, 0x56f1
 ADDIU $s1, $zero, 0x1472
 XOR $v0, $s0, $s1
 JR $zero
-JR $zero
+NOP

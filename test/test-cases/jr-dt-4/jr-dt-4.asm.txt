@@ -1,2 +1,0 @@
-JR $a3
-ADDIU $zero, $zero, 0
