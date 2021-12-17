@@ -1,0 +1,4 @@
+LUI $s1, 0x8000
+SRA $v0, $s1, 0x0
+JR $zero
+NOP

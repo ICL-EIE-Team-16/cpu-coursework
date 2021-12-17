@@ -1,5 +1,6 @@
 ADDIU $s0, $zero, 0xBFC
 SLL $s1, $s0, 0x14
+ADDIU $s2, $zero, 0x14
 SRAV $v0, $s1, $s2
 JR $zero
 NOP
