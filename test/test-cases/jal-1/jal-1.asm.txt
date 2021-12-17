@@ -1,11 +1,9 @@
-ADDIU $s0, $zero, 0x1234
-JAL 0x3F00007
-ADDIU $s1, $zero, 0x5678
-ADDIU $s2, $zero, 0x1234
-ADDU $v0, $v0, $s2
-JR $zero
-NOP
-ADDIU $v0, $zero, 0x1111
-JR $ra
-ADDIU $v0, $v0, 0x1111
-NOP
+addiu $v0, $zero, 0xA
+jal 0x3F00005
+addiu $v0, $v0, 0xB0
+jr $zero
+addiu $v0, $v0, 0xC00
+jal 0x3F00003 
+addiu $v0, $v0, 0xD000
+jr $zero
+addiu $v0, $v0, 0x1000
