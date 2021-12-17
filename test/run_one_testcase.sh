@@ -67,7 +67,6 @@ else
     fi
 fi
 
-
 if [ "${VERBOSE}" = "ENABLE" ] ; then
    >&2 echo "  3 - Running test-bench"
 fi
@@ -90,7 +89,14 @@ if [ "${VERBOSE}" = "ENABLE" ] ; then
 fi
 # This is the prefix for simulation output lines containing result of OUT instruction
 REG_V0_PATTERN="REG v0: OUT: "
+REG_PATTERN="REGFile : OUT: "
 NOTHING=""
+
+# Use "grep" to look only for lines containing REG_PATTERN
+set +e
+grep "${REG_PATTERN}" test/test-cases/${TESTCASE}/${TEST_ID}.stdout | sed -e "s/${REG_PATTERN}/${NOTHING}/g" > test/test-cases/${TESTCASE}/${TEST_ID}.out-reg.csv
+set -e
+# Use "sed" to replace "Memory OUT: " with nothing
 
 # Use "grep" to look only for lines containing REG_V0_PATTERN
 set +e

@@ -21,12 +21,13 @@ for i in ${TESTCASES} ; do
     set +e
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_simple_tb"
     set -e
-    
-    set +e
-    ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_request_tb"
-    set -e
 
     set +e
     ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_random_tb"
     set -e
+
+    set +e
+    ./test/run_one_testcase.sh ${SOURCE_DIRECTORY} ${TESTNAME} ${VERBOSE} "mips_bus_request_tb"
+    set -e
+
 done
