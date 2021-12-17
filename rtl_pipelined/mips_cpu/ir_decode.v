@@ -6,6 +6,7 @@ module IR_decode(
     input logic exec1,
     input logic exec2,
     input logic waitrequest,
+    input logic waitrequest_prev,
 
     output logic[4:0] shift_amount, // only relevant to r_type instructions
     output logic[4:0] destination_reg_1,
@@ -30,8 +31,11 @@ module IR_decode(
     logic i_type_1;
     logic i_type_2;
     logic memory_hazard_prev;
-    logic waitrequest_prev;
     logic waitrequest_prev_prev;
+    logic memory_1_prev;
+    logic branch_first;
+    logic instr1_stalled;
+    logic instr1_stalled_prev;
     logic[5:0] opcode_1;
     logic[5:0] opcode_2;
     logic[5:0] function_code_1;
@@ -40,6 +44,7 @@ module IR_decode(
     logic[31:0] instruction_1;
     logic[31:0] instruction_1_prev;
     logic[31:0] instruction_2;
+    logic[6:0] instruction_code_1_prev;
 
     typedef enum logic[6:0]{
         ADD = 7'd1,
@@ -102,21 +107,48 @@ module IR_decode(
 // Wait request received in the previous clock cycle
     always_ff @(posedge clk) begin
         waitrequest_prev_prev <= waitrequest_prev;
-        waitrequest_prev <= waitrequest;
+    end
+
+// Wait request received in the previous clock cycle
+    always_ff @(posedge clk) begin
+        instruction_1_prev <= instruction_1;
+        instruction_code_1_prev <= instruction_code_1;
+        instr1_stalled_prev <= instr1_stalled;
     end
 
 //Instruction register saving behaviour
     always_ff @(posedge clk) begin
-        if (is_current_instruction_valid)
-            instruction_2 <= instruction_1;
+        if (is_current_instruction_valid) begin
+            if (instr1_stalled_prev) begin
+                instruction_2 <= 32'h0;
+                branch_first <= 1;
+            end else begin
+                instruction_2 <= instruction_1;
+                branch_first <= 0;
+            end
+        end
+
         memory_hazard_prev <= memory_hazard;
     end
 
+// Was previous EXEC1 instruction a memory instruction?
     always @(*) begin
-        if (memory_hazard_prev)
+        memory_1_prev = LB == instruction_code_1_prev || LBU == instruction_code_1_prev || LH == instruction_code_1_prev || LHU == instruction_code_1_prev
+            || LW == instruction_code_1_prev || LWL == instruction_code_1_prev || LWR == instruction_code_1_prev || SB == instruction_code_1_prev
+            || SH == instruction_code_1_prev || SW == instruction_code_1_prev;
+    end
+
+    always @(*) begin
+        if (waitrequest_prev && memory_1_prev) begin
+            instruction_1 = instruction_1_prev;
+            instr1_stalled = 1;
+        end else if (memory_hazard_prev) begin
             instruction_1 = 32'h0;
-        else if (is_current_instruction_valid && !waitrequest_prev)
+            instr1_stalled = 0;
+        end else if (is_current_instruction_valid && !waitrequest_prev) begin
             instruction_1 = current_instruction;
+            instr1_stalled = 0;
+        end
     end
 
 //Type decode
@@ -267,15 +299,17 @@ module IR_decode(
                 reg_write_en = 0;
         end
         else if (i_type_2) begin
-            //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------   LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
-            if (((opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10001) || (opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10000) || (opcode_2 == 6'b100000) || (opcode_2 == 6'b100100) || (opcode_2 == 6'b100001) || (opcode_2 == 6'b100101) || (opcode_2 == 6'b001111) || (opcode_2 == 6'b100011) || (opcode_2 == 6'b100010) || (opcode_2 == 6'b100110)) && !waitrequest_prev_prev) begin
+            //BGEZAL-------------------------------------------  //BLTZAL------------------------------------------
+            if (((opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10001) || (opcode_2 == 6'b000001) && (instruction_2[20:16] == 5'b10000)) && !waitrequest_prev_prev) begin
+                reg_write_en = 1;
+            //LB-------------------- LBU------------------- LH-------------------  LHU------------------  LUI------------------- LW--------------------  LWL------------------- LWR-------------------
+            end else if ((opcode_2 == 6'b100000) || (opcode_2 == 6'b100100) || (opcode_2 == 6'b100001) || (opcode_2 == 6'b100101) || (opcode_2 == 6'b001111) || (opcode_2 == 6'b100011) || (opcode_2 == 6'b100010) || (opcode_2 == 6'b100110)) begin
                 reg_write_en = 1;
             end
                 //ADDI---------------  ADDIU----------------  ANDI-----------------  ORI-------------------  XORI---------------- SLTI----------------- SLTIU-------------
             else if (((opcode_2 == 6'b001000) || (opcode_2 == 6'b001001) || (opcode_2 == 6'b001100) || (opcode_2 == 6'b001101) || (opcode_2 == 6'b001110) || (opcode_2 == 6'b001010) || (opcode_2 == 6'b001011)) && !waitrequest_prev_prev) begin
                 reg_write_en = 1;
-            end
-            else
+            end else
                 reg_write_en = 0;
         end
         else if (j_type_2 && instruction_code_2 == JAL && !waitrequest_prev_prev)

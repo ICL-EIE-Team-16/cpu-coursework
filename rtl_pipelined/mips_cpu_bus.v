@@ -17,7 +17,7 @@ module mips_cpu_bus#(
     input logic[31:0] readdata
 );
 
-    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard, correct_op, registers_match;
+    logic fetch, exec1, exec2, reg_write_en, pc_halt, mem_halt, zero, positive, negative, is_current_instruction_valid, ignore_forwarding, memory_hazard, correct_op, registers_match, waitrequest_prev, disable_forwarding_for_store;
     logic[31:0] databus, alu_b, alu_a, reg_a_out, reg_b_out, pc_address, immediate_1, immediate_2, reg_in, alu_r, mxu_dout, alu_r_saved, return_address, jump_register_data, readdata_unscrambled, writedata_unscrambled, mxu_reg_b_in, alu_r_mxu;
     logic[4:0] reg_a_idx_1, reg_a_idx_2, reg_b_idx_1, reg_b_idx_2, destination_reg_1, reg_in_idx, shift_amount, reg_b_bodge;
     logic[25:0] jump_const;
@@ -159,7 +159,8 @@ module mips_cpu_bus#(
 
 //MUX MXU reg in
     always_comb begin
-        if (reg_in_idx == reg_b_idx_1) begin
+        disable_forwarding_for_store = !(waitrequest_prev && (instruction_code_1 == SB || instruction_code_1 == SH || instruction_code_1 == SW));
+        if (reg_in_idx == reg_b_idx_1 && disable_forwarding_for_store) begin
             mxu_reg_b_in = alu_r_saved;
         end else begin
             mxu_reg_b_in = reg_b_out;
@@ -179,6 +180,7 @@ module mips_cpu_bus#(
     always_ff @(posedge clk) begin
         is_current_instruction_valid <= 1;
         alu_r_saved <= alu_r;
+        waitrequest_prev <= waitrequest;
     end
 
     always @(*) begin
@@ -199,7 +201,7 @@ module mips_cpu_bus#(
         .clk(clk), .current_instruction(readdata_unscrambled), .is_current_instruction_valid(is_current_instruction_valid), .fetch(fetch), .exec1(exec1), .exec2(exec2),
         .shift_amount(shift_amount), .destination_reg_1(destination_reg_1), .destination_reg_2(reg_in_idx), .reg_a_idx_1(reg_a_idx_1), .reg_a_idx_2(reg_a_idx_2), .reg_b_idx_1(reg_b_idx_1), .reg_b_idx_2(reg_b_idx_2),
         .immediate_1(immediate_1), .immediate_2(immediate_2), .memory(jump_const), .reg_write_en(reg_write_en), .instruction_code_1(instruction_code_1), .instruction_code_2(instruction_code_2),
-        .memory_hazard(memory_hazard), .waitrequest(waitrequest)
+        .memory_hazard(memory_hazard), .waitrequest(waitrequest), .waitrequest_prev(waitrequest_prev)
     );
     PC pc(.clk(clk), .reset(reset), .fetch(fetch), .exec1(exec1), .exec2(exec2), .instruction_code(instruction_code_1), .offset(immediate_1[15:0]), .instr_index(jump_const), .register_data(jump_register_data), .zero(zero), .positive(positive), .negative(negative), .address(pc_address), .pc_halt(pc_halt), .return_address(return_address), .memory_hazard(memory_hazard), .waitrequest(waitrequest));
 

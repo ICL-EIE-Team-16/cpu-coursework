@@ -3,7 +3,7 @@ module mips_bus_random_tb;
 
     parameter RAM_INIT_FILE = "test/test-cases/addiu-1/addiu-1.hex.txt";
     parameter WAVES_OUT_FILE = "test/test-cases/addiu-1/addiu-1-mips_bus_random_tb.vcd";
-    parameter TIMEOUT_CYCLES = 1000;
+    parameter TIMEOUT_CYCLES = 7000;
 
     logic clk;
     logic reset;
