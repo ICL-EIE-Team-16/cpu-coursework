@@ -4,7 +4,8 @@ module ALU(
     input logic[4:0] sa,
     input logic fetch, exec1, exec2, clk, reset,
     output logic zero, positive, negative,
-    output logic[31:0] r
+    output logic[31:0] r,
+    output logic exception
 );
 
 logic[63:0] mult_intermediate;
@@ -78,10 +79,22 @@ always @(*) begin
 
     if(op == ADDU || op == ADDIU) begin
         r = a+b;
+        if ((a[31] == b[31]) && (r[31] != a[31])) begin
+            exception = 1;
+        end
+        else begin
+            exception = 0;
+        end
     end
 
     if(op == SUBU) begin
         r = a - b;
+        if ((a[31] == b[31]) && (r[31] != a[31])) begin
+            exception = 1;
+        end
+        else begin
+            exception = 0;
+        end
     end
         
     if(op == SRA) begin
