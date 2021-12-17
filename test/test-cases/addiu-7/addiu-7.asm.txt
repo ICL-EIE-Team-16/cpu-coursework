@@ -1,15 +1,4 @@
-<<<<<<< HEAD
-ADDIU $s0, $zero, 0xffff
-ADDIU $s1, $zero, 0x1234
-ADDIU $s2, $zero, 0x2345
-ADDIU $s3, $zero, 0x3456
-ADDIU $s4, $zero, 0x4567
-ADDIU $s5, $zero, 0x5678
-JR $ra
-ADDIU $v0, $v0, 2
-=======
 ADDIU $v0, $s0, 1
 JR $zero
 ADDIU $t0, $t0, 0
 NOP
->>>>>>> master
