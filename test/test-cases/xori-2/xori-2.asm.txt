@@ -1,4 +1,4 @@
 ADDIU $s0, $zero, 0xffff
 XORI $v0, $s0, 0xffff
 JR $zero
-JR $zero
+NOP

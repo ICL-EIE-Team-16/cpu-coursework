@@ -2,3 +2,4 @@ ADDIU $s0, $zero, 0xBF00
 MTHI $s0
 MFHI $v0
 JR $zero
+NOP

@@ -6,4 +6,4 @@ ADDIU $s1, $zero, 0xA
 MULT $s0, $s1
 MFHI $v0
 JR $zero
-JR $zero
+NOP

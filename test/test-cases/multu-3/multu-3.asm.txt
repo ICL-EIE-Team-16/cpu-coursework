@@ -3,4 +3,4 @@ ADDIU $s1, $s0, 0xf000
 MULTU $s0, $s1
 MFHI $v0
 JR $zero
-JR $zero
+NOP
