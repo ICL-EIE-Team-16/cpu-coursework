@@ -2,22 +2,27 @@
 
 This repository contains code for the CPU coursework for the second-year EIE module Instruction Architectures and Compilers.
 
+## Overall design
+
+The following diagram shows the overall design of the developed CPU.
+
+![CPU block diagram](images/cpu-block-diagram.png?raw=true "CPU block diagram")
+
 ## Directories structure
 
 - `modules_tb` - test benches for particular submodules of the CPU
+- `modules_tb` - test benches for particular submodules of the CPU pipelined version of CPU
 - `rtl` - folder that contains Verilog source files for the CPU
+  - `mips_cpu_bus.v` - main Verilog CPU module that interconnects all submodules
+  - `mips_cpu/*.v` - Verilog files for submodules
+- `rtl_pipelined` - folder that contains Verilog source files for the pipelined version of the CPU that fully supports only main memory
   - `mips_cpu_bus.v` - main Verilog CPU module that interconnects all submodules
   - `mips_cpu/*.v` - Verilog files for submodules
 - `test` - contains files for testing
   - `bin` - contains binary files that are needed to run the testing environment
   - `logs` - contains log files from separate module test benches
-  - `inputs` - data for test cases
-    - `0-assembly` - testing assembly programs 
-    - `1-hex` - testing assembled hexadecimal files that are loaded to the memory starting from address `0xBCF00000` 
-    - `2-testcases` - compiled Verilog programs  
-    - `3-output` - logs from executed Verilog programs
-    - `4-reference` - reference files that are used to compare outputs from programs
   - `testbenches` - template test bench files that are used as a source for all assembly programs testing
+    - `memories` - folder with memories used by test benches
   - `utils` - assembler files
     - `test` - unit tests for assembler
   - `build_utils.sh` - builds utility files needed
@@ -29,44 +34,27 @@ This repository contains code for the CPU coursework for the second-year EIE mod
 - `CMakeLists.txt` - CMake file for setting up CLion unit testing environment
 
 ## Testing
-All bash scripts in the `test` folder assume that they will be executed in the `test` folder.
-- need to add permissions to all bash scripts in the file
+All bash scripts in the `test` folder assume that they will be executed in the root folder of the project.
+
+Following command runs all testcases for ADDIU instruction on the non-pipelined CPU:
+
+````
+./test/test_mips_cpu_bus.sh rtl addiu
+````
+
+To run all test cases on the non-pipelined CPU enter following command:
+
+````
+./test/test_mips_cpu_bus.sh rtl addiu
+````
 
 ## Assembler
 In order to speed ut testing, MIPS assembler was implemented in C++. This assembler takes as an input assembly file with MIPS instructions. As an output, it then generates hex files that are loaded to RAM memory using file as a parameter in Verilog. The assembler was developed with a use of test driven development. Unit tests can be found in `test/utils/test`. The test cases are written in Google Test and the whole C++ environment was set up using CMake.
 Due to the fact that MIPS programs start at `0xBFC00000`, all data address are automatically aligned by offset of `0xBFC00000`. The nop instruction in the assembler can be written as `NOP`.
-Regular expressions for instructions validation are not that perfect yet.
-
-### Todo
-- Test option to jump backwards.
-- Add negative offsets to memory instructions.
-- Need more programs - that check problems such as negative offsets and correct sign extensions.
-- Add execution permission command for each script.
-- Implement LI instruction
-- Remove error output statements from the assembler
-- Make sure that before the submission that the generation of wave forms is uncommented.
-- Pipelining
-  - What happens if there is NOP after instruction that is in the branch delay slot after jump to zero address
-- Supplies ALU with pc_address for for AL type instructions to calculate PC+8 - comment in mips_cpu_bus - is this correct?
-
-Registers encoding: [DOC Imperial](https://www.doc.ic.ac.uk/lab/secondyear/spim/node10.html)
-
-## Possible problems
-- problematic output from simple memory and problems with timing of components
-- will our test benches run on DTs CPU when all our source files will be in `mips_cpu` folder?
-- How will the test bench will be run? Will it be run from the root folder or from the test folder? - ask during mentors meeting
-
-## Before submission check
-- src/mipsregisterfile.v:30: warning: System task ($display) cannot be synthesized in an always_ff process. - remove all $display statements before the submission progress
-- can the MIPS address offset be negative?
-- how the rounding in division should work?
-- How will DTs test cases be run? Is he going connect our CPU to his memory?
-- How permissions will be handled? Will you run chmod +x only on test_mips_cpu_bus.tb
-- What about line endings? Will you convert Windows line endings so there is no error with it? -> can actually run dos2unix before the submission
 
 ## Authors
-- Michal Palic
-- Vaclav Pavlicek
+- Michal Palič
+- Vaclav Pavlíček
 - Pablo Romo Gonzalez
 - Arthika Sivathasan
 - Henry Hausamann
