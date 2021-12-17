@@ -87,10 +87,6 @@ module PC(
             address <= 32'hBFC00000;
             isr_counter <= 0;
         end
-        if (interrupt_signal && (isr_counter == 0)) begin //if there is an interrupt and we aren't already in an isr:
-            interrupt <= 1;
-            resume_address <= next_address;
-        end
         else begin
             if (exec2) begin //fetch before
                 if (pc_halt) begin
@@ -127,6 +123,10 @@ module PC(
                     jump_flag <= 0;
                     jump_address_reg <= 0;
                 end
+            end
+            if (interrupt_signal && (isr_counter == 0)) begin //if there is an interrupt and we aren't already in an isr:
+                interrupt <= 1;
+                resume_address <= next_address;
             end
         end
     end

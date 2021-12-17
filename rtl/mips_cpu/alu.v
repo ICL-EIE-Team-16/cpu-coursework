@@ -89,7 +89,7 @@ always @(*) begin
 
     if(op == SUBU) begin
         r = a - b;
-        if ((a[31] == b[31]) && (r[31] != a[31])) begin
+        if ((a[31] != b[31]) && (r[31] != a[31])) begin
             exception = 1;
         end
         else begin
