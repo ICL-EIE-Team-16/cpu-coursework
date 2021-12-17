@@ -15,7 +15,10 @@ The following diagram shows the overall design of the developed CPU.
 - `rtl` - folder that contains Verilog source files for the CPU
   - `mips_cpu_bus.v` - main Verilog CPU module that interconnects all submodules
   - `mips_cpu/*.v` - Verilog files for submodules
-- `rtl_pipelined` - folder that contains Verilog source files for the pipelined version of the CPU that fully supports only main memory
+- `rtl_interrupt` - folder that contains Verilog source files for the version of the CPU that supports interrupts
+  - `mips_cpu_bus.v` - main Verilog CPU module that interconnects all submodules
+  - `mips_cpu/*.v` - Verilog files for submodules
+- `rtl_pipelined` - folder that contains Verilog source files for the pipelined version of the CPU that fully supports only simple memory
   - `mips_cpu_bus.v` - main Verilog CPU module that interconnects all submodules
   - `mips_cpu/*.v` - Verilog files for submodules
 - `test` - contains files for testing
