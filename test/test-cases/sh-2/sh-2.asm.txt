@@ -1,9 +1,0 @@
-ADDIU $s0, $zero, 0xBFC
-SLL $s1, $s0, 0x14
-ADDIU $s2, $zero, 0x1234
-ADDIU $s3, $zero, 0x5678
-SH $s2, 0x24($s1)
-SH $s3, 0x26($s1)
-LW $v0, 0x24($s1)
-JR $zero
-NOP
